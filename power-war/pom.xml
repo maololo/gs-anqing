@@ -3,11 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.hnxt.projects</groupId>
+    <groupId>com.hnxt.projects.power</groupId>
     <artifactId>power</artifactId>
     <version>1.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>com.hnxt.projects.power</groupId>
   <artifactId>power-war</artifactId>
   <name>power-war</name>
   <properties>
