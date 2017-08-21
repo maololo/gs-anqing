@@ -514,7 +514,7 @@ function initpowerLayerTree(){
 					})
 				});
 				//只加载默认图层在地图上
-				if(data[i].C_ISDEFAULTLAYER=="1"){
+				if(data[i].C_ISDEFAULTLAYER=="1" && data[i].C_ISSHOW=="1"){
 //					layers.push(layer);
 					layerImages.push(layer);
 					treeNodes[i] = {text:data[i].C_LAYERNAME,id:data[i].C_ID,layer:layer,bounds:data[i].C_BBOX,icon:"glyphicon glyphicon-file",state:{checked:true}}
@@ -747,14 +747,13 @@ function right_click_box(){
        })
    });
  	map.addLayer(geomObj);
+ 	var type=""
         if(value == 'area'){
         	$('#measureName').html('面积');
         	type = "Polygon";
         }else if(value == 'length'){
         	$('#measureName').html('长度');
         	type = "LineString";
-        }else if(value == 'circle'){
-        	type = "Circle";
         }
         draw = new ol.interaction.Draw({
           source: geomObj.getSource(),
@@ -1021,18 +1020,30 @@ function zoomOut() {
 }
 
 function radioQuery(){
-	  map.on('singleclick', function(evt) {
-		  alert();
+	 map.on('singleclick', function(evt) { 
 	        document.getElementById('nodelist').innerHTML = "Loading... please wait...";
 	        var view = map.getView();
 	        var viewResolution = view.getResolution();
 	        var source = layerImages[0].get('visible') ? layerImages[0].getSource() : layerImages[1].getSource();
 	        var url = source.getGetFeatureInfoUrl(
 	          evt.coordinate, viewResolution, view.getProjection(),
-	          {'INFO_FORMAT': 'text/html', 'FEATURE_COUNT': 50});
+	          {'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': 50});
+	        console.log(url); 
 	        if (url) {
-	        	$("#nodelist").show();
-	          document.getElementById('nodelist').innerHTML = '<iframe seamless src="' + url + '"></iframe>';
+	        	$.ajax({
+		        	//请求地址                               
+		           url:url,
+		    	   data:{},//设置请求参数 
+		    	   type:"post",//请求方法
+		    	   dataType: 'jsonp',
+//		           crossDomain: true,
+		    	  //success：请求成功之后执行的回调函数   data：服务器响应的数据
+		    	   success:function(data){
+		    		   var sdsd = data;
+		    	   }
+		        });
+//	        	$("#nodelist").show();
+//	          document.getElementById('nodelist').innerHTML = '<iframe seamless src="' + url + '"></iframe>';
 	        }
 	      });
 }
