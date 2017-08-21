@@ -1,0 +1,131 @@
+<script type="text/javascript">
+	function fnlayerType(value){
+		if(value == '1') 
+			return '图层';
+		if(value == '2') 
+			return '图层组';
+	}
+	function fnisDefault(value){
+		if(value == '1') 
+			return '是';
+		if(value == '0') 
+			return '否';
+	}
+	function fnisShow(value){
+		if(value == '1') 
+			return '是';
+		if(value == '0') 
+			return '否';
+	}
+</script>
+<div id="appmanager" >
+    <div class="top">
+        <div class="top-left1">图层管理</div>
+        <div class="dd2" >
+            <a href="#" onclick="fnAddApp()"><img src="/images/organization/add.png"/>添加</a>
+            <a href="#" onclick="fnUpdateApp()"><img src="/images/organization/amend.png"/>修改</a>
+            <a href="#" onclick="fnDeleteApp()" ><img src="/images/organization/cha.png"/>删除</a>
+        </div>
+    </div>
+       <div id="po"  class="table-css1" style="height:93%;padding:10px;overflow: hidden">
+            <table id="app_table" class="easyui-datagrid" style="width:100%;height:100%">
+                <thead>
+                <tr>
+                    <th data-options="field:'ck',checkbox:true">选项</th>
+                    <th data-options="field:'C_LAYERNAME',width:5">图层名称</th>
+                    <th data-options="field:'C_LAYERURL',width:25">服务地址</th>
+                    <th data-options="field:'C_SERVICETYPE',width:5">服务类型</th>
+                    <th data-options="field:'C_BBOX',width:25">显示范围</th>
+                    <th data-options="field:'C_LAYERTYPE',width:5,formatter:fnlayerType">图层类型</th>
+                    <th data-options="field:'C_LAYER',width:10">图层</th>
+                    <th data-options="field:'C_IMAGE',width:10">显示图片</th>
+                    <th data-options="field:'C_ISDEFAULTLAYER',width:10,formatter:fnisDefault">默认图层</th>
+                    <th data-options="field:'C_ISSHOW',width:10,formatter:fnisShow">显示</th>
+                </tr>
+                </thead>
+            </table>
+    </div>
+</div>
+
+<div id="app_dlg" class="easyui-dialog" closed="true" title="图层管理维护"
+		style="padding: 5px; width: 400px; height:620px;"
+		data-options="buttons:'#bb',modal:true">
+	<form id="app_form" action="" method="post">
+		<table align='center' width="100%" cellspacing="32" cellpadding="12">
+			<tr>
+				<td align='right'>图层名称:</td>
+				<td>
+					<input type="text" class="easyui-textbox" id="C_LAYERNAME" name="C_LAYERNAME"/>
+					<input type="hidden" id="C_ID" name="C_ID"/>
+				</td>
+			</tr>
+			<tr>
+				<td align='right'>服务地址:</td>
+				<td>
+					<input type="text" class="easyui-textbox" id="C_LAYERURL" name="C_LAYERURL"/>
+				</td>
+			</tr>
+			<tr>
+				<td align='right'>服务类型:</td>
+				<td>
+					<input type="text" class="easyui-textbox" id="C_SERVICETYPE" name="C_SERVICETYPE"/>
+				</td>
+			</tr>
+			<tr>
+				<td align='right'>显示范围:</td>
+				<td>
+					<input type="text" class="easyui-textbox" id="C_BBOX" name="C_BBOX"/>
+				</td>
+			</tr>
+			<tr>
+				<td align='right'>图层类型:</td>
+				<td>
+					<select id="C_LAYERTYPE" name="C_LAYERTYPE" class="easyui-combobox" style="width:173px;" >
+							<!-- <option value="" selected="selected">-请选择-</option> -->
+							<option value="1" >图层</option>
+							<option value="2">图层组</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td align='right'>图层:</td>
+				<td>
+					<span id="app_layer"><input type="text" class="easyui-textbox" id="C_LAYER1" name="C_LAYER1"/></span>
+					 <span id="app_group" style="display:none;">
+					 <input id="C_LAYER2" name="C_LAYER2" multiple="multiple" class="easyui-combobox" data-options="valueField:'id', textField:'text'" style="width:173px;"/>
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<td align='right'>显示图片:</td>
+				<td>
+					<input type="text" class="easyui-textbox" id="C_IMAGE" name="C_IMAGE"/>
+				</td>
+			</tr>
+			<tr>
+				<td align='right'>默认图层:</td>
+				<td>
+				<select id="C_ISDEFAULTLAYER" name="C_ISDEFAULTLAYER" class="easyui-combobox" style="width:173px;">
+							<option value="1" >是</option>
+							<option value="0">否</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td align='right'>显示:</td>
+				<!--  $('#wrap input[name="payMethod"]:checked ').val(); -->
+				<td>
+                     <select id="C_ISSHOW" name="C_ISSHOW" class="easyui-combobox" style="width:173px;">
+							<option value="1" >是</option>
+							<option value="0">否</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+<div id="bb" class="module_btn">
+	<a href="#" class="easyui-linkbutton" onclick="fnSaveApp()">保存</a>
+	<a href="#" class="easyui-linkbutton" onclick="$('#app_dlg').dialog('close')">关闭</a>
+</div>

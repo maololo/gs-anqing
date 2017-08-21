@@ -1,0 +1,350 @@
+/*测量样式  */
+
+
+ .tooltip {
+        position: relative;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        color: white;
+        padding: 4px 8px;
+        opacity: 0.7;
+        white-space: nowrap;
+      }
+      .tooltip-measure {
+        opacity: 1;
+        font-weight: bold;
+      }
+      .tooltip-static {
+        background-color: #ffcc33;
+        color: black;
+        border: 1px solid white;
+      }
+      .tooltip-measure:before,
+      .tooltip-static:before {
+        border-top: 6px solid rgba(0, 0, 0, 0.5);
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        margin-left: -7px;
+        left: 50%;
+      }
+      .tooltip-static:before {
+        border-top-color: #ffcc33;
+      }   
+      
+ /* 修改缩放控件位置  */    
+ .ol-zoom {
+    top: .5em;
+    left: 98%;
+}   
+/* 修改全屏控件位置  */ 
+.ol-full-screen{
+	right: 6px;
+    top: 54px;
+} 
+      
+      
+      
+
+a{
+    text-decoration: none;
+}
+#toolbar{
+    border-radius: 5px;
+    z-index: 99999;
+    margin: 5px 5px 5px 8px;
+    float: left;
+}
+#toolbar a{outline: 0;}
+.btn-inverse{
+    background-color:white;
+    color: #333;
+    opacity:0.5;
+}
+.btn-group>.btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+    border-radius: 0;
+}
+.btn-group>.btn+.btn {
+    margin-left: 0;
+}
+
+.btn-group-vertical>.btn, .btn-group>.btn {
+    position: relative;
+    float: left;
+}
+
+.btn-group>.btn {
+    font-weight: 400;
+}
+.btn-toolbar .btn, .btn-toolbar .btn-group, .btn-toolbar .input-group {
+    float: left;
+}
+.btn {
+    display: inline-block;
+    float: left;
+    margin-bottom: 0;
+    text-align: center;
+    white-space: nowrap;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    background-image: none;
+    height: 40px;
+    padding: 10px 12px;
+    font-weight: 400;
+    line-height: 1.2;
+    border: none;
+    border-radius:4px;
+    vertical-align: middle;
+    transition: border .25s linear,color .25s linear,background-color .25s linear;
+    -webkit-font-smoothing: subpixel-antialiased;
+    -webkit-transition: border .25s linear,color .25s linear,background-color .25s linear;
+}
+.btn:hover{
+    background: #0a969b;
+}
+.btn:hover span{
+    color: white;
+}
+.glyphicon{font-size: 16px;}
+#measureBtn span, #visBtn span,#settingBtn span{display: inline-block;margin-top: -4px;}
+.dropDown-container {
+   .dropDown-container {
+    top: 100%;
+    box-sizing: border-box;
+    left: 0;
+    margin: 9px;
+    color: red;
+    height: 542.3px;
+    min-width: 260px;
+    text-align: left;
+    background: white;
+    opacity: 0.9;
+}
+}
+.node-layerTree {
+    color: #fff;
+    background-color: transparent;
+    border: none;
+}
+.node-layerTree:hover{
+    background-color: white;
+}
+.squaredTwo:hover span{color: #b3bead}
+.squaredTwo {
+    position: relative;
+    width: 20px;
+    height: 20px;
+   /* background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);*/
+}
+input[type=checkbox]{
+    -webkit-appearance:none;
+    line-height: normal;
+    border: initial;
+    width: 25px;
+    height: 25px;
+    z-index:999;
+}
+.checkimg{
+    margin-top: 20px;padding-left: 10px;
+}
+
+.tablist li a{color:#2ec5ad}
+.select{
+    background: #303336;width: 150px;height: 30px;border: 1px solid #303336;
+}
+.select:hover{
+    background: #2b81af;
+;}
+.modal-footer{border: none}
+.service,.btn-serve,.FilePan,.base-container,.measureBtn,.settingBtn{
+       
+}
+.FilePan{width: 100%;height: 45px;}
+.FilePan button{background: white;height: 26px;line-height: 26px;border: none;
+    margin-top: 8px;margin-left: 10px;color:#303336 }
+.base-row{
+    padding-left: 10px;padding-right: 10px;padding-top: 10px;
+}
+.base{
+    width:500px;top:110%;left:10%;
+}
+.visBtn{
+    width:500px;top:110%;left:55%
+}
+.thumbnail{position: relative}
+.thumbnail span{
+    position: absolute;
+    right: 10px;
+    top:5px;
+    display: none;
+           }
+
+.dropdown-menu{background: transparent;outline: none}
+.measureBtn{height: 120px;    border: 1px solid white;}
+.measureBtn .btn{ margin-left:10px; margin-right:8px;margin-top: 10px;}
+.measure{top: 110%;
+    left: 50%;
+    width: 140px;
+    background-color: white;
+    opacity: 0.9;}
+.setting{top:120%;left:70%;}
+.settingBtn{min-width: 140px;
+    border-radius: 4px;
+    text-align: left;
+    padding: 10px;}
+
+.modal-footer button:hover{ color: white}
+ .settingBtn label {
+    font-size: 15px;
+    font-weight: 400;
+    display: inline-block;
+    max-width: 100%;
+}
+.settingBtn>div{margin-top: 15px;margin-left: 10px;}
+.settingBtn>div>span:nth-child(2){font-size: 20px;}
+#liGroup1{
+	display: block;
+}
+
+
+.measure #measureName{
+   height: 30px;
+    margin: 60px 10px 0 10px;
+    color: #333;
+    }
+    
+    
+ #btnGroup   .bookMaker{
+    height: 500px;
+    width: 200px;
+    padding: 10px;
+    background-color: #fff;
+    opacity: 0.9;
+ }
+ .sweet-alert {
+    left: 50% !important;
+    top: 48% !important;
+ }
+ 
+ /* openlayer样式 */
+.ol-logo-only{
+	display: none;
+}
+ /* jstree样式 */
+ .jstree-default .jstree-node, .jstree-default .jstree-icon {
+    background-image: url(/images/icon.png);
+}
+ .vakata-context{
+     z-index: 99999; 
+} 
+
+.glyphicon-file:before{
+    content: none ;
+}
+
+.jstree-anchor, .jstree-anchor:link, .jstree-anchor:visited, .jstree-anchor:hover {
+    /* text-decoration: none;
+    color: #015351;
+    font-family: "微软雅黑";
+    font-size:12px;
+    font-style:normal; */
+ }
+
+.jstree-default .jstree-checkbox {
+    background-position: -150px -10px;
+}
+.jstree-default .jstree-checkbox:hover {
+    background-position: -150px -10px;
+}
+ 
+.jstree-default>.jstree-no-dots .jstree-closed>.jstree-ocl {
+    background-position: -27px -11px;
+}
+.jstree-default>.jstree-no-dots .jstree-open>.jstree-ocl {
+    background-position: -4px -12px;
+}
+.jstree-default .jstree-themeicon {
+    background-position: -74px -11px;
+}
+
+.jstree-default .glyphicon {
+    background-position: -105px -11px;
+}
+
+.jstree-default.jstree-checkbox-selection .jstree-clicked>.jstree-checkbox, .jstree-default .jstree-checked>.jstree-checkbox {
+    background-position: -50px -10px;
+}
+.jstree-default.jstree-checkbox-selection .jstree-clicked>.jstree-checkbox:hover, .jstree-default .jstree-checked>.jstree-checkbox:hover {
+    background-position:-50px -10px;
+}
+.jstree-default .jstree-anchor>.jstree-undetermined {
+    background-position: -130px -10px;
+}
+.jstree-default .jstree-anchor>.jstree-undetermined:hover {
+    background-position: -130px -10px;
+}
+
+.vakata-context li>a .vakata-contextmenu-sep {
+    display: none;
+}
+.vakata-context .vakata-context-hover > a {
+  position: relative;
+  background-color: #056766;
+  color: #fff;
+  text-shadow: none;
+  box-shadow: 0 0 2px #056766;
+}
+.vakata-context li>a:hover {
+    position: relative;
+    background-color: #056766;
+    box-shadow: 0 0 2px #056766;
+    /*text-shadow: 1px 1px 0 #fff;*/
+    text-shadow: none;
+    color: #fff;
+}
+
+.vakata-context, .vakata-context ul {
+    margin: 0;
+    padding: 2px;
+    position: absolute;
+    background: #f5f5f5;
+    border: none;
+    box-shadow: none;
+}
+
+/* 列表属性table样式 */
+/* Border styles */
+table thead, table tr {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-right-width:1px;
+    border-top-color: rgb(68, 68, 68);
+    line-height:33px;
+}
+
+/* Padding and font style */
+table td, table th {
+    padding: 5px 10px;
+    font-size: 14px;
+    font-family: "Microsoft YaHei";
+    color: rgb(46, 197, 173);
+}
+table tr:nth-child(even):hover{
+    background:rgb(29, 29, 29);
+    cursor: pointer;
+}
+table tr:nth-child(odd):hover{
+    background:rgb(29, 29, 29);
+    cursor: pointer;
+}
+/* Alternating background colors */
+table tr:nth-child(even) {
+    background:transparent;
+}
+table tr:nth-child(odd) {
+    background:transparent;
+}
+
