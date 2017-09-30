@@ -1,0 +1,414 @@
+/*全局样式*/
+body {width: 100%;height: 100% ;border: 0px; margin: 0px;padding: 0px;font:12px "微软雅黑","Arial Narrow",HELVETICA;background:#fff;-webkit-text-size-adjust:
+100%;  }
+a{color:#3C3C3C;text-decoration:none}
+a:hover{color:#f40;}
+em,i{font-style:normal}
+li{list-style:none}
+img{border:0;}
+*{margin:0;padding:0;list-style:none;}
+/*-------------------------------Start 重写easyUI 样式-----------------------------------------*/
+.layout-split-north {border-bottom: 0px;}
+.menu {border-style: none}
+/*-------------------------------End 重写easyUI 样式 -----------------------------------------*/
+
+/*index 页面样式*/
+#header {  
+    background:#308374 url(../../images/home-page-pandect/head-bg.png) no-repeat;
+    background-position:top right;
+    border:1px solid #2a6f62;
+    box-sizing:border-box;
+    width:100% !important;
+}
+.panel {
+     margin-bottom: 0px; 
+     background-color: none; 
+     border: none; 
+     border-radius: 0px; 
+}
+#logo { background: url(../../images/home-page-pandect/logo.png) no-repeat; width: 748px; height: 56px;margin-top:17px;
+       margin-left:10px;}
+
+/* .layout-split-west{
+    border-right:2px solid #176e5e;
+} */
+.layout-split-south{
+    border-top:3px solid #176e5e;
+    border-bottom:2px solid #303943;
+}
+.panel-title{
+    color:white;
+
+}
+.panel-header{
+    background:linear-gradient(to bottom,#077a77 0,#077a77 100%);
+    border: none;
+    height: 30px;
+    line-height: 30px;
+     width:100%; 
+    padding: 0px;
+}
+.panel-header .hamburgerimg{
+	    margin-left: 10px;
+}
+.panel-header img{
+	margin-left: 13px;
+	margin-bottom: 5px;
+}
+.panel-header .font{
+	font-size: 1.2rem;
+	color:white;
+}
+.layout-button-up{
+    background:none;
+}
+.iconfont,.glyphicon {
+	color: white;
+}
+.nav-word{
+    font-size: 25px;
+    font-weight: 600;
+    margin-top: 25px;
+}
+.navbar {
+    margin-bottom: 0px;
+}
+.navbar-header{
+	margin-top: 13px;
+}
+/*-------------------------------header-right样式-----------------------------------------*/
+
+
+
+.easyui-layout #header .header-right{
+  float: right;
+  margin-right:10px;
+  margin-top: -30px;
+  color:#fff;
+  
+}
+.easyui-layout #header a{
+  color:#FAF7D4;
+}
+.easyui-layout #header a:hover{
+  color:#f40;
+}
+.easyui-layout #header img{
+  margin-right:3px;
+}
+
+    /*-------------------------------左侧内容区域-----------------------------------------*/
+.panel-body {
+    padding: 0px;
+    border: none;
+}
+#center-left{
+    background: -o-linear-gradient(top, #fff, #248271);
+    width: 160px;
+    height:100%;
+}
+ .main{
+    width: 100%;
+    height: 100%;
+    background:#fff;
+}
+.left-nav{
+    height:100%;
+    background:#005a52;
+    float: left;
+/*     border-right:1px solid #64A79A; */
+}
+
+.left-nav dl .menu{
+    width: 161px;
+    height: 33px;
+    line-height:20px;
+    background:#005a52;
+    padding-left: 15px;
+    box-sizing:border-box;
+    padding-top:6px;
+    margin-left:-1px;
+    margin-bottom:1px;
+    position:relative;
+    cursor:pointer;
+}
+.left-nav dl dt .home{
+    margin-right:4px;
+    float:left;
+    margin-top:2px;
+}
+.left-nav dl dt .arrow{
+    left:140px;
+    cursor:pointer;
+    float:left;
+    position:absolute;
+}
+.left-nav dl dt a{
+    color:#fff;
+    font-size:16px;
+    float:left;
+    text-decoration: none;
+}
+.left-nav dl .sub-menu{
+    display:none;
+    margin:0;
+}
+.left-nav dl .sub-menu a:hover{
+    background:#01675e;
+    text-decoration: none;
+}
+.left-nav dl .text{
+    width: 160px;
+    line-height:30px;
+    background:#005a52;
+    text-decoration: none;
+/*     border-top: 1px solid #dfe1e0; */
+/*     border-bottom: 1px solid #dfe1e0; */
+    padding-left:40px;
+    padding-top: 5px;
+    box-sizing:border-box;
+    color: white;
+    font-size:14px;
+    float:left;
+    margin-top:-1px;
+}
+
+.left-nav dl{ margin: 0px;}
+.left-nav dl  dt{ margin: 0px;}
+/*-------------------------------center区域-----------------------------------------*/
+.layout-panel-center {
+	leaft:0px;
+}
+/*-------------------------------center区域右部顶部导航-----------------------------------------*/
+#center-top{
+    height:20px;
+    width: 100%;
+}
+
+/*-------------------------------底部内容区域-----------------------------------------*/
+#foot{
+    width: 100%;
+    height:22px;
+    background:#303943;
+    border:5px solid #3e4853;
+    color: #fff;
+}
+p{
+    text-align:center;
+    font: 12px/19px "宋体";}
+    
+    
+    /*-------------------------------------重写easyui输入框的样式-------------------------------*/
+ .l-btn-text{
+    margin:0;
+}
+
+.textbox{
+    margin-left:10px;
+    border:1px solid #b0e7dd;
+    box-shadow: 1px 1px 1px #ccc;
+}
+.header-right .textbox{
+	color:black;
+}
+.validatebox-invalid{
+    background-color:#FFFFFF;
+}
+
+.caculate{
+    background:linear-gradient(to bottom,#8DEFF9 0,#26B7AF 100%);
+    border:linear-gradient(to bottom,#8DEFF9 0,#26B7AF 100%);
+}
+ 
+.combo-arrow{
+    background:url("../../images/count-analyze/spinner_arrows.png") no-repeat -14px 3px;
+}
+    
+  
+  
+ /*-------------------------------------重写easyui弹出框的关闭按钮的样式-------------------------------*/ 
+  .panel-tool-close {
+    background: url("../../images/organization/cha.png") no-repeat;
+}  
+
+ .panel-tool a {
+    display: inline-block;
+     width: 16px;
+    height: 16px; 
+   /*  filter: alpha(opacity=60); */
+    vertical-align: top;
+    opacity: 1;
+    margin:4px;
+} 
+.window .panel-tool{
+  height: 20px;
+  width: 20px;
+  margin-top: -13px;
+  margin-right:3px;
+}
+.panel-tool:hover {
+  border-radius:10px;
+    background: linear-gradient(to bottom,#AFE7DC 0,#AFE7DC 100%); 
+}   
+.panel-tool a:hover {
+    opacity: 1;
+    filter: alpha(opacity=100);
+    background-color:#AFE7DC;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
+}               
+
+ /* ----------------重写easyui默认(messager)弹窗样式--------------------- */
+ .messager-window {
+   border-color:#fff;
+   padding:0px;	
+    width: 480px !important;
+    height: 325px !important;
+    -webkit-box-shadow: 2px 0px 6px #ccc;
+    box-shadow: 2px 0px 6px #ccc;
+}
+.window-shadow {
+    background: none; 
+    -moz-box-shadow: 2px 2px 3px #cccccc;
+    -webkit-box-shadow: 2px 2px 3px #cccccc;
+    box-shadow: none;
+}    
+
+
+.messager-body {
+    padding: 0px ;
+    overflow: auto;
+}
+#dataimp_dlg #dataimp_form tr{
+	line-height: 30px;
+}                   
+.messager-window .window-header{
+	border: 0px;
+	background:linear-gradient(to bottom,#fff 0,#fff 100%);
+	padding:0px;
+	height: 30px;
+	line-height:30px;
+	width: 480px !important;
+}                    
+.messager-window  .panel-tool{
+	 /* display:none;  */
+}
+.messager-button .l-btn-text {
+    line-height: 43px;
+    font-size: 16px;
+    font-family: 宋体;
+    color: #ffffff;
+}
+.window .window-header .panel-title {
+    background: none;
+     margin-left: 10px;
+    color: #ffffff;
+    font-size: 14px;
+    font-family: "微软雅黑"; 
+    height: 30px;
+    line-height: 30px;
+}                    
+.window .messager-body {
+	border: none;
+    height: 215px;
+    width: 480px !important;
+    background: #fff;
+    padding: 0px;
+    text-align: center;
+}  
+.window .window-body .div1{
+	color:#575757;
+	font-size:30px;
+	font-family:宋体;
+	margin-top: 20px;
+}
+.window .window-body .div2{
+	    color: #979797;
+    font-size: 16px;
+    font-family: 宋体;
+    margin-top: 25px;
+}
+.messager-question {
+	display: none;
+}
+.window .window-body .div3{
+	height: 100px;
+    background: url(../../images/home-page-pandect/ok.png) no-repeat;
+    margin-left: 197px;
+}
+.window .window-body .div5{
+	height: 100px;
+    background: url(../../images/home-page-pandect/exit2.png) no-repeat;
+    margin-left: 197px;
+}
+.window .window-body .div4{
+	height: 100px;
+    background: url(../../images/home-page-pandect/cancel.png) no-repeat;
+    margin-left: 197px;
+}
+.window .window-body .div6{
+	height: 100px;
+    background: url(../../images/home-page-pandect/reminder.png) no-repeat;
+    margin-left: 197px;
+}
+.window .window-body .div7{
+	height: 100px;
+    background: url(../../images/home-page-pandect/reminder.png) no-repeat;
+    margin-left: 197px;
+    margin-top: 35px;
+}
+.messager-button .l-btn{
+    width: 198px;
+    height: 43px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    color: #ffffff;
+    background: linear-gradient(to bottom,#666 0,#666 100%);	
+    opacity:0.8;
+    filter:Alpha(opacity=80);
+}	
+.messager-button .l-btn:hover{
+	opacity:1;
+    filter:Alpha(opacity=100);
+}                      
+.messager-window .dialog-button {
+      background:linear-gradient(to bottom,#fff 0,#fff 100%);
+      border:none;
+     width:100%;	
+     height: 100px;
+     text-align: center;
+} 
+
+
+
+.messager-icon{
+    float: none;
+    width: 325px;
+    height: 90px;
+    margin: 0 10px 10px 0;
+}  
+
+.window-proxy-mask, .window-mask {
+    background: #000;
+}
+
+.messager-window .messager-button .l-btn:last-child{
+	 background: #da634c;
+}
+
+    
+    
+    /* 重写easyuitable */
+    input[type=radio], input[type=checkbox] {
+     margin:0; 
+    }
+    
+    #logAdmin .dd2 a{
+    margin-right: 15px;
+    }               
+  
+  
+  
+ 

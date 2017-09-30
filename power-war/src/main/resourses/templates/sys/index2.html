@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<title>首页</title>
+<link rel="stylesheet" type="text/css"
+	href="/lib/easyui/1.4.5/themes/default/easyui.css" />
+<link rel="stylesheet" type="text/css"
+	href="/lib/easyui/1.4.5/themes/icon.css" />
+<link rel="stylesheet" type="text/css" href="/iconfont/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="/css/default/default.css" />
+<link rel="stylesheet" type="text/css" href="/lib/leaflet/leaflet.css" />
+<link rel="stylesheet" type="text/css" href="/lib/leaflet/Control-FullScreen.min.css"/>
+<script type="text/javascript" src="/lib/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="/lib/jquery/jquery-form.js"></script>
+<script type="text/javascript" src="/lib/easyui/1.4.5/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/lib/easyui/1.4.5/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="/lib/echart/echarts.js"></script>
+<script th:src="@{'/js/'+${modelName}+'/index.js'}"></script>
+<script type="text/javascript" src="/lib/leaflet/leaflet-src.js"></script>
+<script type="text/javascript" src="/lib/leaflet/Control-FullScreen.min.js"></script>
+<script type="text/javascript" src="/lib/leaflet/Leaflet.Editable.js"></script>
+<script type="text/javascript" src="/lib/leaflet/Path-Drag.js"></script>
+</head>
+<body class="easyui-layout">
+	<div
+		data-options="region:'north' ,split:false,minHeight:100,maxHeight:600,height:100,border:false"
+		id="header">
+		<div>
+		     <img alt="" src="/images/home-page-pandect/logo-bai.png" style="width: 250px;height: 50px;padding-right: 10px" id="logo">
+		     <span id="sysTitle" style="font-size: 38px;color: white"></span>
+		</div>
+		<div class="header-right">
+			欢迎您，[<span id="loginName"></span>]！ <a class="set"
+				href="javascript:void(0)"><img
+				src="/images/home-page-pandect/set.png" height="12" width="12" />设置</a>
+			|<select id="APPTYPE" name="APPTYPE" class="easyui-combobox" style="width:80px;">
+			 </select>
+			|<a class="set" href="/login/exit.action"><img
+				src="/images/home-page-pandect/exit.png" height="12" width="12" />退出系统</a>
+		</div>
+	</div>
+
+	<div data-options="region:'west',split:true,border:false"
+		id="center-left" style="overflow: hidden; background-color: #00458a">
+		<!-- 左侧栏 -->
+		<div class="main">
+			<div class="left-nav" id="menu">
+				<!-- <dl th:each="tree:${menuData}">
+					<dt class="menu">
+						<i class="home"><img th:src="${tree.attributes.C_ICONCLS}"
+							height="16" width="18" /></i><a href="javascript:;"
+							th:text="${tree.text}"></a><i class="arrow"><img
+							class="right" src="/images/home-page-pandect/choice-down.png"
+							height="11" width="12" /></i>
+					</dt>
+					<dd class="sub-menu" style="display: none"
+						th:each="children:${tree.children}">
+						<div>
+							<a class="text" href="javascript:;"
+								th:onclick="'javascript:res(\'' + ${children.attributes.C_URL} + '\',\'' + ${children.attributes.C_ISOUTLINK} + '\',\'' + ${children.attributes.C_ISCOMMON} + '\',this);'"
+								th:text="${children.text}"></a>
+						</div>
+						<div style="clear: both;"></div>
+					</dd>
+				</dl> -->
+			</div>
+		</div>
+	</div>
+	<div class="easyui-panel" id="center-top" title="位置：首页-->总览"
+		data-options="region:'center'">
+		<div class="easyui-layout" data-options="fit:true">
+			<div id="center-bottom" data-options="region:'center',split:true"
+				style="overflow: hidden"></div>
+		</div>
+
+	</div>
+
+	<!-- <div 
+		data-options="region:'south',split:false,minHeight:20,maxHeight:100,height:30,border:false"
+		id="foot" >
+		<center>单位：某某公司 &nbsp;&nbsp; 部门：应用研发中心 &nbsp;&nbsp;
+			技术支持：某某科技有限公司 &nbsp;&nbsp; TEL：400-111-2222</center>
+	</div> -->
+</body>
+</html>

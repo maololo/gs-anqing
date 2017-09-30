@@ -1,0 +1,105 @@
+<!--  
+ 新 Bootstrap 核心 CSS 文件 
+ <link rel="stylesheet" href="/bootstrap/3.3.0/css/bootstrap.min.css"/>
+
+可选的Bootstrap主题文件（一般不用引入）
+<link rel="stylesheet" href="/bootstrap/3.3.0/css/bootstrap-theme.min.css"/>
+
+ jQuery文件。务必在bootstrap.min.js 之前引入
+<script src="/jquery/1.11.3/jquery.min.js"></script>
+
+最新的 Bootstrap 核心 JavaScript 文件
+<script src="/bootstrap/3.3.0/js/bootstrap.min.js"></script>  -->
+
+		<style>
+			/* 
+			 * 由于IE不支持<template>标签，所以template标签中的内容在IE下会直接显示出来。
+			 * 将模板设为隐藏即可解决这个问题，template标签各浏览器支持请参考：http://caniuse.com/#feat=template
+			 */
+			#grid-template, #dialog-template{
+				display: none;
+			}
+		</style> 
+		<div id="app">
+			<div class="container">
+				<div class="form-group">
+					<label>Search</label>
+					<input type="text" class="search-input" v-model="searchQuery" />
+				</div>
+
+			</div>
+			<div class="container">
+				<simple-grid :data-list="people" :columns="columns" :search-key="searchQuery">
+				</simple-grid>
+			</div>
+		</div>
+
+		<template id="grid-template">
+			<table  class="table table-striped">
+				<thead>
+					<tr>
+						<th v-for="col in columns">
+							{{ col.name | capitalize}}
+						</th>
+						<th>
+							Delete
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="(index,entry) in dataList | filterBy searchKey">
+						<td v-for="col in columns">
+							<span v-if="col.isKey"><a href="javascript:void(0)" @click="openEditItemDialog(entry[col.name])">{{entry[col.name]}}</a></span>
+							<span v-else>{{entry[col.name]}}</span>
+						</td>
+						<td class="text-center">
+							<button class="btn-danger" @click="deleteItem(entry)">delete</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="container">
+				<button class="btn" @click="openNewItemDialog('Create New Item')">Create</button>
+			</div>
+
+			<modal-dialog :mode="mode" :title="title" :item="item" :fields="columns" v-on:create-item="createItem" v-on:update-item="updateItem">
+			</modal-dialog>
+
+		</template>
+
+		<template id="dialog-template">
+			<div class="dialogs">
+				<div class="dialog" v-bind:class="{ 'dialog-active': show }">
+					<div class="dialog-content">
+						<header class="dialog-header">
+							<h1 class="dialog-title">{{ title }}</h1>
+						</header>
+						<div class="dialog-body">
+							<div v-for="field in fields" class="form-group">
+								<label>{{ field.name }}</label>
+								<select v-if="field.dataSource" v-model="item[field.name]" :disabled="mode === 2 && field.isKey">
+										<option v-for="opt in field.dataSource" :value="opt">{{ opt }}</option>
+								</select>
+								<input v-else type="text" v-model="item[field.name]" :disabled="mode === 2 && field.isKey">
+							</div>
+						</div>
+						<footer class="dialog-footer">
+							<div class="form-group">
+								<label></label>
+								<button class="btn-save" v-on:click="save">Save</button>
+								<button class="btn-close" v-on:click="close">Close</button>
+							</div>
+						</footer>
+					</div>
+				</div>
+				<div class="dialog-overlay"></div>
+			</div>
+		</template>
+<script type="text/javascript" th:inline="javascript">
+		var modelName=[[${modelName}]];
+		var modelName=[[${method}]];
+</script>  
+<link th:href="@{'/'+${modelName}+'/style.css'}" rel="stylesheet"/>  
+<script src="/vue/1.0.25/vue.js" ></script>
+<!-- <script th:src="@{/vue/1.0.25/vue.js}" ></script> -->
+<script th:src="@{'/'+${modelName}+'/index.js'}"> </script> 

@@ -1,0 +1,26 @@
+.ledger button:hover{
+    background: #077a77;
+    color: white;
+}
+.ledger button{
+    color: #077a77;
+    border: 1px solid #077a77;
+    border-radius: 3px
+}
+.ledger{
+    float: right;
+    margin-right: 2rem
+}
+table tr:nth-child(odd):hover {
+    background-color:#daf9d2;
+}
+table tr:nth-child(even):hover {
+    background-color:#daf9d2;
+}
+.table {
+     margin-bottom: 0px;
+    background: white;
+}
+table tr td{
+    color: #333333;
+}

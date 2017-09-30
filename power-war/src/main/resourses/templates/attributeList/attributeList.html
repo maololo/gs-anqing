@@ -1,0 +1,60 @@
+
+
+
+<div class="modal-content table-content" style="background: transparent; border: 1px solid #444;">
+            <div class="modal-body check-text" >
+            
+            <span id="assemblageQueryOptions1" style="display: none">
+               <div class="check">
+                                                       查询图层：<select  id="powLayes1" onchange="changeLayer(this.options[this.options.selectedIndex].value)"  style="width:150px;margin-right:60px;"></select>
+                                                                 过滤字段：<select  id="filterField" name="filterField" onchange="changeFilterField(this.options[this.options.selectedIndex].text)"style="width:100px;">
+                           </select>
+                       <input type="text" id="fieldValue" name="fieldValue" style="height: 30px;"/>
+                       <button type="button"  class="btn btn-primary" onclick="queryFeature()" style="float: right;margin-right: 20px;" >查询</button>
+               </div>
+            </span>
+            
+            <span id="assemblageQueryOptions2" style="display: none">
+                <div class="check">
+                                                             查询图层：<select  id="powLayes2"  style="width:150px;margin-right:60px;"></select>
+                                                          通讯单位：<select  id="communicate" name="communicate" style="width:180px;margin-right:60px;">
+                         <option value ="*">请选择</option> 
+                         <option value ="电信">电信</option> 
+                         <option value ="联通">联通</option> 
+                         <option value ="移动">移动</option> 
+                         <option value ="联通*移动">联通&移动</option> 
+                         <option value ="电信*联通*移动">电信&联通&移动</option>
+                    </select>
+                                                            探测单位：<select  id="detectionUnit" name="detectionUnit" style="width:225px;">
+                          <option value ="*">请选择</option> 
+                         <option value ="保定金迪地下管线探测工程有限公司">保定金迪地下管线探测工程有限公司</option> 
+                         <option value ="正元地理信息有限责任公司">正元地理信息有限责任公司</option> 
+                         <option value ="四川省第三测绘工程院">四川省第三测绘工程院</option> 
+                    </select>
+                </div>
+                <div class="check">
+                                                        所在道路：<select  id="roadAddress" name="roadAddress" style="width:150px;margin-right:60px;">
+                          <option value ="*">请选择</option> 
+                         <option value ="国庆街">国庆街</option> 
+                         <option value ="中山路">中山路</option> 
+                         <option value ="革新街">革新街</option> 
+                         <option value ="巴山街">巴山街</option> 
+                         <option value ="雨阳街">雨阳街</option>
+                    </select>
+                                                           是否锁定：<select  id="is_Lock" name="is_Lock" style="width:100px;margin-right:60px;">
+                         
+                         <option value ="*">请选择</option> 
+                         <option value ="锁定">是</option> 
+                         <option value ="非锁定">否</option>
+                    </select>
+                    <button type="button"  class="btn btn-primary" onclick="regionQuery()" style="float: right;margin-right:40px;"> 框选</button>
+                    <button type="button"  class="btn btn-primary" onclick="combinationQuery()" style="float: right;margin-right: 20px;" >查询</button>
+                </div>
+                
+            </span>
+            
+              
+      <table id="wfsFeatureTable" style="height:410px;overflow:auto;"></table> 
+
+    </div>
+</div>

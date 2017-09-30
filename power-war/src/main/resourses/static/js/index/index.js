@@ -1,86 +1,19 @@
-var map = "";
-var sketch = "";
-
-/**
- * 度量工具提示元素.
- * @type {Element}
- */
-var measureTooltipElement = "";
-
-
-/**
- * 点击继续绘制polygonoverlay显示测量.
- * @type {ol.Overlay}
- */
-var measureTooltip = "";
-
-
-
- 
-  var geomObj=""; //测量时生成的对象
-var draw = "";
-var flag = 0;
+var map = ""; //openLayers地图
+var boxExtent = ""; //矩形、多边形查询的范围
+var drawGeometry = ""; //鼠标画几何图形对象
+var highlightObj =[]; //查询后的高亮对象
+var propertyListWindow=""; //查询结果弹出框对象
+var selectEvent ="";
+var editObject={}; //编辑对象
+var attributeInfoObj=""; //属性信息弹窗对象
 $(function () {
-	
+//	LoadPage('/default/index.action','/js/index/index.js','default/index.css');
 	var raster = new ol.layer.Tile({
         source: new ol.source.OSM()
       });
-//
-//	var format = 'image/png';
-//	var bounds = [297500.0001,202600.0323,300000.0001,204200.5024];
-//	var untiled = new ol.layer.Image({
-//	    source: new ol.source.ImageWMS({
-//	        ratio: 1,
-//	        url: 'http://172.16.15.114:8080/geoserver/pipeline/wms',
-//	        params: {'FORMAT': format,
-//	            //'VERSION': '1.1.1',
-//	            STYLES: '',
-//	            LAYERS: 'pipeline:DHXLINE,pipeline:DHXPOINT',
-//	        }
-//	    })
-//	});
-//	var tiled = new ol.layer.Tile({
-//        visible: false,
-//        source: new ol.source.TileWMS({
-//          url: 'http://172.16.15.91:8080/geoserver/pipeline/wms',
-//          params: {'FORMAT': format, 
-//                   'VERSION': '1.1.1',
-//                   tiled: true,
-//                STYLES: '',
-//                LAYERS: 'pipeline:DHXLINE,pipeline:DHXPOINT',
-//             tilesOrigin: 297500.00009999983 + "," + 202600.03680000082
-//          }
-//        })
-//      });
-	
-//	var layers = [untiled];
-//	var projection = new ol.proj.Projection({
-//	    code: 'EPSG:2439',
-//	    units: 'm',
-//	    axisOrientation: 'neu',
-//	    global: false
-//	});
-//	map = new ol.Map({
-////	    controls: ol.control.defaults({
-////	        attribution: false
-////	    }),
-//	    controls: ol.control.defaults().extend([
-//  	                                          new ol.control.FullScreen()
-//  	                                        ]),
-//	    target: 'openlayersID',
-//	    projection: 'EPSG:4326',
-//	    layers: layers,
-//	    view: new ol.View({
-//	        projection: projection
-//	    })
-//	});
-////	alert(map.getLayers());
-//	map.getView().fit(bounds, map.getSize());
-
-
-	
      
 	
+    
     var index=0;
     $(".baseLayer").click(function () {
         index=$(".baseLayer").index(this);
@@ -103,249 +36,193 @@ $(function () {
         $("#btnGroup").show();
         $(this).hide();
     });
-  /*  $(".settingBtn .choose").click(function () {
-        index=$(".settingBtn .choose").index(this);
-        $(this).hide();
-        $(".unchoose").eq(index).show();
-    });
-    $(".settingBtn .unchoose").click(function () {
-        index=$(".settingBtn .unchoose").index(this);
-        $(this).hide();
-        $(".choose").eq(index).show();
-    });
-    
-
-  
-    $(".modalUncheck").click(function () {
-        $(this).hide();
-        $(".modalCheck").show();
-        $(".data").show()
-    })
-    $(".modalCheck").click(function () {
-        $(this).hide();
-        $(".modalUncheck").show();
-        $(".data").hide()
-    })
-    $(".basecheck").click(function () {
-        $(this).hide();
-        $(".unbasecheck").show()
-    })
-    $(".unbasecheck").click(function () {
-        $(this).hide();
-        $(".basecheck").show()
-    })
-    */
     
     
     
-    /*--------------//测量------------------*/
-     
-
-//    var sdsd =ol.proj.toLonLat(bounds);
-
-//      map = new ol.Map({
-//    	  controls: ol.control.defaults().extend([
-//    	                                          new ol.control.FullScreen()
-//    	                                        ]),
-//        layers: [raster],
-//        target: 'openlayersID',
-//        view: new ol.View({
-////          center: ol.proj.fromLonLat([114.3935,30.5084], 'EPSG:3857','EPSG:4326'),
-//          center:[114.3935,30.5084],
-//          projection: 'EPSG:4326',
-//          zoom: 10
-//        })
-//      });
-      
-      
-      
-      
-       
-      //初始化书签列表tree
-    		$('#bookMakerTree').jstree({
-    			"plugins" : ["contextmenu","wholerow"],
-    			 "contextmenu":{
-    	                "show_at_node":false,
-    			     	 "items":{
-    			            "添加书签":{  
-    			                     "label":"添加书签",  
-    			                     "action":function(data){  
-    			                         var inst = jQuery.jstree.reference(data.reference); 
-    			                        var obj = inst.get_node(data.reference);
-    			                		if(obj.parent == "#"){
-    			                			swal({ 
-    			                				  title: "书签名称:", 
-    			                				  type: "input", 
-    			                				  allowEscapeKey: true,
-    			                				  showCancelButton: true, 
-    			                			      closeOnConfirm: false,
-    			                			      animation: "slide-from-top", 
-    			                			      confirmButtonColor: "#DD6B55",
-    			                		 		  confirmButtonText: "确定",
-    			                		 		  cancelButtonText: "取消",
-    			                				  inputPlaceholder: "名称" 
-    			                				},
-    			                				function(inputValue){ 
-    			                					if (inputValue === false) return; 
-    			                					var name = inputValue.trim();
-    			                					
-    			                				  if (inputValue == "" || name == "") { 
-    			                				    swal.showInputError("书签名称不能为空!");
-    			                				    return;
-    			                				  }else if(queryField("T_POWERBOOKMARK",name)){
-    			                					swal.showInputError("此书签名已存在，请从新输入!");
-      			                				    return; 
-    			                				  }
-    			                				  var view = map.getView(); 
-    			                				  $.post('/T_POWERBOOKMARK/save.action',{
-    			                						'C_BOOKNAME':name,
-    			                						 'C_LONGITUDE':view.getCenter()[0],
-    			                						 'C_LATITUDE':view.getCenter()[1],
-    			                						 'C_VIEWGRADE':view.getZoom(),
-    			                					     'C_ID':""
-    			                					    },
-    			                					function(result){
-    			                					    if(result.success){	
-    			                					    	var ref = $('#bookMakerTree').jstree(true),
-    		    			                                  sel = ref.get_selected();
-    		    			                				  ref.create_node(sel[0], 
-    		    	                               		                {text:name,
-    		    	                                                     id:result.data.C_ID, 
-    		    	                                                     icon:"glyphicon glyphicon-file"},
-    		    	                                              "first",
-    		    	                                              function() {
-    		    	                                                      // alert("added");
-    		    	                                                    	 swal("书签添加成功!", "新建书签为: " + name, "success");
-    		    	                                               });
-    			                					    }
-    			                					},"json");		
-    			                				});
-    			                		}else{
-    			                			swal('子节点不能添加书签!','',"warning");
-    			                		}
-    			                     }  
-    			                 },  
-    			              "修改书签":{  
-    			                     "label":"修改书签",  
-    			                     "action":function(data){  
-    			                         var inst = jQuery.jstree.reference(data.reference),  
-    			                          obj = inst.get_node(data.reference);
-    				                	 if(obj.children.length==0 && obj.parent != "#"){
-    		                                 swal({ 
-   			                				  title: "新书签名称:", 
-   			                				  type: "input", 
-   			                				  allowEscapeKey: true,
-   			                				  showCancelButton: true, 
-   			                			      closeOnConfirm: false,
-   			                			      animation: "slide-from-top", 
-   			                			      confirmButtonColor: "#DD6B55",
-   			                		 		  confirmButtonText: "确定",
-   			                		 		  cancelButtonText: "取消"
-   			                				},
-   			                				function(inputValue){ 
-   			                					if (inputValue === false) return; 
-   			                					var name = inputValue.trim();
-   			                					
-   			                				  if (inputValue == "" || name == "") { 
-   			                				    swal.showInputError("新书签名称不能为空!");
-   			                				    return;
-   			                				  }else if(queryField("T_POWERBOOKMARK",name)){
-   			                					swal.showInputError("此书签名称已存在，请从新输入!");
-     			                				    return; 
-   			                				  }
-   			                				  $.post('/T_POWERBOOKMARK/save.action',{
+  //初始化书签列表tree
+//    initBookMarkTree();
+	$('#bookMakerTree').jstree({
+		"plugins" : ["contextmenu","wholerow"],
+		 "contextmenu":{
+                "show_at_node":false,
+		     	 "items":{
+		            "添加书签":{  
+		                     "label":"添加书签",  
+		                     "action":function(data){  
+		                         var inst = jQuery.jstree.reference(data.reference); 
+		                        var obj = inst.get_node(data.reference);
+		                		if(obj.parent == "#"){
+		                			swal({ 
+		                				  title: "书签名称:", 
+		                				  type: "input", 
+		                				  allowEscapeKey: true,
+		                				  showCancelButton: true, 
+		                			      closeOnConfirm: false,
+		                			      animation: "slide-from-top", 
+		                			      confirmButtonColor: "#DD6B55",
+		                		 		  confirmButtonText: "确定",
+		                		 		  cancelButtonText: "取消",
+		                				  inputPlaceholder: "名称" 
+		                				},
+		                				function(inputValue){ 
+		                					if (inputValue === false) return; 
+		                					var name = inputValue.trim();
+		                					
+		                				  if (inputValue == "" || name == "") { 
+		                				    swal.showInputError("书签名称不能为空!");
+		                				    return;
+		                				  }else if(queryField("T_POWERBOOKMARK",name)){
+		                					swal.showInputError("此书签名已存在，请从新输入!");
+			                				    return; 
+		                				  }
+		                				  var view = map.getView(); 
+		                				  $.post('/T_POWERBOOKMARK/save.action',{
 		                						'C_BOOKNAME':name,
-		                					     'C_ID':obj.id
+		                						 'C_LONGITUDE':view.getCenter()[0],
+		                						 'C_LATITUDE':view.getCenter()[1],
+		                						 'C_VIEWGRADE':view.getZoom(),
+		                					     'C_ID':""
 		                					    },
-		                					  function(result){
-		                					    	if(result.success){
-		                					    		var ref = $('#bookMakerTree').jstree(true);
-		     		                                   var sel = ref.get_selected();
-		     		                                  if(!sel.length) { return false; }
-		     		                                   sel = sel[0];
-		                					    		ref.rename_node(sel,name);
-		                					    		swal(result.title,'',"success");
-		                					    	}
-		                					  },"json");		
-   			                				  });
-    				                		}else{
-    				                			swal('根节点不能修改!','',"warning");
-    				                		}
-    			                       
-    			                     }  
-    			                 },
-    			                 "删除书签":{  
-    			                     "label":"删除书签",  
-    			                     "action":function(data){  
-    			                         var inst = jQuery.jstree.reference(data.reference); 
-    			                        var obj = inst.get_node(data.reference);
-    			                		if(obj.children.length==0 && obj.parent != "#"){
-    			                			 swal({
-   				                     		  title: "确定删除此书签？",
-   				                     		  text: "删除后不可恢复,请谨慎操作!",
-   				                     		  type: "warning",
-   				                     		  showCancelButton: true,
-   				                     		  confirmButtonColor: "#DD6B55",
-   				                     		  confirmButtonText: "确定",
-   				                     		  cancelButtonText: "取消",
-   				                     		  closeOnConfirm: false
-   				                     		},
-   				                     	function(){
-   				                     		$.post('/T_POWERBOOKMARK/delete.action',
-   				             					{"ID":obj.original.id},
-   				             					function(result){
-   				             						if (result.success){    
-   				             						   var ref = $('#bookMakerTree').jstree(true),
-   	   				                     			   sel = ref.get_selected();
-   	   				                     			   if(!sel.length) { return false; }
-   	   				                     			   ref.delete_node(sel[0]);
-   				             							swal(result.title,'',"success");
-   				             						} else {
-   				             							swal(result.title,'',"error");
-   				             						}
-   				             					},'json');
-   				                     		});
-    			                		}else{
-    			                			swal('根节点不能删除!','',"warning");
-    			                		}
-    			                     }  
-    			                 },  
-    			                 
-    			                 
-    			           }
-    			          },
-    		    'core' : {
-    		    	"check_callback" : true ,
-    		    	'data' :initBookMarkTree()
-    		    }
-    		  });
-    		
-    		//书签管理绑定单击事件 定位到书签场景
-    		$('#bookMakerTree').bind('select_node.jstree',function(event, data){
-    			var childrens = $('#bookMakerTree').jstree("get_children_dom",data.node);
-    			var parent = $('#bookMakerTree').jstree("get_parent",data.node);
-    			if(childrens.length==0 && parent != "#"){
-    				var id=data.node.original.id;
-    				$.ajax({
-    					//请求地址                               
-    					url:"/T_POWERBOOKMARK/search.action",
-    					data:{"search.C_ID*eq":id},//设置请求参数 
-    					type:"post",//请求方法
-    					dataType:"json",//设置服务器响应类型
-    					//success：请求成功之后执行的回调函数   data：服务器响应的数据
-    					success:function(data){
-    						if(data !=""){
-    							var latlng =[data[0].C_LONGITUDE,data[0].C_LATITUDE];
-    							var view = map.getView();
-        						view.setCenter(latlng);     //设置视图中心坐标
-                				view.setZoom(data[0].C_VIEWGRADE); //设置视图显示层级
-    						}
-    					}
-    				});
-    			}
-    	    });
-    	
-    	
+		                					function(result){
+		                					    if(result.success){	
+		                					    	var ref = $('#bookMakerTree').jstree(true),
+	    			                                  sel = ref.get_selected();
+	    			                				  ref.create_node(sel[0], 
+	    	                               		                {text:name,
+	    	                                                     id:result.data.C_ID, 
+	    	                                                     icon:"glyphicon glyphicon-file"},
+	    	                                              "first",
+	    	                                              function() {
+	    	                                                    	 swal("书签添加成功!", "新建书签为: " + name, "success");
+	    	                                               });
+		                					    }
+		                					},"json");		
+		                				});
+		                		}else{
+		                			swal('子节点不能添加书签!','',"warning");
+		                		}
+		                     }  
+		                 },  
+		              "修改书签":{  
+		                     "label":"修改书签",  
+		                     "action":function(data){  
+		                         var inst = jQuery.jstree.reference(data.reference),  
+		                          obj = inst.get_node(data.reference);
+			                	 if(obj.children.length==0 && obj.parent != "#"){
+	                                 swal({ 
+		                				  title: "新书签名称:", 
+		                				  type: "input", 
+		                				  allowEscapeKey: true,
+		                				  showCancelButton: true, 
+		                			      closeOnConfirm: false,
+		                			      animation: "slide-from-top", 
+		                			      confirmButtonColor: "#DD6B55",
+		                		 		  confirmButtonText: "确定",
+		                		 		  cancelButtonText: "取消"
+		                				},
+		                				function(inputValue){ 
+		                					if (inputValue === false) return; 
+		                					var name = inputValue.trim();
+		                					
+		                				  if (inputValue == "" || name == "") { 
+		                				    swal.showInputError("新书签名称不能为空!");
+		                				    return;
+		                				  }else if(queryField("T_POWERBOOKMARK",name)){
+		                					swal.showInputError("此书签名称已存在，请从新输入!");
+			                				    return; 
+		                				  }
+		                				  $.post('/T_POWERBOOKMARK/save.action',{
+                						'C_BOOKNAME':name,
+                					     'C_ID':obj.id
+                					    },
+                					  function(result){
+                					    	if(result.success){
+                					    		var ref = $('#bookMakerTree').jstree(true);
+     		                                   var sel = ref.get_selected();
+     		                                  if(!sel.length) { return false; }
+     		                                   sel = sel[0];
+                					    		ref.rename_node(sel,name);
+                					    		swal(result.title,'',"success");
+                					    	}
+                					  },"json");		
+		                				  });
+			                		}else{
+			                			swal('根节点不能修改!','',"warning");
+			                		}
+		                       
+		                     }  
+		                 },
+		                 "删除书签":{  
+		                     "label":"删除书签",  
+		                     "action":function(data){  
+		                         var inst = jQuery.jstree.reference(data.reference); 
+		                        var obj = inst.get_node(data.reference);
+		                		if(obj.children.length==0 && obj.parent != "#"){
+		                			 swal({
+			                     		  title: "确定删除此书签？",
+			                     		  text: "删除后不可恢复,请谨慎操作!",
+			                     		  type: "warning",
+			                     		  showCancelButton: true,
+			                     		  confirmButtonColor: "#DD6B55",
+			                     		  confirmButtonText: "确定",
+			                     		  cancelButtonText: "取消",
+			                     		  closeOnConfirm: false
+			                     		},
+			                     	function(){
+			                     		$.post('/T_POWERBOOKMARK/delete.action',
+			             					{"ID":obj.original.id},
+			             					function(result){
+			             						if (result.success){    
+			             						   var ref = $('#bookMakerTree').jstree(true),
+  				                     			   sel = ref.get_selected();
+  				                     			   if(!sel.length) { return false; }
+  				                     			   ref.delete_node(sel[0]);
+			             							swal(result.title,'',"success");
+			             						} else {
+			             							swal(result.title,'',"error");
+			             						}
+			             					},'json');
+			                     		});
+		                		}else{
+		                			swal('根节点不能删除!','',"warning");
+		                		}
+		                     }  
+		                 },  
+		                 
+		                 
+		           }
+		          },
+	    'core' : {
+	    	"check_callback" : true ,
+	    	'data' :initBookMarkTree()
+	    }
+	  });
+	
+	//书签管理绑定单击事件 定位到书签场景
+	$('#bookMakerTree').bind('select_node.jstree',function(event, data){
+		var childrens = $('#bookMakerTree').jstree("get_children_dom",data.node);
+		var parent = $('#bookMakerTree').jstree("get_parent",data.node);
+		if(childrens.length==0 && parent != "#"){
+			var id=data.node.original.id;
+			$.ajax({
+				//请求地址                               
+				url:"/T_POWERBOOKMARK/search.action",
+				data:{"search.C_ID*eq":id},//设置请求参数 
+				type:"post",//请求方法
+				dataType:"json",//设置服务器响应类型
+				//success：请求成功之后执行的回调函数   data：服务器响应的数据
+				success:function(data){
+					if(data !=""){
+						var latlng =[data[0].C_LONGITUDE,data[0].C_LATITUDE];
+						var view = map.getView();
+						view.setCenter(latlng);     //设置视图中心坐标
+        				view.setZoom(data[0].C_VIEWGRADE); //设置视图显示层级
+					}
+				}
+			});
+		}
+    });
+      
     	//初始化图层列表
     	$('#powerLayerTree').jstree({
                 "plugins" : ["checkbox","contextmenu","wholerow"],
@@ -356,7 +233,124 @@ $(function () {
                    },
                    "contextmenu":{
    	                "show_at_node":false,
-   			     	 "items":{
+   	             "items":{
+   		            "添加":{  
+   		                     "label":"添加", 
+                             "icon":"/images/1_07.png",
+   		                     "action":function(data){
+   		                    	clearOnMapEvent();//清除主动添加到地图上的事件
+   		                         var inst = jQuery.jstree.reference(data.reference); 
+   		                        var obj = inst.get_node(data.reference);
+   		                		if(obj.children.length==0 && obj.parent != "#"){
+   		                			//获取当前图层及类型
+   		                			var layer = obj.original.layer;
+   		                			var type = layer.getSource().getFeatures()[0].getGeometry().getType().toLowerCase();
+   		                			if(type=="point"){
+   		                				type="Point";
+   		                			}else if(type=="multilinestring"){
+   		                				type="MultiLineString"
+   		                			}
+   		                			//画矢量图形
+   		                			var draw = new ol.interaction.Draw({
+   		                	             source: layer.getSource(),
+   		                	             geometryName:'SHAPE', 
+   		                	             type: (type)
+   		                	         });
+   		                	         map.addInteraction(draw);
+   		                	         draw.on('drawend',function(e) {
+   		                	              //保存编辑数据
+   		                	              editObject.feature = e.feature;
+		                	        	     editObject.source = layer.getSource();
+		                	        	     editObject.editType = "add";
+		                	        	     editObject.layer_name = queryLayerNameByID(obj.id);
+		                	        	     map.removeInteraction(draw);
+		                	        	     jsPanelAttributeInfo("/sd_station/sd_station.action","局站数据属性",500,360);
+   		                	         }, this);
+   		                		}else{
+   		                			swal('根节点不能添加!','',"warning");
+   		                		}
+   		                     }  
+   		                 },  
+   		              "修改":{  
+   		                     "label":"修改",  
+   		                     "action":function(data){ 
+   		                    	clearOnMapEvent();//清除主动添加到地图上的事件
+   		                         var inst = jQuery.jstree.reference(data.reference),  
+   		                          obj = inst.get_node(data.reference);
+   			                	 if(obj.children.length==0 && obj.parent != "#"){
+   			                		 var select = new ol.interaction.Select();
+   			                         var modify = new ol.interaction.Modify({
+   			                             features: select.getFeatures()
+   			                         });
+   			                         map.addInteraction(select);
+   			                         map.addInteraction(modify);
+   			                         modify.on('modifyend', function (e) {
+   			                        	var layer = $('#powerLayerTree').jstree().get_node("#"+obj.id).original.layer;
+   			                        	 editObject.feature = e.features.getArray()[0];
+   		                	        	 editObject.source = layer.getSource();
+   		                	        	 editObject.editType = "update";
+		                	        	     editObject.layer_name = queryLayerNameByID(obj.id);
+//   			                        	 var geomType = e.features.getArray()[0].getGeometry().getType().toLowerCase();
+   			                        	 jsPanelAttributeInfo(e.features.getArray()[0]);
+   			                             map.removeInteraction(modify);
+   			                             map.removeInteraction(select);
+   			                         }); 
+   			                	 }else{
+   			                			swal('根节点不能修改!','',"warning");
+   			                	 }
+   		                       
+   		                     }  
+   		                 },
+   		                 "删除":{  
+   		                     "label":"删除",  
+   		                     "action":function(data){ 
+   		                    	clearOnMapEvent();//清除主动添加到地图上的事件
+   		                         var inst = jQuery.jstree.reference(data.reference); 
+   		                        var obj = inst.get_node(data.reference);
+   		                		if(obj.children.length==0 && obj.parent != "#"){
+   		                			
+   		                			var select = new ol.interaction.Select();
+   		                	         map.addInteraction(select);
+   		                	         select.on('select', function (e) {
+   		                	             if(select.getFeatures().getArray().length == 0){
+   		                	             } else {
+   		                	            	 swal({
+   					                     		  title: "确定删除此数据？",
+   					                     		  text: "删除后不可恢复,请谨慎操作!",
+   					                     		  type: "warning",
+   					                     		  showCancelButton: true,
+   					                     		  confirmButtonColor: "#DD6B55",
+   					                     		  confirmButtonText: "确定",
+   					                     		  cancelButtonText: "取消",
+   					                     		  closeOnConfirm: false
+   					                     		},
+   					                     	  function(isConfirm){
+   					                     		  if(isConfirm){
+   					                     			//获取当前图层及类型
+     						                			var layer = $('#powerLayerTree').jstree().get_node("#"+obj.id).original.layer;
+//     					                     			operatWFS(e.target.getFeatures(),'delete');
+//     				                	                 var geomType = e.target.getFeatures().getArray()[0].getGeometry().getType().toLowerCase();
+//     				                	                 var f = vector_Source_point.getFeatureById(e.target.getFeatures().getArray()[0].getId());
+     						                			layer.getSource().removeFeature(e.target.getFeatures().getArray()[0]);
+     				                	                  e.target.getFeatures().clear();
+     				                	                map.removeInteraction(select);
+     				                	                swal("删除成功",'',"success"); 
+   					                     		  }else{
+        					                     		 map.removeInteraction(select);
+        					                     	 }
+   					                     			
+   					                     	 });
+   		                	                 
+   		                	             }
+   		                	         });
+   		                			 
+   		                		}else{
+   		                			swal('根节点不能删除!','',"warning");
+   		                		}
+   		                     }  
+   		                 },  
+   		           }
+   			     	 /*"items":{
    			               "移除图层":{  
    			                     "label":"移除图层",  
    			                     "action":function(data){  
@@ -389,7 +383,7 @@ $(function () {
    			                		}
    			                     }  
    			                 },  
-   			           }
+   			           }*/
    			          },   
                 "core" : {
                   /*'force_text' : true,
@@ -413,8 +407,9 @@ $(function () {
     	  });
     	//图层取消勾选事件
     	$('#powerLayerTree').on("uncheck_node.jstree", function (event, data) {
-    		var childrens = $('#powerLayerTree').jstree("get_children_dom",data.node);
-    		if(childrens.length>0){
+    		//判断是否为父节点
+    		var is_parent = $('#powerLayerTree').jstree("is_parent",data.node);
+    		if(is_parent){
     			for(var i=0;i<childrens.length;i++){
     				var id = childrens[i].id;
     				var nodeLayer =$('#powerLayerTree').jstree().get_node("#"+id);
@@ -426,22 +421,19 @@ $(function () {
     	});
     	
     	//图层tree绑定单击事件 定位到图层场景
-		$('#powerLayerTree').bind('select_node.jstree',function(event, data){
-			var childrens = $('#bookMakerTree').jstree("get_children_dom",data.node);
-			var parent = $('#bookMakerTree').jstree("get_parent",data.node);
-			if(childrens.length==0 && parent != "#"){
-				//定位到添加的图层位置
-				  var bbox = data.node.original.bounds.split(',');
-				  map.getView().fit(bbox, map.getSize());
-			}
+    	$('#powerLayerTree').bind('select_node.jstree',function(event, data){
+    			if(data.node.children.length == 0){
+    				//定位到添加的图层位置
+    				  var bbox = data.node.original.bounds.split(',');
+    				  map.getView().fit(bbox, map.getSize());
+    			}
 	    });
     	
-    	$.ajax({
+    	/*$.ajax({
 	    	//请求地址                               
 	       url:"/T_POWERLAYERS/search.action",
 		   data:{},//设置请求参数 
 		   type:"post",//请求方法
-//		   async:false, 
 		   dataType:"json",//设置服务器响应类型
 		  //success：请求成功之后执行的回调函数   data：服务器响应的数据
 		   success:function(data){
@@ -449,19 +441,25 @@ $(function () {
 				   //只加载显示的图层
 				   if(data[i].C_ISSHOW == "1"){
 					   var html = '<div class="col-sm-6">'+
-					   '<a href="#" class="thumbnail" onclick="andWMSLayer('+data[i].C_ID+')">'+
+					   '<a href="#" class="thumbnail" onclick="addWMSLayer('+data[i].C_ID+')">'+
 					   '<img src="/images/'+data[i].C_IMAGE+'" alt="...">'+
 					   '</a><p style="text-align: center;margin-top: -15px;">'+data[i].C_LAYERNAME+'</p></div>';
 					   $('#webServiceLater').append(html);
 				   }
 			   }
 		   }
-	   });
+	   });*/
     	
+    		
+    	//关闭jspane窗口事件
+    	$(document).on('jspanelclosed', function (event, id) {
+    		clearHighlightObj();
+    	}); 	
 })
 
 //初始化书签列表tree
 function initBookMarkTree(){
+	
 	var bookMarkTree = {id:-1,text: "书签管理",state : {"opened" : true }};
 	var treeNodes = new Array();
 	$.ajax({
@@ -483,7 +481,7 @@ function initBookMarkTree(){
 	return arr;
 }
 
-var layerImages =[];
+
 //初始化图层列表tree
 function initpowerLayerTree(){
 	var powerLayerTree = {id:-1,text: "图层管理",state : {"opened" : true }};
@@ -491,52 +489,58 @@ function initpowerLayerTree(){
 	$.ajax({
     	//请求地址                               
        url:"/T_POWERLAYERS/search.action",
-	   data:{},//设置请求参数 
+	   data:{"sort.C_ID":'ASC'},//设置请求参数 
 	   type:"post",//请求方法
 	   async:false, 
 	   dataType:"json",//设置服务器响应类型
 	  //success：请求成功之后执行的回调函数   data：服务器响应的数据
 	   success:function(data){
-		   var format = 'image/png';
-			var bounds = [297500.0001,202600.0323,300000.0001,204200.5024];
-			
+			var bounds=[115.902731511993,39.5010013847293,117.174121256339,40.0926220582295];
 			var layers = [];
+			var treeId=0;
 			for(var i in data){
-				var layer = new ol.layer.Image({
-					source: new ol.source.ImageWMS({
-						ratio: 1,
-						url: data[i].C_LAYERURL,
-						params: {'FORMAT': 'image/png',
-							//'VERSION': '1.1.1',
-							STYLES: '',
-							LAYERS: data[i].C_LAYER,
-						}
-					})
-				});
 				//只加载默认图层在地图上
 				if(data[i].C_ISDEFAULTLAYER=="1" && data[i].C_ISSHOW=="1"){
-//					layers.push(layer);
-					layerImages.push(layer);
-					treeNodes[i] = {text:data[i].C_LAYERNAME,id:data[i].C_ID,layer:layer,bounds:data[i].C_BBOX,icon:"glyphicon glyphicon-file",state:{checked:true}}
+//					bounds = data[i].C_BBOX;
+					   var wfsParams = {
+					        service : 'WFS',
+					        version : '1.1.0',
+					        request : 'GetFeature',
+					        typeName : data[i].C_LAYER,  //图层名称，可以是单个或多个
+					        outputFormat : 'application/json'//'text/javascript',  //重点，不要改变
+					    };
+					    var vector_Source = new ol.source.Vector({
+					    	wrapX: false,
+					        format: new ol.format.GeoJSON(),
+					        url: data[i].C_LAYERURL+'?'+ $.param(wfsParams),
+					        url:'http://172.16.15.147:8080/geoserver/anqing/wfs?'+ $.param(wfsParams),
+					        strategy: ol.loadingstrategy.bbox,
+					        projection: 'EPSG:4326'
+					    });
+					    var layer = new ol.layer.Vector({
+					        source: vector_Source
+					    });
+					layers.push(layer);
+					treeNodes[treeId] = {text:data[i].C_LAYERNAME,id:data[i].C_ID,layer:layer,bounds:data[i].C_BBOX,icon:"glyphicon glyphicon-file",state:{checked:true}}
+					treeId++;
 				}
 			}
 			var projection = new ol.proj.Projection({
-			    code: 'EPSG:2439',
+			    code: 'EPSG:4326',
 			    units: 'm',
 			    axisOrientation: 'neu',
 			    global: false
-			});
+			}); 
+			
+			
 			//初始化地图
 			map = new ol.Map({
-//			    controls: ol.control.defaults({
-//			        attribution: false
-//			    }),
-			    controls: ol.control.defaults().extend([
-		  	           new ol.control.FullScreen()
-		  	         ]),
+			    controls: ol.control.defaults({
+			    	attribution:false
+			    }).extend([]),
 			    target: 'openlayersID',
 			    projection: 'EPSG:4326',
-			    layers: layerImages,
+			    layers:layers,
 			    view: new ol.View({
 			        projection: projection
 			    })
@@ -546,7 +550,8 @@ function initpowerLayerTree(){
 				  if (interaction instanceof ol.interaction.DoubleClickZoom) {
 					map.removeInteraction(interaction);
 				  }
-				});
+		    });
+			 
 			map.getView().fit(bounds, map.getSize());
 		   
 	   }
@@ -558,32 +563,11 @@ function initpowerLayerTree(){
 
 
 
-//判断数据库T_POWERBOOKMARK表里是否存在此标签名(标签名称)
-// 返回   false：数据库没有此数据；  true：数据库有此数据
-function queryField(value){
-	var flag="";
-	$.ajax({
-    	//请求地址                               
-       url:"/T_POWERBOOKMARK/search.action",
-	   data:{"search.C_BOOKNAME*eq":value},//设置请求参数 
-	   type:"post",//请求方法
-	   async:false, 
-	   dataType:"json",//设置服务器响应类型
-	  //success：请求成功之后执行的回调函数   data：服务器响应的数据
-	   success:function(data){
-		   if(data==""){
-			   flag=false; 
-		   }else{
-			   flag=true;
-		   }
-	   }
-   });
-	return flag;
-}
+
 
     
       //添加WMS图层
-      function andWMSLayer(val){
+     /* function addWMSLayer(val){
     	  //图层tree根节点
     	  var root =$('#powerLayerTree').jstree().get_node("#-1");
     	  var childrens = $('#powerLayerTree').jstree("get_children_dom",root);
@@ -591,7 +575,7 @@ function queryField(value){
     	  //判断此图层是否已添加
     	  for(var i in childrens){
     		  if(childrens[i].id == val){
-    			  alert("图层已添加");
+    			  swal('此图层已添加','',"warning");
     			  falg = false;
     			  break;
     		  }
@@ -607,18 +591,24 @@ function queryField(value){
     			  //success：请求成功之后执行的回调函数   data：服务器响应的数据
     			  success:function(data){
     				  if(data !=""){
-    					  var format = 'image/png';
-    					  var layer = new ol.layer.Image({
-    						  source: new ol.source.ImageWMS({
-    							  ratio: 1,
-    							  url: data[0].C_URL,
-    							  params: {'FORMAT': format,
-    								  //'VERSION': '1.1.1',
-    								  STYLES: '',
-    								  LAYERS: data[0].C_LAYER,
-    							  }
-    						  })
-    					  });
+    					  var wfsParams = {
+    						        service : 'WFS',
+    						        version : '1.1.0',
+    						        request : 'GetFeature',
+    						        typeName : data[0].C_LAYER,  //图层名称，可以是单个或多个
+    						        outputFormat : 'application/json'//'text/javascript',  //重点，不要改变
+    						    };
+    				  	 var vector_Source = new ol.source.Vector({
+    						    	wrapX: false,
+    						        format: new ol.format.GeoJSON(),
+    						        url:'http://172.16.15.147:8080/geoserver/wfs?'+ $.param(wfsParams),
+    						        strategy: ol.loadingstrategy.bbox,
+    						        projection: 'EPSG:2439'
+    					 });
+    				     var layer = new ol.layer.Vector({
+    						   source: vector_Source
+    					 });
+    					  
     					  var ref = $('#powerLayerTree').jstree(true);
     					  ref.create_node(root, 
     						  {text:data[0].C_LAYERNAME,
@@ -639,411 +629,1471 @@ function queryField(value){
     		  });
     	  }
     	  
-      }
-   
- //删除图层及其节点     
-function removeNode(){
-	var ref = $('#bookMakerTree').jstree(true),
-	sel = ref.get_selected();
-	if(!sel.length) { return false; }
-		   ref.delete_node(sel[0]);
-} 
+      }*/
       
- //删除测量对象
-function clearMeasureObj(){
-	if(geomObj !=""){
-		map.removeLayer (geomObj);
-		geomObj="";
-	}
-	 
-	 if(measureTooltip !=""){
-	 	 map.removeOverlay (measureTooltip);
-	 }
-
-}
+      //查询结果jspanel弹窗绑定关闭事件
+      $(document).on('jspanelbeforeclose', function (event, id) {
+    	  if(id == "openDialg"){
+    		  $('#search').modal('show');//显示查询模态框
+    	  }
+      });
+    //初始化编辑列表tree
+      /*function initEdit(){
+      	$('#editLayerTree').jstree({
+      		"plugins" : ["contextmenu","wholerow"],
+      		 "contextmenu":{
+                      "show_at_node":false,
+      		     	 "items":{
+      		            "添加":{  
+      		                     "label":"添加",  
+      		                     "action":function(data){
+      		                    	clearOnMapEvent();//清除主动添加到地图上的事件
+      		                    	debugger;
+      		                         var inst = jQuery.jstree.reference(data.reference); 
+      		                        var obj = inst.get_node(data.reference);
+      		                		if(obj.children.length==0 && obj.parent != "#"){
+      		                			//获取当前图层及类型
+      		                			var layer = $('#powerLayerTree').jstree().get_node("#"+obj.id).original.layer;
+      		                			var type = layer.getSource().getFeatures()[0].getGeometry().getType().toLowerCase();
+      		                			if(type=="point"){
+      		                				type="Point";
+      		                			}else if(type=="multilinestring"){
+      		                				type="MultiLineString"
+      		                			}
+      		                			var geometryName = "the_geom";
+      		                			//画矢量图形
+      		                			var draw = new ol.interaction.Draw({
+      		                	             source: layer.getSource(),
+      		                	             geometryName:geometryName, 
+      		                	             type: (type)
+      		                	         });
+      		                	         map.addInteraction(draw);
+      		                	       draw.on('drawend',function(e) {
+      		                	    	     e.feature.set('the_geom',e.feature.getGeometry());
+//      		                	    	    editWFSFeature([e.feature],'add','pipeline:DHXPOINT');
+      		                	    	     //保存编辑数据
+      		                	    	     editObject.feature = e.feature;
+  		                	        	     editObject.source = layer.getSource();
+  		                	        	     editObject.editType = "add";
+  		                	        	     editObject.layer_name = queryLayerNameByID(obj.id);
+  		                	        	     map.removeInteraction(draw);
+//  		                	        	     jsPanelAttributeInfo();
+      		                	         }, this);
+      		                		}else{
+      		                			swal('根节点不能添加!','',"warning");
+      		                		}
+      		                     }  
+      		                 },  
+      		              "修改":{  
+      		                     "label":"修改",  
+      		                     "action":function(data){ 
+      		                    	clearOnMapEvent();//清除主动添加到地图上的事件
+      		                         var inst = jQuery.jstree.reference(data.reference),  
+      		                          obj = inst.get_node(data.reference);
+      			                	 if(obj.children.length==0 && obj.parent != "#"){
+      			                		 var select = new ol.interaction.Select();
+      			                         var modify = new ol.interaction.Modify({
+      			                             features: select.getFeatures()
+      			                         });
+      			                         map.addInteraction(select);
+      			                         map.addInteraction(modify);
+      			                         modify.on('modifyend', function (e) {
+      			                        	var layer = $('#powerLayerTree').jstree().get_node("#"+obj.id).original.layer;
+      			                        	 editObject.feature = e.features.getArray()[0];
+      		                	        	 editObject.source = layer.getSource();
+      		                	        	 editObject.editType = "update";
+ 		                	        	     editObject.layer_name = queryLayerNameByID(obj.id);
+//      			                        	 var geomType = e.features.getArray()[0].getGeometry().getType().toLowerCase();
+      			                        	 jsPanelAttributeInfo(e.features.getArray()[0]);
+      			                             map.removeInteraction(modify);
+      			                             map.removeInteraction(select);
+      			                         }); 
+      			                	 }else{
+      			                			swal('根节点不能修改!','',"warning");
+      			                	 }
+      		                       
+      		                     }  
+      		                 },
+      		                 "删除":{  
+      		                     "label":"删除",  
+      		                     "action":function(data){ 
+      		                    	clearOnMapEvent();//清除主动添加到地图上的事件
+      		                         var inst = jQuery.jstree.reference(data.reference); 
+      		                        var obj = inst.get_node(data.reference);
+      		                		if(obj.children.length==0 && obj.parent != "#"){
+      		                			
+      		                			var select = new ol.interaction.Select();
+      		                	         map.addInteraction(select);
+      		                	         select.on('select', function (e) {
+      		                	             if(select.getFeatures().getArray().length == 0){
+      		                	             } else {
+      		                	            	 swal({
+      					                     		  title: "确定删除此数据？",
+      					                     		  text: "删除后不可恢复,请谨慎操作!",
+      					                     		  type: "warning",
+      					                     		  showCancelButton: true,
+      					                     		  confirmButtonColor: "#DD6B55",
+      					                     		  confirmButtonText: "确定",
+      					                     		  cancelButtonText: "取消",
+      					                     		  closeOnConfirm: false
+      					                     		},
+      					                     	  function(isConfirm){
+      					                     		  if(isConfirm){
+      					                     			//获取当前图层及类型
+        						                			var layer = $('#powerLayerTree').jstree().get_node("#"+obj.id).original.layer;
+//        					                     			operatWFS(e.target.getFeatures(),'delete');
+//        				                	                 var geomType = e.target.getFeatures().getArray()[0].getGeometry().getType().toLowerCase();
+//        				                	                 var f = vector_Source_point.getFeatureById(e.target.getFeatures().getArray()[0].getId());
+        						                			layer.getSource().removeFeature(e.target.getFeatures().getArray()[0]);
+        				                	                  e.target.getFeatures().clear();
+        				                	                map.removeInteraction(select);
+        				                	                swal("删除成功",'',"success"); 
+      					                     		  }else{
+           					                     		 map.removeInteraction(select);
+           					                     	 }
+      					                     			
+      					                     	 });
+      		                	                 
+      		                	             }
+      		                	         });
+      		                			 
+      		                		}else{
+      		                			swal('根节点不能删除!','',"warning");
+      		                		}
+      		                     }  
+      		                 },  
+      		           }
+      		          },
+      	    'core' : {
+      	    	"check_callback" : true ,
+      	    	'data' :initEditLayerTree()
+      	    }  
+      	  });
+      }*/
 
 //全幅
 function fullView(){
-	var box= "297500.0001,202600.0323,300000.0001,204200.5024";
+	closeFunction();
+	var box= "115.840072190847,39.6361366726513,116.508648762049,40.0926220582295";
 	 var bbox = box.split(',');
 	  map.getView().fit(bbox, map.getSize());
 }
 
 //框选放大
 function right_click_box(){
-	  draw = new ol.interaction.Draw({
+	closeFunction();
+	drawGeometry = new ol.interaction.Draw({
           source:new ol.source.Vector(),
           type: /** @type {ol.geom.GeometryType} */ ('Circle'),
-          geometryFunction: ol.interaction.Draw.createBox(),
-          style: new ol.style.Style({
-            fill: new ol.style.Fill({
-              color: 'rgba(255, 255, 255, 0.2)'
-            }),
-            stroke: new ol.style.Stroke({
-              color: 'rgba(0, 0, 0, 0.5)',
-              lineDash: [10, 10],
-              width: 2
-            }),
-            image: new ol.style.Circle({
-              radius: 5,
-              stroke: new ol.style.Stroke({
-                color: 'rgba(0, 0, 0, 0.7)'
-              }),
-              fill: new ol.style.Fill({
-                color: 'rgba(255, 255, 255, 0.2)'
-              })
-            })
-          })
+          geometryFunction: ol.interaction.Draw.createBox()
+         
         });
-        map.addInteraction(draw);
+        map.addInteraction(drawGeometry);
 
-        var coord ="";
-        draw.on('drawstart',
-            function(evt) {
-              // set sketch
-              sketch = evt.feature;
-              /** @type {ol.Coordinate|undefined} */
-              coord = evt.coordinate;
-              listener = sketch.getGeometry().on('change', function(evt) {
-            	  var geom = evt.target;
-                if (geom instanceof ol.geom.Geometry) {
-                  var extent = geom.getExtent();
-                  coord  = ol.extent.getCenter(extent);
-                }
-              });
-            }, this);
-
-        draw.on('drawend',
+        drawGeometry.on('drawend',
             function(event) {
-              sketch = null;
-              if(draw!=""){
-            	  map.removeInteraction(draw);
-            	  draw = "";
-              }
-              
+              clearDrawGeometry();
+              //获取框选范围
+              var xy = event.target.sketchCoords_;
+              //获取范围中心点
+              var coord = ol.extent.getCenter([xy["0"]["0"],xy["0"][1],xy[1]["0"],xy[1][1]]);
               var view = map.getView();
               view.setCenter(coord);
+//              var asd = ol.proj.transform([37.41, 8.82], 'EPSG:4326', 'EPSG:3857');
               // 让地图的zoom增加1，从而实现地图放大
               view.setZoom(view.getZoom() + 1);
+              //重新渲染地图
               map.render();
-              ol.Observable.unByKey(listener);
             }, this);
 }
 
 
-//测量
- function addInteraction(value) {
-	 clearMeasureObj();
- 	flag = 1;
- 	
- // 添加一个绘制的线使用的layer
- 	geomObj = new ol.layer.Vector({
-       source: new ol.source.Vector(),
-       style: new ol.style.Style({
-           stroke: new ol.style.Stroke({
-               color: '#ffcc33',
-               size: 2
-           })
-       })
-   });
- 	map.addLayer(geomObj);
- 	var type=""
-        if(value == 'area'){
-        	$('#measureName').html('面积');
-        	type = "Polygon";
-        }else if(value == 'length'){
-        	$('#measureName').html('长度');
-        	type = "LineString";
-        }
-        draw = new ol.interaction.Draw({
-          source: geomObj.getSource(),
-          type: /** @type {ol.geom.GeometryType} */ (type),
-          style: new ol.style.Style({
+
+//框选查询
+function boxQuery(){
+	closeFunction();
+  	drawGeometry = new ol.interaction.Draw({
+        source:new ol.source.Vector(),
+        type: /** @type {ol.geom.GeometryType} */ ('Circle'),
+        geometryFunction: ol.interaction.Draw.createBox(),
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: 'rgba(255, 255, 255, 0.2)'
+          }),
+          stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 0, 0.5)',
+            lineDash: [10, 10],
+            width: 2
+          }),
+          image: new ol.style.Circle({
+            radius: 5,
+            stroke: new ol.style.Stroke({
+              color: 'rgba(0, 0, 0, 0.7)'
+            }),
             fill: new ol.style.Fill({
               color: 'rgba(255, 255, 255, 0.2)'
-            }),
-            stroke: new ol.style.Stroke({
-              color: 'rgba(0, 0, 0, 0.5)',
-              lineDash: [10, 10],
-              width: 2
-            }),
-            image: new ol.style.Circle({
-              radius: 5,
-              stroke: new ol.style.Stroke({
-                color: 'rgba(0, 0, 0, 0.7)'
-              }),
-              fill: new ol.style.Fill({
-                color: 'rgba(255, 255, 255, 0.2)'
-              })
             })
           })
-        });
-        map.addInteraction(draw);
+        })
+      });
+      map.addInteraction(drawGeometry);
+      var listener ="";
+      var sketch = null;
+      drawGeometry.on('drawstart',
+          function(evt) {
+            // set sketch
+            sketch = evt.feature;
+            var coord = evt.coordinate;
+            listener = sketch.getGeometry().on('change', function(evt) {
+          	  var geom = evt.target;
+              if (geom instanceof ol.geom.Geometry) {
+                var extent = geom.getExtent();
+                boxExtent  = extent;
+              }
+            });
+          }, this);
 
-        createMeasureTooltip();
-
-       
-        var results=""; //测量结果
-        draw.on('drawstart',
-            function(evt) {
-              // set sketch
-              sketch = evt.feature;
-
-              /** @type {ol.Coordinate|undefined} */
-              var tooltipCoord = evt.coordinate;
-
-              listener = sketch.getGeometry().on('change', function(evt) {
-            	  var geom = evt.target;
-                var output;
-                if (geom instanceof ol.geom.Polygon) {
-                  output = formatArea(geom);
-                  tooltipCoord = geom.getInteriorPoint().getCoordinates();
-                } else if (geom instanceof ol.geom.LineString) {
-                  output = formatLength(geom);
-                  tooltipCoord = geom.getLastCoordinate();
-                }
-                results = output;
-                measureTooltipElement.innerHTML = output;
-                measureTooltip.setPosition(tooltipCoord);
-              });
-            }, this);
-
-        draw.on('drawend',
-            function(event) {
-              measureTooltipElement.className = 'tooltip tooltip-static';
-              measureTooltip.setOffset([0, -7]);
-              // unset sketch
-              sketch = null;
-              // unset tooltip so that a new one can be created
-              measureTooltipElement = null;
-
-              if(draw!=""){
-          		map.removeInteraction(draw);
-          		draw = "";
-          	 }
-
-              ol.Observable.unByKey(listener);
-              $('#measuretext').html(results);
-            }, this);
-      }
-
-      /**
-       * Creates a new measure tooltip
-       */
-      function createMeasureTooltip() {
-        if (measureTooltipElement) {
-          measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-        }
-        measureTooltipElement = document.createElement('div');
-        measureTooltipElement.className = 'tooltip tooltip-measure';
-        measureTooltip = new ol.Overlay({
-          element: measureTooltipElement,
-          offset: [0, -15],
-          positioning: 'bottom-center'
-        });
-        map.addOverlay(measureTooltip);
-      }
-
-      var geodesicCheckbox=true;
-      /**
-       * Format length output.
-       * @param {ol.geom.LineString} line The line.
-       * @return {string} The formatted length.
-       */
-      var formatLength = function(line) {
-        var length;
-        if (geodesicCheckbox) {
-          var coordinates = line.getCoordinates();
-          length = 0;
-          var sourceProj = map.getView().getProjection();
-          var wgs84Sphere = new ol.Sphere(6378137);
-          for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-            var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
-            var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
-            length += wgs84Sphere.haversineDistance(c1, c2);
-          }
-        } else {
-          length = Math.round(line.getLength() * 100) / 100;
-        }
-        var output;
-        if (length > 10000) {
-          output = (Math.round(length / 1000 * 100) / 100) +
-              ' ' + 'km';
-        } else {
-          output = (Math.round(length * 100) / 100) +
-              ' ' + 'm';
-        }
-        return output;
-      };
-
-
-      /**
-       * Format area output.
-       * @param {ol.geom.Polygon} polygon The polygon.
-       * @return {string} Formatted area.
-       */
-      var formatArea = function(polygon) {
-        var area;
-        if (geodesicCheckbox) {
-          var sourceProj = map.getView().getProjection();
-          var geom = /** @type {ol.geom.Polygon} */(polygon.clone().transform(
-              sourceProj, 'EPSG:4326'));
-          var coordinates = geom.getLinearRing(0).getCoordinates();
-          var wgs84Sphere = new ol.Sphere(6378137);
-          area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
-        } else {
-          area = polygon.getArea();
-        }
-        var output;
-        if (area > 100000) {
-          output = (Math.round(area / 1000000 * 100) / 100) +
-              ' ' + 'km<sup>2</sup>';
-        } else {
-          output = (Math.round(area * 100) / 100) +
-              ' ' + 'm<sup>2</sup>';
-        }
-        return output;
-      };
-
-
-function changeIcon(name) {
-    $("#icontext").text(name)
-}
-function check(classname) {
-    $(".check").click(function () {
-        $(this).hide();
-        $(".uncheck").show()
-    })
-}
-function uncheck() {
-    $(".uncheck").click(function () {
-        $(this).hide();
-        $(".check").show()
-    })
+      drawGeometry.on('drawend',
+          function(event) {
+            sketch = null;
+            clearDrawGeometry();
+            openDialg("/attributeList/attributeList.action","查询结果","boxQuery");
+            ol.Observable.unByKey(listener);
+          }, this);
+	
 }
 
-//清除测量结果
-function clearMeasure(){
-	clearMeasureObj();
-	$('#measureName').html('测量');
-	$('#measuretext').html('');
-	if(draw!=""){
-		map.removeInteraction(draw);
-		draw = "";
-	}
-	if(measureTooltip!=""){
-		map.removeOverlay (measureTooltip);
-		measureTooltip = "";
-	}
+//组合查询
+/*function assemblageQuery(){
+	closeFunction();
+	openDialg("/attributeList/attributeList.action","查询结果","assemblageQuery");
+}*/
+
+//多边形查询
+function polygonQuery(){
+	closeFunction();
+	drawGeometry = new ol.interaction.Draw({
+        source:new ol.source.Vector(),
+        type: /** @type {ol.geom.GeometryType} */ ('Polygon'),
+        style: new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: 'rgba(255, 255, 255, 0.2)'
+          }),
+          stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 0, 0.5)',
+            lineDash: [10, 10],
+            width: 2
+          }),
+          image: new ol.style.Circle({
+            radius: 5,
+            stroke: new ol.style.Stroke({
+              color: 'rgba(0, 0, 0, 0.7)'
+            }),
+            fill: new ol.style.Fill({
+              color: 'rgba(255, 255, 255, 0.2)'
+            })
+          })
+        })
+      });
+      map.addInteraction(drawGeometry);
+      var listener ="";
+      var sketch = null;
+      drawGeometry.on('drawstart',
+          function(evt) {
+            // set sketch
+            sketch = evt.feature;
+            /** @type {ol.Coordinate|undefined} */
+            var coord = evt.coordinate;
+            listener = sketch.getGeometry().on('change', function(evt) {
+          	  var geom = evt.target;
+              if (geom instanceof ol.geom.Polygon) {
+                var extent = geom.getExtent();
+                boxExtent  = extent;
+              }
+            });
+          }, this);
+
+      drawGeometry.on('drawend',
+          function(event) {
+            sketch = null;
+            clearDrawGeometry();
+            openDialg("/attributeList/attributeList.action","查询结果","polygonQuery");
+            ol.Observable.unByKey(listener);
+          }, this);
 }
 
-//隐藏和显示
-function showAndHide(hinedid){
-        var att = document.getElementById(hinedid).style.display;
-        if(att=="none"){
-            $("#"+hinedid).show();
-            $("#"+hinedid).attr("display","block");
-        }else{
-            $("#"+hinedid).hide();
-            $("#"+hinedid).attr("display","none");
-        }
-}
-
-// 向左移动地图
-function moveToLeft() {
-    var view = map.getView();
-    var mapCenter = view.getCenter();
-    var xy = map.getPixelFromCoordinate(mapCenter);
-    // 让地图中心的x值增加，即可使得地图向左移动，增加的值根据效果可自由设定
-    xy[0] = xy[0] + 400;
-    var latlng = map.getCoordinateFromPixel(xy);
-    view.setCenter(latlng);
-    map.render();
-}
-
-// 向右移动地图
-function moveToRight() {
-    var view = map.getView();
-    var mapCenter = view.getCenter();
-    var xy = map.getPixelFromCoordinate(mapCenter);
-    // 让地图中心的x值减少，即可使得地图向右移动，减少的值根据效果可自由设定
-    xy[0] = xy[0] - 400;
-    var latlng = map.getCoordinateFromPixel(xy);
-    view.setCenter(latlng);
-    map.render();
-}
-
-// 向上移动地图
-function moveToUp() {
-    var view = map.getView();
-    var mapCenter = view.getCenter();
-    var xy = map.getPixelFromCoordinate(mapCenter);
-    // 让地图中心的y值减少，即可使得地图向上移动，减少的值根据效果可自由设定
-    xy[1] = xy[1] - 350;
-    var latlng = map.getCoordinateFromPixel(xy);
-    view.setCenter(latlng);
-    map.render();
-}
-
-// 向下移动地图
-function moveToDown() {
-    var view = map.getView();
-    var mapCenter = view.getCenter();
-    var xy = map.getPixelFromCoordinate(mapCenter);
-    // 让地图中心的y值增加，即可使得地图向下移动，增加的值根据效果可自由设定
-    xy[1] = xy[1] + 350;
-    var latlng = map.getCoordinateFromPixel(xy);
-    view.setCenter(latlng);
-    map.render();
-}
-
-// 移动到成都
-function moveToChengDu() {
-    var view = map.getView();
-    // 设置地图中心为成都的坐标，即可让地图移动到成都
-    view.setCenter(ol.proj.transform([104.06, 30.67], 'EPSG:4326', 'EPSG:3857'));
-    map.render();
-}
-
-// 放大地图
-function zoomIn() {
-    var view = map.getView();
-    // 让地图的zoom增加1，从而实现地图放大
-    view.setZoom(view.getZoom() + 1);
-}
-
-// 缩小地图
-function zoomOut() {
-    var view = map.getView();
-    // 让地图的zoom减小1，从而实现地图缩小
-    view.setZoom(view.getZoom() - 1);
-}
-
+//单选查询
 function radioQuery(){
-	 map.on('singleclick', function(evt) { 
-	        document.getElementById('nodelist').innerHTML = "Loading... please wait...";
-	        var view = map.getView();
-	        var viewResolution = view.getResolution();
-	        var source = layerImages[0].get('visible') ? layerImages[0].getSource() : layerImages[1].getSource();
-	        var url = source.getGetFeatureInfoUrl(
-	          evt.coordinate, viewResolution, view.getProjection(),
-	          {'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': 50});
-	        console.log(url); 
-	        if (url) {
-	        	$.ajax({
-		        	//请求地址                               
-		           url:url,
-		    	   data:{},//设置请求参数 
-		    	   type:"post",//请求方法
-		    	   dataType: 'jsonp',
-//		           crossDomain: true,
-		    	  //success：请求成功之后执行的回调函数   data：服务器响应的数据
-		    	   success:function(data){
-		    		   var sdsd = data;
-		    	   }
-		        });
-//	        	$("#nodelist").show();
-//	          document.getElementById('nodelist').innerHTML = '<iframe seamless src="' + url + '"></iframe>';
+	closeFunction();
+	//定义select控制器
+	var select= new ol.interaction.Select();
+	map.addInteraction(select);//map加载该控件，默认是激活可用的
+	select.on('select', function(e) {
+		if(e.selected.length>0){
+			openDialg("/attributeList/attributeList.action","查询结果","radioQuery",e.selected);
+			map.removeInteraction(select);
+		}
+	});
+	
+}
+
+
+
+function openDialg(url,title,field,dataFeatures){
+	
+	propertyListWindow =$.jsPanel({
+			id:          "openDialg",
+	        position:    'center',
+	        theme:       "rebeccapurple",
+	        contentSize: {width:1000, height:535},
+	        headerTitle: title,
+	        border:      '2px solid rgb(7,102,104)',
+	        contentAjax: {
+	            url: url,
+	            autoload: true,
+	            done: function (data, textStatus, jqXHR, panel) {
+	            	//图层tree根节点
+	            	var root =$('#powerLayerTree').jstree().get_node("#-1");
+	            	var childrens = $('#powerLayerTree').jstree("get_children_dom",root);
+	            	
+	            	$('#assemblageQueryOptions1').hide();
+	            	$('#assemblageQueryOptions2').hide();
+	            	if(field == 'radioQuery'){
+	            		//获取查询图层类型
+	    	        	var layerType = dataFeatures[0].id_.split('.');
+	    	        	//展示数据
+	    	        	displayData(dataFeatures,layerType[0]);
+	            		
+	            	}else if(field == 'boxQuery' || field == 'polygonQuery'){
+	            		$("#powLayes1").empty();
+		            	$("#powLayes1").append("<option value=''>请选择图层</option>");
+	            		for(var i=0;i<childrens.length;i++){
+            				var node=$('#powerLayerTree').jstree().get_node(childrens[i].id);
+            				$("#powLayes1").append("<option value='"+node.original.id+"'>"+node.original.text+"</option>");
+            			}
+	            		$('#assemblageQueryOptions1').show();
+	            	}else if(field == 'assemblageQuery'){
+	            		$("#powLayes2").empty();
+		            	$("#powLayes2").append("<option value=''>请选择图层</option>");
+	            		for(var i=0;i<childrens.length;i++){
+            				var node=$('#powerLayerTree').jstree().get_node(childrens[i].id);
+            				$("#powLayes2").append("<option value='"+node.original.id+"'>"+node.original.text+"</option>");
+            			}
+	            		$('#assemblageQueryOptions2').show();
+	            	}
+	            	$('#search').modal('hide');//隐藏查询模态框
+	            }
+	        },
+	        callback:function(panel){
+	        	this.content.css("padding", "5px");
 	        }
+	    });
+	}
+
+
+//更改图层下拉框后查询属性
+function changeLayer(id){
+	 clearHighlightObj();
+	if(id != ""){
+		var node=$('#powerLayerTree').jstree().get_node(id);
+		var vector_Source = node.original.layer.getSource();
+		$('#filterFieldOptions').show();
+		var feature = vector_Source.getFeatures()[0];
+		//获取查询图层类型
+    	var layerTable = feature.id_.split('.');
+    	$("#filterField").empty();
+		$.ajax({
+	    	//请求地址                               
+	       url:"/"+layerTable[0]+"/querySpatialTableField.action",
+		   data:{},//设置请求参数 
+		   type:"post",//请求方法
+		   async:false, 
+		   dataType:"json",//设置服务器响应类型
+		  //success：请求成功之后执行的回调函数   data：服务器响应的数据
+		   success:function(data){
+			   $("#filterField").append("<option value=''>请选择字段</option>");
+			   for(var i in data){
+				   if(data[i].FIELD !=null && data[i].VALUE !="ID" && data[i].VALUE !="OBJECTID"){
+           				$("#filterField").append("<option value='"+data[i].VALUE+"'>"+data[i].FIELD+"</option>");
+				   }
+			   }
+		   }
+	   });
+		
+	}
+}
+
+//过滤字段下拉列表值改变事件
+function changeFilterField(val){
+	alert(val);
+	
+}
+//框选查询和多边形查询
+function queryFeature(){
+	var id = $('#powLayes1').val();
+	var field = $('#filterField').val();
+	var value = $('#fieldValue').val();
+	if(id ==""){
+		$('#powLayes2').focus();
+		swal('请先选择要查询的图层！','',"warning");
+	}else {
+		if(field !="" && value ==""){
+			$('#fieldValue').focus();
+			swal('请给'+field+'相应的值！','',"warning");
+		}else{
+			$(".modal-content").mLoading("show");  
+			var node=$('#powerLayerTree').jstree().get_node(id);
+			var vector_Source = node.original.layer.getSource();  
+	        selectEvent = new ol.interaction.Select();
+			  map.addInteraction(selectEvent);
+	          highlightObj = selectEvent.getFeatures();
+	        
+	        var timingFunction=setInterval(function(){
+	        	var selectedFeatures=[];	
+	        	vector_Source.forEachFeatureInExtent(boxExtent, function(feature) {
+	        		selectedFeatures.push(feature);
+	        		highlightObj.push(feature);
+	        	});			
+	        	if(selectedFeatures.length==0){
+	        		clearInterval(timingFunction);
+	        		$(".modal-content").mLoading("hide");
+	        		swal('没有查到符合条件的数据','',"warning");
+	        		$('#wfsFeatureTable').bootstrapTable('removeAll');
+		        }else{
+		        	$(".modal-content").mLoading("hide");
+		        	//获取查询图层类型
+		        	var layerType = selectedFeatures[0].id_.split('.');
+		        	displayData(selectedFeatures,layerType[0]);
+		        }
+	        	//关闭定时函数
+	        	clearInterval(timingFunction);
+	        },1000);
+		}
+	}
+		
+}
+
+//组合查询中的框选查询
+/*function regionQuery(){
+	var id=$('#powLayes2').val();
+	if(id ==""){
+		$('#powLayes2').focus();
+		swal('请先选择要查询的图层！','',"warning");
+	}else{
+		//最小化弹出框
+		propertyListWindow.minimize();
+		var layer_name = queryLayerNameByID(id);
+		
+		drawGeometry = new ol.interaction.Draw({
+	        source:new ol.source.Vector(),
+	        type: *//** @type {ol.geom.GeometryType} *//* ('Circle'),
+	        geometryFunction: ol.interaction.Draw.createBox(),
+	        style: new ol.style.Style({
+	          fill: new ol.style.Fill({
+	            color: 'rgba(255, 255, 255, 0.2)'
+	          }),
+	          stroke: new ol.style.Stroke({
+	            color: 'rgba(0, 0, 0, 0.5)',
+	            lineDash: [10, 10],
+	            width: 2
+	          }),
+	          image: new ol.style.Circle({
+	            radius: 5,
+	            stroke: new ol.style.Stroke({
+	              color: 'rgba(0, 0, 0, 0.7)'
+	            }),
+	            fill: new ol.style.Fill({
+	              color: 'rgba(255, 255, 255, 0.2)'
+	            })
+	          })
+	        })
 	      });
+	      map.addInteraction(drawGeometry);
+	      var listener ="";
+	      var sketch = null;
+	      var extent="";
+	      drawGeometry.on('drawstart',
+	          function(evt) {
+	            // set sketch
+	            sketch = evt.feature;
+	            *//** @type {ol.Coordinate|undefined} *//*
+	            var coord = evt.coordinate;
+	            listener = sketch.getGeometry().on('change', function(evt) {
+	          	  var geom = evt.target;
+	              if (geom instanceof ol.geom.Geometry) {
+	                extent = geom.getExtent();
+	              }
+	            });
+	          }, this);
+
+	      drawGeometry.on('drawend',
+	          function(event) {
+	            sketch = null;
+	            clearDrawGeometry();
+	            //恢复弹出框
+	            propertyListWindow.normalize();
+	            $(".modal-content").mLoading("show");
+	            queryfeature(layer_name,extent);
+	            $(".modal-content").mLoading("hide");
+	            ol.Observable.unByKey(listener);
+	          }, this);
+	}
+}
+*/
+
+
+
+//组合查询
+/*function combinationQuery(){
+	var id=$('#powLayes2').val();
+	if(id ==""){
+		$('#powLayes2').focus();
+		swal('请先选择要查询的图层！','',"warning");
+	}else{
+		var layer_name = queryLayerNameByID(id);
+		clearDrawGeometry();
+		$(".modal-body").mLoading("show"); 
+		queryfeature(layer_name);
+	}
+		$(".modal-body").mLoading("hide");
+}*/
+
+//根据id查询图层名称
+function queryLayerNameByID(id){
+	var layer_name="";
+	$.ajax({
+	    //请求地址                               
+	    url:"/T_POWERLAYERS/search.action",
+	    data:{"search.C_ID*eq":id},//设置请求参数 
+	     type:"post",//请求方法
+	    async:false, 
+	    dataType:"json",//设置服务器响应类型
+	   //success：请求成功之后执行的回调函数   data：服务器响应的数据
+	    success:function(data){
+	       if(data!=""){
+	    	   var layer = data[0].C_LAYER;
+	    	   layer_name = layer.substring(layer.indexOf(':')+1);
+	       }
+	    }
+	}); 
+	return layer_name;
+}
+
+//根据图层及范围查询要素
+/*function queryfeature(layer_name,extent){
+	if(extent=="" || extent==undefined){
+		extent=[-180.0,-90.0,180.0,90.0];
+	}
+	var QSDW = $('#communicate').val(); //通讯单位
+	var TCDW = $('#detectionUnit').val(); //探测单位
+	var SZDL = $('#roadAddress').val(); //所在道路
+	var ISLOCK = $('#is_Lock').val(); //是否锁定
+	
+	var featureRequest = new ol.format.WFS().writeGetFeature({
+        srsName: 'EPSG:2439',
+        featureNS: 'http://172.16.15.147:8080/pipeline',
+        featurePrefix: 'osm',
+        featureTypes: [layer_name],
+        outputFormat: 'application/json',
+        geometryName:"the_geom", 
+        filter:ol.format.filter.and(
+//      	  ol.format.filter.equalTo('QSDW', '*'),
+        		ol.format.filter.bbox('the_geom', extent, 'EPSG:2439'),
+        		ol.format.filter.like('QSDW', QSDW ),
+        		ol.format.filter.like('SZDL',SZDL),
+        		ol.format.filter.like('TCDW', TCDW),
+        		ol.format.filter.like('ISLOCK',ISLOCK)
+        )
+    });
+
+    // 然后发布请求并将接收到数据在表格中显示
+    fetch('http://172.16.15.147:8080/geoserver/wfs', {
+        method: 'POST',
+        body: new XMLSerializer().serializeToString(featureRequest)
+    }).then(function(response) {
+        return response.json();
+    }).then(function(json) {
+        var features = new ol.format.GeoJSON().readFeatures(json);
+        if(features.length==0){
+            swal('没有查到符合条件的数据','',"warning");
+            $('#wfsFeatureTable').bootstrapTable('removeAll');
+//            if($("#wfsFeatureTable").datagrid("getData").total != 0){
+//            	$('#wfsFeatureTable').datagrid('loadData',{total:0,rows:[]});
+//            }
+        }else{
+        	displayData(features);
+        }
+    });
+}*/
+//将数据在table中显示
+function displayData(features,layerType){
+	//销毁查询结果 bootstrapTable
+	$('#wfsFeatureTable').bootstrapTable('destroy');
+	var columns=[];
+	switch (layerType) {
+	case "SD_STATION": //局站
+		columns = [{
+	        field: 'ID',
+	        title: '编码',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ID;}
+	    },{
+	        field: 'NAME',
+	        title: '名称',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.NAME;}
+	    }, {
+	    	field: 'DISTRICT',
+	    	title: '行政区划',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.DISTRICT;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	        field: 'TYPE',
+	        title: '类型',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.TYPE;}
+	    }, {
+	    	field: 'VOLTAGE',
+	    	title: '电压等级',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.VOLTAGE;}
+	    }, {
+	    	field: 'OPERATIONDATE',
+	    	title: '投运日期',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return operationdateFormatter(row.values_.OPERATIONDATE);}
+	    }, {
+	    	field: 'MAINTENANCEUNIT',
+	    	title: '维护单位',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+	    }];
+		break;
+	case "SD_JUNCTIONBOX":  //'接头盒'
+		columns = [{
+	        field: 'ID',
+	        title: '编码',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ID;}
+	    },{
+	        field: 'NAME',
+	        title: '名称',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.NAME;}
+	    }, {
+	    	field: 'POSITION',
+	    	title: '位置',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.POSITION;}
+	    }, {
+	    	field: 'SPECIFICATIONS',
+	    	title: '规格标识',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.SPECIFICATIONS;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	    	field: 'MAINTENANCEUNIT',
+	    	title: '维护单位',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+	    }];
+		break;
+	case "SD_COMMUNICATIONPOLETOWER":  //'通信杆塔':
+		columns = [{
+	        field: 'NAME',
+	        title: '杆塔名称',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.NAME;}
+	    }, {
+	    	field: 'HEIGHT',
+	    	title: '高度',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.HEIGHT;}
+	    }, {
+	    	field: 'PMSID',
+	    	title: 'PMS编码',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.PMSID;}
+	    }, {
+	    	field: 'TOWERMATERIAL',
+	    	title: '杆塔材质',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.TOWERMATERIAL;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	    	field: 'MAINTENANCEUNIT',
+	    	title: '维护单位',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+	    }];
+		break;
+	case "SD_PERSONWELL":  //'人井'
+		columns = [{
+	        field: 'ID',
+	        title: '编码',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ID;}
+	    },{
+	        field: 'NAME',
+	        title: '名称',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.NAME;}
+	    }, {
+	    	field: 'AFFILIATEDID',
+	    	title: '附属对象ID',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.AFFILIATEDID;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	        field: 'MAINTENANCEUNIT',
+	        title: '维护单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	    	field: 'REMARK',
+	    	title: '备注',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.REMARK;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+	    }];
+		break;
+	case "SD_RESIDUALCABLE": //'余缆'
+		columns = [{
+	        field: 'ID',
+	        title: '所属光缆段ID',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ID;}
+	    },{
+	        field: 'LENGTH',
+	        title: '长度',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.LENGTH;}
+	    }, {
+	    	field: 'MAINTENANCEUNIT',
+	    	title: '行政区划',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '维护单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	    	field: 'REMARK',
+	    	title: '备注',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.REMARK;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+
+	    }];
+		break;
+	case "SD_OPTICALCABLESECTION":  //'光缆段'
+		columns = [{
+	        field: 'ID',
+	        title: '编码',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ID;}
+	    },{
+	        field: 'NAME',
+	        title: '名称',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.NAME;}
+	    }, {
+	    	field: 'TYPE',
+	    	title: '类型',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.TYPE;}
+	    }, {
+	    	field: 'LENGTH',
+	    	title: '长度',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.LENGTH;}
+	    }, {
+	    	field: 'CORENUM',
+	    	title: '芯数',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.CORENUM;}
+	    }, {
+	    	field: 'VOLTAGECLASS',
+	    	title: '线路电压等级',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.VOLTAGECLASS;}
+	    }, {
+	    	field: 'LAYWAY',
+	    	title: '敷设方式',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.LAYWAY;}
+	    }, {
+	    	field: 'STARTID',
+	    	title: '起点',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.STARTID;}
+	    }, {
+	    	field: 'ENDID',
+	    	title: '终点',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.ENDID;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	    	field: 'MAINTENANCEUNIT',
+	    	title: '维护单位',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+	    }];
+		break;
+	case "SD_CABLEDUCT": //'电缆管道':
+		columns = [{
+	        field: 'PMSID',
+	        title: 'PMS系统编码',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.PMSID;}
+	    },{
+	        field: 'NAME',
+	        title: '名称',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.NAME;}
+	    }, {
+	    	field: 'BURIEDLENGTH',
+	    	title: '埋设长度(米)',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.BURIEDLENGTH;}
+	    }, {
+	    	field: 'BURIEDWIDTH',
+	    	title: '埋设宽度(米)',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.BURIEDWIDTH;}
+	    }, {
+	    	field: 'STARTPOSITION',
+	    	title: '起点井',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.STARTPOSITION;}
+	    }, {
+	    	field: 'ENDPOSITION',
+	    	title: '终点井',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.ENDPOSITION;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	    	field: 'MAINTENANCEUNIT',
+	    	title: '维护单位',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+	    }];
+		break;
+	case "SD_CABLETRENCH":  //'电缆沟':
+		columns = [{
+	        field: 'PMSID',
+	        title: 'PMS系统编码',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.PMSID;}
+	    },{
+	        field: 'NAME',
+	        title: '名称',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.NAME;}
+	    }, {
+	    	field: 'BURIEDLENGTH',
+	    	title: '埋设长度(米)',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.BURIEDLENGTH;}
+	    }, {
+	    	field: 'BURIEDWIDTH',
+	    	title: '埋设宽度(米)',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.BURIEDWIDTH;}
+	    }, {
+	    	field: 'STARTPOSITION',
+	    	title: '起点井',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.STARTPOSITION;}
+	    }, {
+	    	field: 'ENDPOSITION',
+	    	title: '终点井',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.ENDPOSITION;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	    	field: 'MAINTENANCEUNIT',
+	    	title: '维护单位',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+	    }];
+		break;
+	case "SD_CABLETUNNEL":  //'电缆隧道':
+		columns = [{
+	        field: 'PMSID',
+	        title: 'PMS系统编码',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.PMSID;}
+	    },{
+	        field: 'NAME',
+	        title: '名称',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.NAME;}
+	    }, {
+	    	field: 'BURIEDLENGTH',
+	    	title: '埋设长度(米)',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.BURIEDLENGTH;}
+	    }, {
+	    	field: 'BURIEDWIDTH',
+	    	title: '埋设宽度(米)',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.BURIEDWIDTH;}
+	    }, {
+	    	field: 'STARTPOSITION',
+	    	title: '起点井',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.STARTPOSITION;}
+	    }, {
+	    	field: 'ENDPOSITION',
+	    	title: '终点井',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.ENDPOSITION;}
+	    }, {
+	        field: 'ASSETUNIT',
+	        title: '资产单位',
+	        align: 'center',
+            valign: 'top',
+            sortable: true,
+            formatter:function(value,row,index){return row.values_.ASSETUNIT;}
+	    }, {
+	    	field: 'MAINTENANCEUNIT',
+	    	title: '维护单位',
+	    	align: 'center',
+	    	valign: 'top',
+	    	sortable: true,
+	    	formatter:function(value,row,index){return row.values_.MAINTENANCEUNIT;}
+	    }, {
+	    	field: '操作',
+	    	title: '操作',
+	    	align: 'center',
+	    	valign: 'middle',
+	    	sortable: true,
+	    	events: operateEvents,//给按钮注册事件
+	    	formatter: operateFormatter//表格中增加按钮
+	    }];
+		break;
+	default:
+		break;
+	}
+	$('#wfsFeatureTable').bootstrapTable({
+	    data: features,
+	    method:'post',
+	    striped: true,
+		dataType: "json",
+		pagination: true,
+		queryParamsType: "limit",
+		singleSelect: false,
+		contentType: "application/x-www-form-urlencoded",
+		pageSize: 10,
+		pageNumber:1,
+		showColumns: false, //不显示下拉框（选择显示的列）
+		sidePagination: "client", 
+		queryParams: queryParams,//分页参数
+//		clickToSelect: true,
+		height: 480,
+	    columns:columns 
+	});
+}
+//bootstrap table操作按钮 （查询结果表）
+window.operateEvents = {
+         'click .RoleOfPosition': function (e, value, row, index) {
+        	//将jspanel弹窗缩成一行
+ 			propertyListWindow.smallify();
+ 			var feature = row;
+ 			clearHighlightObj();
+ 			selectEvent = new ol.interaction.Select();
+ 			  map.addInteraction(selectEvent);
+ 			  //设置要素高亮
+ 			highlightObj =selectEvent.getFeatures(); 
+ 			highlightObj.push(feature);
+ 			//获取要素的几何范围
+ 			 var extent=feature.getGeometry().getExtent();
+ 		     map.getView().fit(extent,map.getSize());
+      }
+     };  
+/**
+ * @requires jQuery
+ * 
+ * 格式化日期时间
+ */
+function operationdateFormatter(value) {
+	if(value != null){
+		return value.substring(0,value.indexOf('Z'));
+	}
+	return null;
+}
+
+//bootstrap table操作按钮 （查询结果表）
+function operateFormatter(val,row,index){  
+    return  ['<button type="button" class="RoleOfPosition btn btn-default  btn-sm" style="margin-right:15px;">定位</button>'
+            ].join('');
+      
+}  
+//设置传入参数
+function queryParams(params) {
+	return {
+		page_pn: params.pageNumber,
+		sColumn:params.sort,
+		order:params.order,
+		page_size: params.limit
+//		"search.C_DISASTERNAME*like":'%'+$("#DISASTERNAME").val()+'%',
+//		"search.C_DIRECTPERS*like":'%'+$("#DIRECTPERS").val()+'%',
+//		"search.C_DISASTERADDR*like":'%'+$("#DISASTERADDR").val()+'%',
+//		"search.C_HAPPENDTIME*eq":$("#HAPPENDTIME").val()
+	}
+};
+
+
+
+//清除高亮对象
+function clearHighlightObj(){
+	if(highlightObj.length!=0){
+		highlightObj.clear();
+	}
+}
+//清除画几何对象
+function clearDrawGeometry(){
+	if(drawGeometry!=""){
+		map.removeInteraction(drawGeometry);
+  		drawGeometry = "";
+	}
+}
+
+
+//关闭属性列表弹出窗口
+function closePropertyListWindow(){
+	if(propertyListWindow!=""){
+		propertyListWindow.close();
+		propertyListWindow="";
+	}
+}
+
+
+//关闭所有
+function closeFunction(){
+	closePropertyListWindow();
+	clearDrawGeometry();
+	clearHighlightObj();
+	clearMeasureObj();
+	clearOnMapEvent();
+
+}
+
+//清除主动添加到地图的事件（画、选择、移动）
+function clearOnMapEvent(){
+	var events = map.getInteractions().getArray();
+	for(var i=0;i<events.length;i++){
+		var e = events[i];
+		  if (e instanceof ol.interaction.Draw || e instanceof ol.interaction.Select ||
+				  e instanceof ol.interaction.Modify) {
+			map.removeInteraction(e);
+			--i;
+		  }
+  }
+}
+
+
+
+//保存feature
+function saveFeature(){
+	
+	$("#attributeInfo").mLoading("show");
+	clearOnMapEvent();//清除主动添加到地图上的事件
+	if(editObject !=""){
+         var fea = editObject.feature.clone();//此处clone 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
+           var geo = fea.getGeometry();
+            // 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
+            geo.applyTransform(function(flatCoordinates, flatCoordinates2, stride) {
+                     for (var j = 0; j < flatCoordinates.length; j += stride) {
+                                  var y = flatCoordinates[j];
+                        var x = flatCoordinates[j + 1];
+                                 flatCoordinates[j] = x;
+                                  flatCoordinates[j + 1] = y;
+                            }
+                        });
+         
+             fea.set('SHAPE',geo);
+		
+		var featureType = editObject.layer_name;
+		var editType = editObject.editType;
+		//设置featureID
+		setFeatureID(fea,featureType);
+		
+		//获取属性字段的json
+		var attributeJson = getFormJson(featureType.toLowerCase()+"_form");
+		//设置feature对应的属性
+		for(var field in attributeJson){
+			fea.set(field,attributeJson[field]);
+		}
+		
+		editWFSFeature([fea],editType,featureType);
+		editObject = {};
+		//关闭属性弹窗
+		attributeInfoObj.close();
+		$("#attributeInfo").mLoading("hide");
+
+	}
+	 
+}
+
+//将序列化对象转json
+function getFormJson(form) {
+	var o = {};
+	var a = $("#"+form).serializeArray();
+	$.each(a, function () {
+		if (o[this.name] !== undefined) {
+			if (!o[this.name].push) {
+			    o[this.name] = [o[this.name]];
+			}
+			o[this.name].push(this.value || '');
+		} else {
+			o[this.name] = this.value || '';
+		}
+	});
+	return o;
+}
+
+
+//编辑操作
+function editWFSFeature(features,editType,featureType){
+	var WFSTSerializer =  new ol.format.WFS({
+        featureNS: "http://172.16.15.147:8080/anqing",
+        featureType: "anqing:"+featureType,
+        version:'2.0.0'
+    });
+    var featObject;
+    if(editType == 'add'){
+        featObject= WFSTSerializer.writeTransaction(features,
+                null, null, {
+        	    featureNS: 'http://172.16.15.147:8080/anqing',//为创建工作区时的命名空间URI
+                featurePrefix: "anqing",
+                version:'2.0.0',
+                featureType: featureType, //feature对应图层
+                srsName: 'EPSG:4326'// 坐标系
+          });
+    }else if(editType == 'update') {
+        featObject = WFSTSerializer.writeTransaction( null,features, null, {
+                    featureNS: 'http://172.16.15.147:8080/pipeline',//为创建工作区时的命名空间URI
+                    //featurePrefix: "osm",
+                    featureType: featureType,
+                    version:'2.0.0',
+                    srsName: 'EPSG:2439'// 坐标系}
+                });
+   }else if(editType == 'delete'){
+        featObject= WFSTSerializer.writeTransaction(
+                null,null,features, {
+                    featureNS: 'http://172.16.15.147:8080/pipeline',//为创建工作区时的命名空间URI
+//                    featurePrefix: "osm",
+                    version:'2.0.0',
+                    featureType: featureType, //feature对应图层
+//                featureType:'pipeline:DHXPOINT',
+//                    srsName: 'EPSG:3857'// 坐标系
+                    srsName: 'EPSG:2439'// 坐标系
+                });
+    }
+
+
+    var serializer = new XMLSerializer();
+    // 将参数转换为xml格式数据
+    var featString = serializer.serializeToString(featObject);
+    var request = new XMLHttpRequest();
+    request.open('POST', 'http://172.16.15.147:8080/geoserver/wfs?service=wfs');
+    request.setRequestHeader('Content-Type', 'text/xml');
+    request.send(featString);
+     
+	swal("保存成功",'',"success");
+}
+
+//弹出属性字段信息框
+function jsPanelAttributeInfo(url,title,width,height,features){
+	attributeInfoObj = $.jsPanel({
+		id:          "attributeInfo",
+		position:    {right: 20, top: 100},
+		theme:       "rebeccapurple",
+//		paneltype:   'modal',
+		contentSize: {width: width, height: height},
+		headerTitle: title,
+		contentAjax: {
+            url: url,
+            autoload: true,
+            done: function (data, textStatus, jqXHR, panel) {
+            	//图层tree根节点
+            	var root =$('#powerLayerTree').jstree().get_node("#-1");
+            	var childrens = $('#powerLayerTree').jstree("get_children_dom",root);
+            	//新添加的feature在没保存之前都可以移动位置
+            	if(editObject.editType == "add"){
+            		var select = new ol.interaction.Select();
+            	    var modify = new ol.interaction.Modify({
+            	        features: select.getFeatures()
+            	    });
+            	    map.addInteraction(select);
+            	    select.on('select', function (e) {
+            	    	if(e.selected[0].id_ != undefined){
+            	    		e.selected=[];
+            	    	}
+            	    });
+            	    map.addInteraction(modify);
+      	      }
+            }
+        },
+	    callback:    function (panel) {
+//	        this.content.css("padding", "15px");
+	      
+	    }
+	});
+}
+
+//设置featureID
+function setFeatureID(feature,featureType){
+	$.ajax({
+	    //请求地址                               
+	    url:"/SYSTEMCODE/search.action",
+	    data:{"search.TABLENAME*eq":featureType},//设置请求参数 
+	     type:"post",//请求方法
+	    async:false, 
+	    dataType:"json",//设置服务器响应类型
+	   //success：请求成功之后执行的回调函数   data：服务器响应的数据
+	    success:function(data){
+	       if(data!=""){
+	    	   feature.set("ID",data[0].CODE+guid());
+	       }
+	    }
+	});  
+}
+
+
+//生成guid编码
+function guid() {
+    return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
 }

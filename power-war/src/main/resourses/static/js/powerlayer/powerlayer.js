@@ -4,6 +4,7 @@
  * 初始化事件
  */
 function init(){
+//$(function(){ 	
 	fnInitGrid();
 	
 	$("#C_LAYERTYPE").combobox({
@@ -102,13 +103,6 @@ function fnAddApp(){
 	$('#app_dlg').dialog('open');
 }
 
-/**
- *添加图层类型option选项触发事件
- */
-//function gradeChange(val){
-//	alert(val);
-//	
-//}
 
 /**
  * 保存图层信息
@@ -117,14 +111,25 @@ function fnSaveApp(){
 	//判断添加的是图层还是图层组 重新拼接保存的图层信息
 	var flag = $('#C_LAYERTYPE').combobox('getValue');
 	var layer=""
+    var layerID=""
 	if(flag=="1"){
+		layerID = 'C_LAYER1';
 		layer = $('#C_LAYER1').textbox('getValue');
 	}else if(flag == "2"){
+		layerID = 'C_LAYER2';
 		var layers = $('#C_LAYER2').combobox('getValues');
 		for(var i=0;i<layers.length-1;i++){
 			layer+=layers[i]+','
 		}
 		layer+=layers[layers.length-1];
+	}
+	var name = $('#C_LAYERNAME').textbox('getValue');
+	if(name==""|| name.trim()==""){
+		$('#C_LAYERNAME').focus();
+		swal('图层名称不能为空','',"warning");
+	}else if(layer == ""){
+		$('#'+layerID).focus();
+		swal('图层不能为空','',"warning");
 	}
 	$.post('/T_POWERLAYERS/save.action',
 		{C_LAYERNAME:$('#C_LAYERNAME').textbox('getValue'),
@@ -146,7 +151,7 @@ function fnSaveApp(){
 }
 
 /**
- * 保存角色信息
+ * 保存图层信息
  */
 function fnUpdateApp(){
 	var rows = $('#app_table').datagrid('getSelections');

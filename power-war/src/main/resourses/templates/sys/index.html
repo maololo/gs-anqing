@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<title>安庆电网</title>
+    <link rel="stylesheet" type="text/css" href="/lib/easyui/1.4.5/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/easyui/1.4.5/themes/default/easyui.css" />
+    <link type="text/css" rel="stylesheet" href="/lib/bootstrap/3.3.0/css/bootstrap.min.css"/>
+<!--     <link type="text/css" rel="stylesheet" href="/lib/bootstrap/3.3.0/css/bootstrap-theme.min.css"/> -->
+<!--     <link type="text/css" rel="stylesheet" href="/lib/bootstrap/3.3.0/css/bootstrap-datetimepicker.min.css"/> -->
+    <!--Openlayers 官方样式-->
+<!--     <link rel="stylesheet"  type="text/css" href="/lib/openlayer/3.20.1/ol.css"/> -->
+    <link rel="stylesheet" type="text/css" href="/iconfont/iconfont.css" />
+    <link type="text/css" rel="stylesheet" href="/lib/sweetalert/sweetalert.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/jstree/themes/default/style.min.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/jsPanel/3.8.0/jquery.jspanel.css" />
+    <link type="text/css" rel="stylesheet" href="/lib/bootstrap/3.3.0/css/bootstrap-table.min.css"/>
+    <link type="text/css" rel="stylesheet" href="/lib/mloading/jquery.mloading.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/default/default.css" />
+<!--     <link rel="stylesheet" type="text/css" href="/css/index/index.css" /> -->
+    
+    
+    
+    <script type="text/javascript" src="/lib/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/sys/index.js"></script>
+    <script type="text/javascript" src="/lib/easyui/1.4.5/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/lib/easyui/1.4.5/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/lib/sweetalert/sweetalert.min.js"></script>
+    <script type="text/javascript" src="/lib/jsPanel/3.8.0/jquery.jspanel.min.js"></script>
+<!--     <script type="text/javascript" src="/lib/openlayer/3.20.1/ol-debug.js"></script> -->
+<!--     <script type="text/javascript" src="/lib/bootstrap/bootstrap.min.js"></script> -->
+    <script type="text/javascript" src="/lib/mloading/jquery.mloading.js"></script>
+    <script type="text/javascript" src="/lib/jstree/jstree.min.js"></script>
+<!--     <script th:src="@{'/js/'+${modelName}+'/index.js'}"></script> -->
+<!--     <script src="/js/index/index.js" type="text/javascript"></script> -->
+<!--     <script src="/js/measure/measure.js" type="text/javascript"></script> -->
+<!--     <script src="/js/bookManage/bookManage.js" type="text/javascript"></script> -->
+<!--     <script src="/js/editFeature/editFeature.js" type="text/javascript"></script> -->
+<!--     <script src="/js/mapBasic/mapBasic.js" type="text/javascript"></script> -->
+</head>
+<body class="easyui-layout">
+	<div data-options="region:'north' ,split:false,minHeight:87,maxHeight:600,height:87,border:false"
+		id="header">
+	  <div class="navbar navbar-fixed-top  col-xs-12" >
+        <div class="navbar-header">
+            <a href="" ><img src="/images/home-page-pandect/logo2_03.png" alt=""></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href=""style="background: transparent;"><img src="/images/home-page-pandect/logo2_05.png" alt=""></a></li>
+                <li class="nav-word" style="color: white">国网GIS配电通信接入网管理平台</li>
+            </ul>
+        </div>
+		  <div class="header-right">
+<!-- 			欢迎您，[<font th:text="${username}" />]！ <a class="set" -->
+			欢迎您，[admin]！ <a class="set"
+				href="javascript:void(0)"><img
+				src="/images/home-page-pandect/set.png" height="12" width="12" />设置</a>
+			|<select id="APPTYPE" name="APPTYPE" class="easyui-combobox" style="width:80px;">
+			 </select>
+			|<a class="set" href="/login/exit.action"><img
+				src="/images/home-page-pandect/exit.png" height="12" width="12" />退出系统</a>
+		</div> 
+      </div>
+	</div>
+
+	<div data-options="region:'west',split:true,border:false"
+		id="center-left" style="overflow: hidden; background-color: #00458a">
+		<!-- 左侧栏 -->
+		<div class="main" style="background: #005a52;">
+			<div class="left-nav" id="menu">
+			</div>
+		</div>
+	</div>
+	<div class="easyui-panel" id="center-top" style="overflow: hidden;" data-options="region:'center'">
+		<div class="panel-header">
+            <span class="iconfont icon-shousuo  hamburger" style="margin-left: 10px;"></span>
+            <span class="glyphicon glyphicon-stats  hamburgerimg"  style="display: none;"></span>
+            <img style="" src="/images/home-page-pandect/home-small.png" alt=""/>
+            <span class="font" id="center-title">系统管理</span>
+        </div>
+		<div class="easyui-layout" data-options="fit:true">
+			<div id="center-bottom" data-options="region:'center',split:true"
+				style="overflow: hidden"></div>
+		</div>
+
+	</div>
+
+	<!-- <div 
+		data-options="region:'south',split:false,minHeight:20,maxHeight:100,height:30,border:false"
+		id="foot" >
+		<center>单位：某某公司 &nbsp;&nbsp; 部门：应用研发中心 &nbsp;&nbsp;
+			技术支持：某某科技有限公司 &nbsp;&nbsp; TEL：400-111-2222</center>
+	</div> -->
+</body>
+</html>

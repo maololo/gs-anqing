@@ -1,3 +1,7 @@
+
+
+
+
 /*测量样式  */
 
 
@@ -47,7 +51,6 @@
       
       
       
-
 a{
     text-decoration: none;
 }
@@ -104,6 +107,7 @@ a{
 }
 .btn:hover{
     background: #0a969b;
+    opacity: 1;
 }
 .btn:hover span{
     color: white;
@@ -137,7 +141,7 @@ a{
     position: relative;
     width: 20px;
     height: 20px;
-   /* background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);*/
+   background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
 }
 input[type=checkbox]{
     -webkit-appearance:none;
@@ -186,7 +190,7 @@ input[type=checkbox]{
 .measureBtn{height: 120px;    border: 1px solid white;}
 .measureBtn .btn{ margin-left:10px; margin-right:8px;margin-top: 10px;}
 .measure{top: 110%;
-    left: 50%;
+    left: 37%;
     width: 140px;
     background-color: white;
     opacity: 0.9;}
@@ -217,22 +221,20 @@ input[type=checkbox]{
     }
     
     
- #btnGroup   .bookMaker{
-    height: 500px;
+ #btnGroup .bookMaker,#editLayerSelect .editLayer,#toolbar .dropdown-menu .dropDown-container{
+    min-height: 300px;
+    max-height: 700px;
     width: 200px;
     padding: 10px;
     background-color: #fff;
     opacity: 0.9;
  }
+
  .sweet-alert {
     left: 50% !important;
     top: 48% !important;
  }
  
- /* openlayer样式 */
-.ol-logo-only{
-	display: none;
-}
  /* jstree样式 */
  .jstree-default .jstree-node, .jstree-default .jstree-icon {
     background-image: url(/images/icon.png);
@@ -244,14 +246,14 @@ input[type=checkbox]{
 .glyphicon-file:before{
     content: none ;
 }
-
-.jstree-anchor, .jstree-anchor:link, .jstree-anchor:visited, .jstree-anchor:hover {
-    /* text-decoration: none;
-    color: #015351;
-    font-family: "微软雅黑";
-    font-size:12px;
-    font-style:normal; */
- }
+.attributeBtn{
+          padding: 5px 5px;
+    width: 195px;
+    height: 65px;
+}
+.attributeBtn .btn{
+	margin:5px;
+}
 
 .jstree-default .jstree-checkbox {
     background-position: -150px -10px;
@@ -301,7 +303,7 @@ input[type=checkbox]{
     position: relative;
     background-color: #056766;
     box-shadow: 0 0 2px #056766;
-    /*text-shadow: 1px 1px 0 #fff;*/
+    text-shadow: 1px 1px 0 #fff;
     text-shadow: none;
     color: #fff;
 }
@@ -313,38 +315,172 @@ input[type=checkbox]{
     background: #f5f5f5;
     border: none;
     box-shadow: none;
-}
+} 
 
-/* 列表属性table样式 */
+
+
+/*------------------------------------------ table styles ------------------------*/
 /* Border styles */
+.datagrid-header-row, .datagrid-row{
+	height:30px;
+}
 table thead, table tr {
-    border-top-width: 1px;
-    border-top-style: solid;
-    border-right-width:1px;
-    border-top-color: rgb(68, 68, 68);
-    line-height:33px;
+    line-height:30px;
+    width: 100%;
 }
 
 /* Padding and font style */
 table td, table th {
     padding: 5px 10px;
-    font-size: 14px;
+    font-size: 12px;
     font-family: "Microsoft YaHei";
-    color: rgb(46, 197, 173);
+    color:#626262;
+    text-align:center;
 }
 table tr:nth-child(even):hover{
-    background:rgb(29, 29, 29);
+    background:#def6f3;
     cursor: pointer;
 }
 table tr:nth-child(odd):hover{
-    background:rgb(29, 29, 29);
+    background:#def6f3;
     cursor: pointer;
 }
 /* Alternating background colors */
 table tr:nth-child(even) {
-    background:transparent;
+    background:#fafafa;
 }
 table tr:nth-child(odd) {
     background:transparent;
 }
+.datagrid-btable tr td{
+	border:none;
+}
+.datagrid-htable tr td{
+	border:none;
+}
 
+
+.jsPanel-headerbar {
+    min-height: 35px;
+}
+.panel-body-noheader{
+	border:none;
+}
+.jsPanel .jsPanel-hdr{
+    background-color:#308374 !important;
+}
+.jsPanel-titlebar h3{
+    font-size:14px;
+    margin:8px 5px 8px 10px;
+}
+.jsglyph{
+    font-size:12px;
+    font-weight:400;
+}
+.jsPanel-controlbar:nth-child(1){
+    padding:0 5px;
+}
+@media (min-width: 768px){
+    .table-content{
+        -webkit-box-shadow:none;
+        box-shadow:none;
+    }
+}
+.check-text{
+    padding: 0;
+    font-size:14px;
+    color:#666;
+    margin-top: -10px;
+}
+.check-text .check{
+    background: #f1efef;
+    line-height: 42px;
+    padding-left:10px;
+    margin-bottom:10px;
+}
+.table-content select{
+    height:30px;
+    border-radius:5px;
+}
+.table-content{
+    margin-left:5px ;
+    margin-right:5px;
+    padding-top: 10px;
+    border:none !important;
+}
+.btn-primary{
+    background-color:#308374;
+}
+.btn-primary:hover{
+    background-color:#216a5d;
+}
+
+/* datagrid分页修改 */
+.datagrid-toolbar, .datagrid-pager{
+    background: none;
+    /* margin-top: -25px !important; */
+}
+.pagination-info{
+    float:left;
+}
+.pagination table{
+    float:right;
+}
+
+/*------------------------------------------------属性字段样式--------------------------------------------*/
+#attributeInfo .control-label input{
+    height: 32px;
+    width: 320px;
+    border-radius:1px;
+    background-color:#FFF;
+    border:1px solid #e5e6e7;
+    color:inherit;
+    padding:6px 12px;
+    font-size:14px;
+    margin-left:5px;
+}
+#attributeInfo  .control-label{
+    text-align:right;
+    font-weight:700;
+    color:#666;
+    margin-top:8px;
+}
+#attributeInfo  .text{
+    margin-bottom: 15px;
+}
+
+.form-group{
+	
+    margin-bottom: 15px;
+}
+#attributeInfo p button{
+	height: 34px;
+    width: 68px;
+    margin-right: 20px;
+    margin-top:5px;
+}
+.form-control:focus{
+    border-color:#308374;
+}
+option:hover{
+    background-color:#308374;
+}
+/* option{
+	background-color: red;
+} */
+
+#ISLOCK{
+	    margin-left: 15px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100px;
+    height: 34px;
+}
+
+
+ .text-but{
+   width: 60px;
+    height: 30px;
+    font-size: 13px;
+  }
