@@ -247,8 +247,8 @@ $(function () {
    		                			var type = layer.getSource().getFeatures()[0].getGeometry().getType().toLowerCase();
    		                			if(type=="point"){
    		                				type="Point";
-   		                			}else if(type=="multilinestring"){
-   		                				type="MultiLineString"
+   		                			}else if(type=="line"){
+   		                				type="Line"
    		                			}
    		                			//画矢量图形
    		                			var draw = new ol.interaction.Draw({
@@ -260,7 +260,7 @@ $(function () {
    		                	         draw.on('drawend',function(e) {
    		                	              //保存编辑数据
    		                	                editObject.feature = e.feature;
-//		                	        	     editObject.source = layer.getSource();
+		                	        	     editObject.source = layer.getSource();
 		                	        	     editObject.editType = "add";
 		                	        	     editObject.layer_name = queryLayerNameByID(obj.id);
 		                	        	     //弹出属性窗口
@@ -295,7 +295,7 @@ $(function () {
    			             	    		 modify.setActive(true);
    			             	    		 //保存数据
 			                        	 editObject.feature = e.selected[0];
-//		                	        	 editObject.source = layer.getSource();
+		                	        	 editObject.source = layer.getSource();
 		                	        	 editObject.editType = "update";
 		                	        	 if(attributeInfoObj != ""){
 		                	        		 attributeInfoObj.close();
@@ -421,6 +421,7 @@ $(function () {
     		//判断是否为父节点
     		var is_parent = $('#powerLayerTree').jstree("is_parent",data.node);
     		if(is_parent){
+    			var childrens = $('#powerLayerTree').jstree("get_children_dom",data.node);
     			for(var i=0;i<childrens.length;i++){
     				var id = childrens[i].id;
     				var nodeLayer =$('#powerLayerTree').jstree().get_node("#"+id);
@@ -1809,6 +1810,18 @@ function saveFeature(){
 		var featureType = editObject.layer_name;
 		var editType = editObject.editType;
 		
+		//获取属性字段的json
+		var attributeJson = getFormJson(featureType.toLowerCase()+"_form");
+		//设置feature对应的属性
+		for(var field in attributeJson){
+			//如果输入内容为空，将其改为null
+			if(attributeJson[field] ==""){
+				editObject.feature.set(field,null);
+			}else{
+				editObject.feature.set(field,attributeJson[field]);
+			}
+		}
+		
 		var feature = editObject.feature.clone();//此处clone 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
 		var geo = feature.getGeometry();
 		// 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
@@ -1834,17 +1847,8 @@ function saveFeature(){
 //	        feature.setGeometryName('SHAPE');
 //	        feature.setGeometry(geo);
 		}
-		//获取属性字段的json
-		var attributeJson = getFormJson(featureType.toLowerCase()+"_form");
-		//设置feature对应的属性
-		for(var field in attributeJson){
-			//如果日期输入框内容为空，将其改为null
-			if(field.indexOf('DATE') > 0 && attributeJson[field] ==""){
-				feature.set(field,null);
-			}else{
-				feature.set(field,attributeJson[field]);
-			}
-		}
+		
+		
 		editWFSFeature([feature],editType,featureType);
 		editObject = {};
 		//关闭属性弹窗
@@ -1855,7 +1859,7 @@ function saveFeature(){
 	 
 }
 
-//将序列化对象转json
+//将序列化对象转成json
 function getFormJson(form) {
 	var o = {};
 	var a = $("#"+form).serializeArray();
@@ -1917,7 +1921,10 @@ function editWFSFeature(features,editType,featureType){
     request.open('POST', 'http://172.16.15.147:8080/geoserver/wfs?service=wfs');
     request.setRequestHeader('Content-Type', 'text/xml');
     request.send(featString);
-     
+    //刷新
+//	editObject.source.refresh();
+	 //重新渲染地图
+    map.render();
 	swal("保存成功",'',"success");
 }
 
