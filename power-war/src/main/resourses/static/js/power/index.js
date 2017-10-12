@@ -2315,6 +2315,7 @@ function LoadJS(src, tableName, callback) {
 	document.getElementsByTagName("head")[0].appendChild(script);
 }
 function res(url, outlink, common, self, callback) {
+	url = url.toLowerCase();
 	//bug1
 	var tableName = "";
 	var findex = url.lastIndexOf("/");
