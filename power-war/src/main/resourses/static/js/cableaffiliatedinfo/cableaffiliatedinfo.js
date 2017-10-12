@@ -52,8 +52,7 @@ function init(){
 		sidePagination: "server", //服务端请求
 		queryParams: queryParams,//分页参数
 		clickToSelect: true,
-		height: 400,
-        //		clickToSelect: true,
+//		height: 400,
         columns: [{
             field: 'C_OPSECTIONID',
             title: '光缆段编号',
@@ -107,16 +106,15 @@ function queryParams(params) {
 };
 
 function operateFormatter(val,row,index){
-    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color:#308374  "><span  class=" glyphicon glyphicon-edit " ><span></button>',
-        '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style="margin-right:15px; background: none;outline:none;color:red"><span  class=" glyphicon glyphicon-trash " ><span></button>'
-        /*'<button class="RoleOfPosition  btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color: #6688b5"><span  class=" glyphicon glyphicon-retweet " ><span></button>',
-        '<button class="RoleOfPosition  btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color: #bf824c"><span  class=" glyphicon glyphicon-record  " ><span></button>'*/
+    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
+        '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
     ].join('');
 }
 
 
 function openCableaffiliatedInfoDailog(url,title){
 	cableaffiliatedInfo = $.jsPanel({
+		headerControls: { controls: "closeonly" },
         id:			 "cableaffiliatedInfo",
         position:    'center',
         theme:       "#308374",

@@ -11,7 +11,6 @@ var measureTooltipElement = ""; //度量工具提示元素.
 var measureTooltip = ""; //测量结果对象
 
 $(function(){
-	showMenu();  //初始化导航
 	initLayerTree();//初始图层列表
 	$('.inactive').click(function(){
 	    if($(this).siblings('ul').css('display')=='none'){
@@ -225,9 +224,7 @@ function initLayerTree(){
 	                                editObject.feature = e.selected[0];
 	                                editObject.source = layer.getSource();
 	                                editObject.editType = "update";
-	                                if (attributeInfoObj != "") {
-	                                    attributeInfoObj.close();
-	                                }
+	                                closeAttributeInfoObj();
 	                                jsPanelAttributeInfo();
 	                            }
 	                        });
@@ -377,7 +374,7 @@ function getLayerTreeData(){
 					    	wrapX: false,
 					        format: new ol.format.GeoJSON(),
 					        url: data[i].C_LAYERURL+'?'+ $.param(wfsParams),
-					        url:'http://172.16.15.147:8080/geoserver/anqing/wfs?'+ $.param(wfsParams),
+//					        url:'http://172.16.15.147:8080/geoserver/anqing/wfs?'+ $.param(wfsParams),
 					        strategy: ol.loadingstrategy.bbox,
 					        projection: 'EPSG:4326'
 					    });
@@ -429,146 +426,8 @@ function getLayerTreeData(){
 	var arr = [powerLayerTree];
 	return arr;
 }
-/**
- * 显示菜单数据
- */
-function showMenu(){
-	  $.ajax({
-	      url:'/module/queryMenuInfo.action',
-	      method: 'post',
-	      data:{
-	         id:'C_ID',
-	         text:'C_MODULENAME',
-	         parentId:'C_PARENT_ID'
-	      },
-	      async:false,
-	      dataType:'json',    
-	      success:function(data){
-	        $("#left_nav1").html("");
-	        $("#left_nav2").html("");
-	    	var left_nav1_menu = '<ul class="nav nav-pills nav-stacked nav-management ">';
-	    	var left_nav2_menu = '<ul class="nav nav-pills nav-stacked ">';
-	        for(var i=0;i<data.length;i++){
-	        	var menuData = data[i];
-	        	if(menuData.id != 24 && menuData.text != "系统管理"){
-	        		var childrenData = menuData.children;
-	        		var imgSrc = menuData.attributes.C_ICONCLS;
-	        		if(imgSrc ==null){
-	        			imgSrc = "";
-	        		}
-	        		left_nav1_menu = left_nav1_menu+'<li><a href="javascript:;" class="inactive"><span class="iconfont '+imgSrc+'" style="margin-right: 5px;"></span>'+menuData.text+'</a><ul style="display: none">';
-	        		left_nav2_menu = left_nav2_menu+'<li><a href="javascript:"><span class="iconfont '+imgSrc+'"></span></a><ul class="foldsecond"><li><a href="javascript:">'+menuData.text+'<span class="iconfont icon-xiala" style="float:right"></span></a><ul class="foldthird" style="display: none">';
-	        		if(childrenData!=undefined){
-	        			for(var j=0;j<childrenData.length;j++){
-	        				var icon = childrenData[j].attributes.C_ICONCLS;
-	        				left_nav1_menu = left_nav1_menu+"<li ><a href='javascript:;' onclick=res('"+childrenData[j].attributes.C_URL+"','"+childrenData[j].attributes.C_ISOUTLINK + "','"+childrenData[j].attributes.C_ISCOMMON + "',this);>"+childrenData[j].text+"</a></li>";
-	        				left_nav2_menu = left_nav2_menu+"<li ><a href='javascript:;' onclick=res('"+childrenData[j].attributes.C_URL+"','"+childrenData[j].attributes.C_ISOUTLINK + "','"+childrenData[j].attributes.C_ISCOMMON + "',this);>"+childrenData[j].text+"</a></li>";
-	        			} 
-	        			left_nav1_menu = left_nav1_menu+"</ul></li>";
-	        			left_nav2_menu = left_nav2_menu+"</ul></li></ul></li>";
-	        		}
-	        	}
-	        }
-	        left_nav1_menu = left_nav1_menu+"</ul>";
-	        $("#left_nav1").append(left_nav1_menu);
-	        left_nav2_menu = left_nav2_menu+"</ul>";
-	        $("#left_nav2").append(left_nav2_menu);
-	      },
-	      error:function(data){
-	        
-	      }
-	  });
-}
 
 
-
-
-function loadPage(url,title,id){
-	LoadJS(url);
-    $(".content-top").find("span").eq(4).text(title);
-	 $.jsPanel({
-	 id:			 id,
-	 //position:    'center',
-	 theme:       "#308374",
-	 contentSize: {width: 'auto', height: 'auto'},
-	 headerTitle: title,
-	 border:      '1px solid #066868',
-	 contentAjax: {
-	 url: url,
-	 autoload: true
-	 },
-	 callback:    function () {
-	 this.content.css("padding", "5px");
-	 }
-	 });
-}
-
-/**
- * JS动态加载
- * @param src js路径
- * @constructor
- */
-function LoadJS(url,callback)
-{
-    var findex = url.lastIndexOf("/");
-    var lindex = url.lastIndexOf(".");
-    var jssrc = url.substr(findex+1,lindex-findex-1);
-    var js = "js/"+jssrc+".js";
-    var css =  document.createElement("link");
-    css.type = "text/css";
-    css.rel = "stylesheet";
-    css.id ="css";
-    if(css.readyState){ // IE
-        css.onreadystatechange = function(){
-            if(css.readyState == "loaded" || css.readyState == "complete"){
-                script.onreadystatechange = null;
-                if (!$.isEmptyObject(callback)){
-                    callback();
-                }
-            }
-        };
-    }else{ // FF, Chrome, Opera, ...
-        css.onload = function(){
-            if (!$.isEmptyObject(callback)){
-                callback();
-            }
-        };
-    }
-    $("#css").remove();
-    css.href = "css/"+jssrc+".css";
-    document.getElementsByTagName("head")[0].appendChild(css);
-
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    if(script.readyState){ // IE
-        script.onreadystatechange = function(){
-            if(script.readyState == "loaded" || script.readyState == "complete"){
-                script.onreadystatechange = null;
-                if (!$.isEmptyObject(callback)){
-                    callback();
-                }else{
-                    try
-                    {init();}
-                    catch(err)
-                    {console.info("异步加载的js中，未定义init方法");	}
-                }
-            }
-        };
-    }else{ // FF, Chrome, Opera, ...
-        script.onload = function(){
-            if (!$.isEmptyObject(callback)){
-                callback();
-            }else{
-                try
-                {init();}
-                catch(err)
-                {console.info("异步加载的js中，未定义init方法");	}
-            }
-        };
-    }
-    script.src = js;
-    document.getElementsByTagName("head")[0].appendChild(script);
-}
 
 //关闭所有
 function closeFunction(){
@@ -881,9 +740,13 @@ function openDialg(url,title,field,dataFeatures){
 	
 	propertyListWindow =$.jsPanel({
 			id:          "openDialg",
+			 maximizedMargin: {
+	             top:    100,
+	             left:   170
+	         },
 	        position:    'center',
 	        theme:       "rebeccapurple",
-	        contentSize: {width:1000, height:535},
+	        contentSize: {width: 'auto', height: 'auto'},
 	        headerTitle: title,
 	        border:      '2px solid rgb(7,102,104)',
 	        contentAjax: {
@@ -910,7 +773,7 @@ function openDialg(url,title,field,dataFeatures){
             				$("#powLayes1").append("<option value='"+node.original.id+"'>"+node.original.text+"</option>");
             			}
 	            		$('#assemblageQueryOptions1').show();
-	            	}else if(field == 'assemblageQuery'){
+	            	}/*else if(field == 'assemblageQuery'){
 	            		$("#powLayes2").empty();
 		            	$("#powLayes2").append("<option value=''>请选择图层</option>");
 	            		for(var i=0;i<childrens.length;i++){
@@ -918,7 +781,7 @@ function openDialg(url,title,field,dataFeatures){
             				$("#powLayes2").append("<option value='"+node.original.id+"'>"+node.original.text+"</option>");
             			}
 	            		$('#assemblageQueryOptions2').show();
-	            	}
+	            	}*/
 	            	$('#search').modal('hide');//隐藏查询模态框
 	            }
 	        },
@@ -1065,27 +928,120 @@ function changeLayer(id){
 		
 	}
 }
+//更改图层下拉框后查询属性
+function changeFilterField(fieldValue){
+	if(fieldValue != "请选择字段"){
+		if(fieldValue.indexOf("(")>0){
+			fieldValue = fieldValue.substring(0,fieldValue.indexOf("("));
+		}
+		var data = queryEnumerateByField(fieldValue);
+		if (data!="" && data!=null) { 
+        	$('#filterFieldInput').hide();
+        	$('#filterFieldSelect').show();
+        	$("#filterFieldSelectValue").empty();
+        	$("#filterFieldSelectValue").append("<option value=''>请选择字段</option>");
+            for(var i=0;i<data.length;i++) {
+            	$('#filterFieldSelectValue').append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
+            }
+           
+        }else{
+        	$('#filterFieldInput').show();
+        	$('#filterFieldSelect').hide();
+        }
+	}
+	
+}
+
+//根据字段结果查询枚举表
+function queryEnumerateByField(field){
+	var data="";
+	$.ajax({
+		url:"/T_ENUMERATE/search.action",
+    	data:{"search.C_TYPE*eq":field,"sort.C_SORTID":'ASC'},//设置请求参数 
+    	type:"post",//请求方法 
+        dataType: "Json",
+        async:false,
+        success: function (data) {
+        	data = data;
+            
+        }
+    })
+    return data;
+}
+
+
 //框选和多边形弹窗中的查询按钮
 function queryFeature(){
 	var id = $('#powLayes1').val();
-	var field = $('#filterField').val();
-	var value = $('#fieldValue').val();
 	if(id ==""){
 		$('#powLayes2').focus();
 		swal('请先选择要查询的图层！','',"warning");
 	}else {
-		if(field !="" && value ==""){
-			$('#fieldValue').focus();
-			swal('请给'+field+'相应的值！','',"warning");
+		//获取过滤字段结果
+		var field = $('#filterField option:selected').text();
+		if(field.indexOf("(")>0){
+			field = field.substring(0,field.indexOf("("));
+		}
+		//根据过滤字段查询后面是文本框还是下拉框，并获取其结果
+		var value="",valueId="";
+		var data = queryEnumerateByField(field);
+		if(data ==""){
+			value = $('#filterFieldInputValue').val();
+			valueId = '#filterFieldInputValue';
+		}else{
+			value = $('#filterFieldSelectValue').val();
+			valueId = '#filterFieldSelectValue';
+		}
+		if(field !="请选择字段" && value ==""){
+			$(valueId).focus();
+			swal('请给过滤字段相应的值！','',"warning");
 		}else{
 //			$(".modal-content").mLoading("show");  
-			var node=$('#powerLayerTree').jstree().get_node(id);
-			var vector_Source = node.original.layer.getSource();  
-	        selectEvent = new ol.interaction.Select();
-			  map.addInteraction(selectEvent);
-	          highlightObj = selectEvent.getFeatures();
+//			var node=$('#powerLayerTree').jstree().get_node(id);
+//			var vector_Source = node.original.layer.getSource();  
+//	        selectEvent = new ol.interaction.Select();
+//			  map.addInteraction(selectEvent);
+//	          highlightObj = selectEvent.getFeatures();
+			var filterValue = value=="" ? "*" : value;
+	          var layer_name = queryLayerNameByID(id);
+	          var featureNS = "http://"+queryWFSURL()+"/pipeline";
+	          var featureRequest = new ol.format.WFS().writeGetFeature({
+	              srsName: 'EPSG:4326',
+//	              featureNS: 'http://172.16.15.147:8080/pipeline',
+	              featureNS: featureNS,
+	              featurePrefix: 'osm',
+	              featureTypes: [layer_name],
+	              outputFormat: 'application/json',
+	              geometryName:"the_geom", 
+	              filter:ol.format.filter.and(
+//	            	  ol.format.filter.equalTo('QSDW', '*'),
+	              		ol.format.filter.bbox('the_geom', boxExtent, 'EPSG:2439'),
+	              		ol.format.filter.like($('#filterField').val(), filterValue)
+	              )
+	          });
+
+	          // 然后发布请求并将接收到数据在表格中显示
+	          var featureUrl = "http://"+queryWFSURL()+"/geoserver/wfs";
+	          fetch(featureUrl, {
+	              method: 'POST',
+	              body: new XMLSerializer().serializeToString(featureRequest)
+	          }).then(function(response) {
+	              return response.json();
+	          }).then(function(json) {
+	              var features = new ol.format.GeoJSON().readFeatures(json);
+	              if(features.length==0){
+	                  $(".modal-content").mLoading("hide");
+		        		swal('没有查到符合条件的数据','',"warning");
+		        		$('#wfsFeatureTable').bootstrapTable('removeAll');
+	              }else{
+	            	    //获取查询图层类型
+			        	var layerType = features[0].id_.split('.');
+			        	displayData(features,layerType[0]);
+			        	$(".modal-content").mLoading("hide");
+	              }
+	          });
 	        
-	        var timingFunction=setInterval(function(){
+	        /*var timingFunction=setInterval(function(){
 	        	var selectedFeatures=[];	
 	        	vector_Source.forEachFeatureInExtent(boxExtent, function(feature) {
 	        		selectedFeatures.push(feature);
@@ -1097,14 +1053,14 @@ function queryFeature(){
 	        		swal('没有查到符合条件的数据','',"warning");
 	        		$('#wfsFeatureTable').bootstrapTable('removeAll');
 		        }else{
-		        	$(".modal-content").mLoading("hide");
 		        	//获取查询图层类型
 		        	var layerType = selectedFeatures[0].id_.split('.');
 		        	displayData(selectedFeatures,layerType[0]);
+		        	$(".modal-content").mLoading("hide");
 		        }
 	        	//关闭定时函数
 	        	clearInterval(timingFunction);
-	        },1000);
+	        },1000);*/
 		}
 	}
 		
@@ -1179,8 +1135,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 	    }];
 		break;
 	case "SD_JUNCTIONBOX":  //'接头盒'
@@ -1232,8 +1188,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 	    }];
 		break;
 	case "SD_COMMUNICATIONPOLETOWER":  //'通信杆塔':
@@ -1285,8 +1241,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 	    }];
 		break;
 	case "SD_PERSONWELL":  //'人井'
@@ -1338,8 +1294,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 	    }];
 		break;
 	case "SD_RESIDUALCABLE": //'余缆'
@@ -1391,8 +1347,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 
 	    }];
 		break;
@@ -1480,8 +1436,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 	    }];
 		break;
 	case "SD_CABLEDUCT": //'电缆管道':
@@ -1547,8 +1503,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 	    }];
 		break;
 	case "SD_CABLETRENCH":  //'电缆沟':
@@ -1614,8 +1570,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 	    }];
 		break;
 	case "SD_CABLETUNNEL":  //'电缆隧道':
@@ -1681,8 +1637,8 @@ function displayData(features,layerType){
 	    	align: 'center',
 	    	valign: 'middle',
 	    	sortable: true,
-	    	events: operateEvents,//给按钮注册事件
-	    	formatter: operateFormatter//表格中增加按钮
+	    	events: operateEventsFeature,//给按钮注册事件
+	    	formatter: operateFormatterFeature//表格中增加按钮
 	    }];
 		break;
 	default:
@@ -1703,12 +1659,40 @@ function displayData(features,layerType){
 		sidePagination: "client", 
 		queryParams: queryParams,//分页参数
 //		clickToSelect: true,
-		height: 480,
+//		height: 480,
 	    columns:columns 
 	});
 }
 //bootstrap table操作按钮 （查询结果表）
-window.operateEvents = {
+window.operateEventsFeature = {
+		'click .RoleOfdDeldte': function (e, value, row, index) {
+            $(this).css("background","#308374")
+            swal({
+          		  title: "确定删除此数据？",
+          		  text: "删除后不可恢复,请谨慎操作!",
+          		  type: "warning",
+          		  showCancelButton: true,
+          		  confirmButtonColor: "#DD6B55",
+          		  confirmButtonText: "确定",
+          		  cancelButtonText: "取消",
+          		  closeOnConfirm: false
+          		},
+          	  function(isConfirm){
+          		  if(isConfirm){
+          			 //获取当前图层
+//          			  var layer = obj.original.layer;
+//           			editWFSFeature(e.target.getFeatures().getArray(),'delete',layer_type);
+//           			layer.getSource().removeFeature(e.target.getFeatures().getArray()[0]);
+//   	                e.target.getFeatures().clear();
+   	                swal("删除成功",'',"success"); 
+          		  }
+          	 });
+        },
+        'click .RoleOfEdit': function (e, value, row, index) {
+        	rowData = row;
+//            $(this).css("background","#308374");
+//            openEquipmentDailog('/equipment/equipmentAdd.action','设备信息');
+        },
          'click .RoleOfPosition': function (e, value, row, index) {
         	//将jspanel弹窗缩成一行
  			propertyListWindow.smallify();
@@ -1737,8 +1721,11 @@ function operationdateFormatter(value) {
 }
 
 //bootstrap table操作按钮 （查询结果表）
-function operateFormatter(val,row,index){  
-    return  ['<button type="button" class="RoleOfPosition btn btn-default  btn-sm" style="margin-right:15px;">定位</button>'
+function operateFormatterFeature(val,row,index){  
+    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
+             '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>',
+             '<button class="RoleOfPosition  btn btn-sm rolebtn" style="background: none;outline:none;color: #bf824c" title="定位"><span  class=" glyphicon glyphicon-record  " ><span></button>'
+             
             ].join('');
       
 }  
@@ -1756,204 +1743,306 @@ function queryParams(params) {
 	}
 };
 
- 
-
-/**
- * JS动态加载
- * @param src js路径
- * @constructor
- */
-function LoadJS(src,tableName,callback){
-	var css =  document.createElement("link");
-	css.type = "text/css";
-	css.rel = "stylesheet";
-	css.id ="css";
-	if(css.readyState){ // IE
-		css.onreadystatechange = function(){
-			if(css.readyState == "loaded" || css.readyState == "complete"){
-				script.onreadystatechange = null;
-				if (!$.isEmptyObject(callback)){
-					callback();
-				}
-			}
-		};
-	}else{ // FF, Chrome, Opera, ...
-		css.onload = function(){
-			if (!$.isEmptyObject(callback)){
-				callback();
-			}
-		};
-	}
-	$("#css").remove();
-	var findex = src.lastIndexOf("/");
-	var lindex = src.lastIndexOf(".");
-	var csssrc = src.substr(findex+1,lindex-findex-1);
-	css.href = "/css/"+csssrc+"/"+csssrc+".css";
-	document.getElementsByTagName("head")[0].appendChild(css);
-	
-	var script = document.createElement("script");
-	script.type = "text/javascript";
-	if(script.readyState){ // IE
-		script.onreadystatechange = function(){
-			if(script.readyState == "loaded" || script.readyState == "complete"){
-				script.onreadystatechange = null;
-				if (!$.isEmptyObject(callback)){
-					callback();
-				}else{
-					try
-						{init(tableName);}
-					catch(err)
-					{console.info("异步加载的js中，未定义init方法");	}
-				}
-			}
-		};
-	}else{ // FF, Chrome, Opera, ...
-		script.onload = function(){
-			if (!$.isEmptyObject(callback)){
-				callback();
-			}else{
-				try
-				{init(tableName);}
-				catch(err)
-				{console.info("异步加载的js中，未定义init方法");	}
-			}
-		};
-	}
-	script.src = src;
-	document.getElementsByTagName("head")[0].appendChild(script);
+//根据id查询图层名称
+function queryLayerNameByID(id){
+	var layer_name="";
+	$.ajax({
+	    //请求地址                               
+	    url:"/T_POWERLAYERS/search.action",
+	    data:{"search.C_ID*eq":id},//设置请求参数 
+	     type:"post",//请求方法
+	    async:false, 
+	    dataType:"json",//设置服务器响应类型
+	   //success：请求成功之后执行的回调函数   data：服务器响应的数据
+	    success:function(data){
+	       if(data!=""){
+	    	   var layer = data[0].C_LAYER;
+	    	   layer_name = layer.substring(layer.indexOf(':')+1);
+	       }
+	    }
+	}); 
+	return layer_name;
 } 
-function res(url,outlink,common,self,callback){
-	var tableName = "";
-	var findex = url.lastIndexOf("/");
-	var lindex = url.lastIndexOf(".");
-	var jssrc = url.substr(findex+1,lindex-findex-1);
-	/*if(common == 1){
-		tableName = jssrc;
-		jssrc = "common";
-	}*/
-	var js = "/js/"+jssrc+"/"+jssrc+".js";
-	if(self != undefined && self !=''){
-		var childNodes = self.parentNode.parentNode.parentNode.childNodes;
-		$('#center-title').html(childNodes[0].innerText+" / "+self.innerHTML);
+
+//根据id查询图层名称
+function queryWFSURL(){
+	var url="";
+	$.ajax({
+	    //请求地址                               
+	    url:"/T_POWERLAYERS/search.action",
+//	    data:{"search.C_ID*eq":id},//设置请求参数 
+	    data:{},//设置请求参数 
+	     type:"post",//请求方法
+	    async:false, 
+	    dataType:"json",//设置服务器响应类型
+	   //success：请求成功之后执行的回调函数   data：服务器响应的数据
+	    success:function(data){
+	       if(data!=""){
+	    	   url = data[0].C_LAYERURL;
+	       }
+	    }
+	}); 
+	var wfsURL = url.split("/")[2];
+	return wfsURL;
+} 
+
+
+//弹出属性字段信息框
+function jsPanelAttributeInfo(){
+	var name = editObject.layer_name.toLowerCase();
+	var url = "/"+name+"/"+name+".action";
+	var title = getLayerNameTitle(editObject.layer_name)+"数据属性";
+	attributeInfoObj = $.jsPanel({
+		id:          "attributeInfo",
+		headerControls: { controls: "closeonly" },
+		position:    {right: 20, top: 100},
+		theme:       "rebeccapurple",
+//		paneltype:   'modal',
+		contentSize: 'auto auto',
+//		contentSize: {width: width, height: height},
+		headerTitle: title,
+		contentAjax: {
+            url: url,
+            autoload: true,
+            done: function (data, textStatus, jqXHR, panel) {
+            	//图层tree根节点
+//            	var root =$('#powerLayerTree').jstree().get_node("#-1");
+//            	var childrens = $('#powerLayerTree').jstree("get_children_dom",root);
+            	if(editObject.editType == "add"){
+            		var select = new ol.interaction.Select();
+            	    var modify = new ol.interaction.Modify({
+            	    	features: select.getFeatures()
+            	    });
+            	    map.addInteraction(select);
+            	    select.on('select', function (e) {
+            	    	if(e.selected[0].id_ != undefined){
+            	    		modify.setActive(false);
+            	    	}else{
+            	    		modify.setActive(true);
+            	    	}
+            	    });
+            	    map.addInteraction(modify);
+      	       }else if(editObject.editType == "update"){
+      	    	 var feature = editObject.feature.values_;
+      	    	 for(var id in feature){
+      	    		 if(id != "geometry" && id != "ID" && document.getElementById(id).type == "select-one"){
+      	    			 $('#'+id).selectpicker('val',feature[id]);
+      	    		 }else{
+      	    			 $('#'+id).val(feature[id]);
+      	    		 }
+      	    	 }
+      	       }
+            }
+        },
+	    callback:    function (panel) {
+//	        this.content.css("padding", "15px");
+	      
+	    }
+	});
+}
+
+//设置featureID
+function setFeatureID(feature,featureType){
+	$.ajax({
+	    //请求地址                               
+	    url:"/SYSTEMCODE/search.action",
+	    data:{"search.TABLENAME*eq":featureType},//设置请求参数 
+	     type:"post",//请求方法
+	    async:false, 
+	    dataType:"json",//设置服务器响应类型
+	   //success：请求成功之后执行的回调函数   data：服务器响应的数据
+	    success:function(data){
+	       if(data!=""){
+	    	   feature.set("ID",data[0].CODE+guid());
+	       }
+	    }
+	});  
+}
+
+
+//生成guid编码
+function guid() {
+    return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+}
+
+//根据数据库表名获取图层中文名
+function getLayerNameTitle(layer_name){
+	var value="";
+	switch (layer_name) {
+	case "SD_STATION": //局站
+		value = "局站";
+		break;
+	case "SD_JUNCTIONBOX":  //'接头盒'
+		value = "接头盒";
+		break;
+	case "SD_COMMUNICATIONPOLETOWER":  //'通信杆塔'
+		value = "通信杆塔";
+		break;
+	case "SD_PERSONWELL":  //'人井'
+		value = "人井";
+		break;
+	case "SD_RESIDUALCABLE": //'余缆'
+		value = "余缆";
+		break;
+	case "SD_OPTICALCABLESECTION":  //'光缆段'
+		value = "光缆段";
+		break;
+	case "SD_CABLEDUCT": //'电缆管道'
+		value = "电缆管道";
+		break;
+	case "SD_CABLETRENCH":  //'电缆沟'
+		value = "电缆沟";
+		break;
+	case "SD_CABLETUNNEL":  //'电缆隧道'
+		value = "电缆隧道";
+		break;
+	default:
+		break;
 	}
-	if(outlink==1){
-		var content = '<iframe scrolling="no" frameborder="0"  src="'+url+'" style="width:100%;height:100%;"></iframe>';  
-	 	$('#center-bottom').html(content);
-	}else{
-		
-		$(".content-top").find("span").eq(4).text(self.innerHTML);
-		 $.jsPanel({
-		    id:self.innerHTML,
-		    //position:    'center',
-		    theme:   "#308374",
-		    contentSize: {width: 'auto', height: 'auto'},
-		    headerTitle: self.innerHTML,
-		    border:      '1px solid #066868',
-		    contentAjax: {
-		   url: url,
-		   autoload: true,
-		    done: function (data, textStatus, jqXHR, panel) {
-         	 LoadJS(js,tableName,callback);
-           }
-		   },
-		   callback:    function () {
-		   this.content.css("padding", "5px");
-		  }
-		 });
-		
+	return value;
+}
+
+//取消保存
+function unSaveFeature(){
+	clearOnMapEvent();//清除主动添加到地图上的事件
+	if(editObject.editType == "add"){
+		var source = editObject.source;
+		source.removeFeature(editObject.feature);
+	}
+	if(editObject !=""){
+		editObject = {};
+	}
+	closeAttributeInfoObj();
+}
+//空间数据属性弹出框
+function closeAttributeInfoObj(){
+	if(attributeInfoObj != ""){
+		attributeInfoObj.close();
+		attributeInfoObj="";
 	}
 }
+//保存feature
+function saveFeature(){
+	$("#attributeInfo").mLoading("show");
+	clearOnMapEvent();//清除主动添加到地图上的事件
+	if(editObject !=""){
+		var featureType = editObject.layer_name;
+		var editType = editObject.editType;
+		
+		//获取属性字段的json
+		var attributeJson = getFormJson(featureType.toLowerCase()+"_form");
+		//设置feature对应的属性
+		for(var field in attributeJson){
+			//如果输入内容为空，将其改为null
+			if(attributeJson[field] ==""){
+				editObject.feature.set(field,null);
+			}else{
+				editObject.feature.set(field,attributeJson[field]);
+			}
+		}
+		
+		var feature = editObject.feature.clone();//此处clone 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
+		var geo = feature.getGeometry();
+		// 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
+		geo.applyTransform(function(flatCoordinates, flatCoordinates2, stride) {
+			for (var j = 0; j < flatCoordinates.length; j += stride) {
+				var y = flatCoordinates[j];
+				var x = flatCoordinates[j + 1];
+				flatCoordinates[j] = x;
+				flatCoordinates[j + 1] = y;
+			}
+		});
+		feature.set('SHAPE',geo);
+		
+		if(editType == "add"){
+			//设置featureID
+			setFeatureID(feature,featureType);
+		}else if(editType == "update"){
+	        feature.setId(editObject.feature.getId()); // 注意ID是必须，通过ID才能找到对应修改的feature
 
-/*var title='test'
-var id='test3213416'
-var url ="/test/test.action"
-function res(url,title,id){
-	LoadJS(url);
-    $(".content-top").find("span").eq(4).text(title);
-	 $.jsPanel({
-	 id:			 id,
-	 //position:    'center',
-	 theme:       "#308374",
-	 contentSize: {width: 'auto', height: 'auto'},
-	 headerTitle: title,
-	 border:      '1px solid #066868',
-	 contentAjax: {
-	 url: url,
-	 autoload: true
-	 },
-	 callback:    function () {
-	 this.content.css("padding", "5px");
-	 }
-	 });
-}
-*/
-/**//**
- * JS动态加载
- * @param src js路径
- * @constructor
- *//*
-function LoadJS(url,callback)
-{
-    var findex = url.lastIndexOf("/");
-    var lindex = url.lastIndexOf(".");
-    var jssrc = url.substr(findex+1,lindex-findex-1);
-    var js = "js/"+jssrc+".js";
-    var css =  document.createElement("link");
-    css.type = "text/css";
-    css.rel = "stylesheet";
-    css.id ="css";
-    if(css.readyState){ // IE
-        css.onreadystatechange = function(){
-            if(css.readyState == "loaded" || css.readyState == "complete"){
-                script.onreadystatechange = null;
-                if (!$.isEmptyObject(callback)){
-                    callback();
-                }
-            }
-        };
-    }else{ // FF, Chrome, Opera, ...
-        css.onload = function(){
-            if (!$.isEmptyObject(callback)){
-                callback();
-            }
-        };
-    }
-    $("#css").remove();
-    css.href = "css/"+jssrc+".css";
-    document.getElementsByTagName("head")[0].appendChild(css);
+	        //此处需要将原有的geometry空间字段删除，否则提交不成功，如果服务空间表空间就是geometry，则不需要处理
+	        feature.unset(feature.getGeometryName());
+	        //设置空间字段名，以wfs服务为准
+//	        feature.setGeometryName('SHAPE');
+//	        feature.setGeometry(geo);
+		}
+		editWFSFeature([feature],editType,featureType);
+		editObject = {};
+		//关闭属性弹窗
+		closeAttributeInfoObj();
+		$("#attributeInfo").mLoading("hide");
 
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    if(script.readyState){ // IE
-        script.onreadystatechange = function(){
-            if(script.readyState == "loaded" || script.readyState == "complete"){
-                script.onreadystatechange = null;
-                if (!$.isEmptyObject(callback)){
-                    callback();
-                }else{
-                    try
-                    {init();}
-                    catch(err)
-                    {console.info("异步加载的js中，未定义init方法");	}
-                }
-            }
-        };
-    }else{ // FF, Chrome, Opera, ...
-        script.onload = function(){
-            if (!$.isEmptyObject(callback)){
-                callback();
-            }else{
-                try
-                {init();}
-                catch(err)
-                {console.info("异步加载的js中，未定义init方法");	}
-            }
-        };
-    }
-    script.src = js;
-    document.getElementsByTagName("head")[0].appendChild(script);
+	}
+	 
 }
 
+//将序列化对象转成json
+function getFormJson(form) {
+	var o = {};
+	var a = $("#"+form).serializeArray();
+	$.each(a, function () {
+		if (o[this.name] !== undefined) {
+			if (!o[this.name].push) {
+			    o[this.name] = [o[this.name]];
+			}
+			o[this.name].push(this.value || '');
+		} else {
+			o[this.name] = this.value || '';
+		}
+	});
+	return o;
+}
+
+//编辑操作
+function editWFSFeature(features,editType,featureType){
+	var WFSTSerializer =  new ol.format.WFS({
+        featureNS: "http://172.16.15.147:8080/anqing",
+        featureType: "anqing:"+featureType,
+        version:'2.0.0'
+    });
+    var featObject;
+    if(editType == 'add'){
+        featObject= WFSTSerializer.writeTransaction(features,
+                null, null, {
+        	    featureNS: 'http://172.16.15.147:8080/anqing',//为创建工作区时的命名空间URI
+                featurePrefix: "anqing",
+                version:'2.0.0',
+                featureType: featureType, //feature对应图层
+                srsName: 'EPSG:4326'// 坐标系
+          });
+    }else if(editType == 'update') {
+        featObject = WFSTSerializer.writeTransaction( null,features, null, {
+                    featureNS: 'http://172.16.15.147:8080/anqing',//为创建工作区时的命名空间URI
+                    featurePrefix: "anqing",//作为前缀
+                    featureType: featureType,
+                    version:'2.0.0',
+                    srsName: 'EPSG:4326'// 坐标系
+                });
+   }else if(editType == 'delete'){
+        featObject= WFSTSerializer.writeTransaction(
+                null,null,features, {
+                    featureNS: 'http://172.16.15.147:8080/anqing',//为创建工作区时的命名空间URI
+                    featurePrefix: "anqing",//作为前缀
+                    featureType: featureType, //feature对应图层
+                    version:'2.0.0',
+                    srsName: 'EPSG:4326'// 坐标系
+                });
+    }
 
 
-}*/
+    var serializer = new XMLSerializer();
+    // 将参数转换为xml格式数据
+    var featString = serializer.serializeToString(featObject);
+    var request = new XMLHttpRequest();
+    request.open('POST', 'http://172.16.15.147:8080/geoserver/wfs?service=wfs');
+    request.setRequestHeader('Content-Type', 'text/xml');
+    request.send(featString);
+    //刷新
+//	editObject.source.refresh();
+	 //重新渲染地图
+    map.render();
+	swal("保存成功",'',"success");
+}

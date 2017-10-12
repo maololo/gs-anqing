@@ -744,10 +744,10 @@ function boxQuery(){
 }
 
 //组合查询
-/*function assemblageQuery(){
+function assemblageQuery(){
 	closeFunction();
 	openDialg("/attributeList/attributeList.action","查询结果","assemblageQuery");
-}*/
+}
 
 //多边形查询
 function polygonQuery(){
@@ -1024,7 +1024,7 @@ function queryFeature(){
 
 
 //组合查询
-/*function combinationQuery(){
+function combinationQuery(){
 	var id=$('#powLayes2').val();
 	if(id ==""){
 		$('#powLayes2').focus();
@@ -1036,7 +1036,7 @@ function queryFeature(){
 		queryfeature(layer_name);
 	}
 		$(".modal-body").mLoading("hide");
-}*/
+}
 
 //根据id查询图层名称
 function queryLayerNameByID(id){
@@ -1060,7 +1060,7 @@ function queryLayerNameByID(id){
 }
 
 //根据图层及范围查询要素
-/*function queryfeature(layer_name,extent){
+function queryfeature(layer_name,extent){
 	if(extent=="" || extent==undefined){
 		extent=[-180.0,-90.0,180.0,90.0];
 	}
@@ -1104,7 +1104,7 @@ function queryLayerNameByID(id){
         	displayData(features);
         }
     });
-}*/
+}
 //将数据在table中显示
 function displayData(features,layerType){
 	//销毁查询结果 bootstrapTable

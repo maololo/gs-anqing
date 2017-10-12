@@ -55,8 +55,7 @@ function init(){
 		sidePagination: "server", //服务端请求
 		queryParams: queryParams,//分页参数
 		clickToSelect: true,
-		height: 400,
-        //		clickToSelect: true,
+//		height: 400,
         columns: [{
             field: 'C_EQUIPMENTID',
             title: '设备编号',
@@ -139,16 +138,15 @@ function queryParams(params) {
 };
 
 function operateFormatter(val,row,index){
-    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color:#308374  "><span  class=" glyphicon glyphicon-edit " ><span></button>',
-        '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style="margin-right:15px; background: none;outline:none;color:red"><span  class=" glyphicon glyphicon-trash " ><span></button>'
-        /*'<button class="RoleOfPosition  btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color: #6688b5"><span  class=" glyphicon glyphicon-retweet " ><span></button>',
-        '<button class="RoleOfPosition  btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color: #bf824c"><span  class=" glyphicon glyphicon-record  " ><span></button>'*/
+    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
+        '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
     ].join('');
 }
 
 function openLightsplitterinfoDailog(url,title){
 	lightsplitterinfo = $.jsPanel({
         id:			 "lightsplitterinfo",
+        headerControls: { controls: "closeonly" },
         position:    'center',
         theme:       "#308374",
         contentSize: {width: 'auto', height: 'auto'},
