@@ -1,0 +1,41 @@
+ 
+
+<div style="min-width: 350px;">
+    <form class="form-horizontal" style="margin-top: 20px;" id="lightsplitterinfo_form">
+        
+        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label" >设备编号:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="C_EQUIPMENTID" id="C_EQUIPMENTID"/>
+                                <input type="hidden" name="C_ID" id="C_ID"/>
+                            </div>
+                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">端子编号:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="C_TERMINALNUM" id="C_TERMINALNUM"/>
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label" >分光器端子类型:</label>
+                            <div class="col-sm-4" >
+                                <select id="C_UPORDOWN" name="C_UPORDOWN" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">连接的设备编号:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="C_TOEQUIPMENTID" id="C_TOEQUIPMENTID"/>
+                            </div>
+                            
+				            
+                        </div>
+        <div class="form-group">
+            <div class="text-center">
+                <button class="btn" type="button" style="background:#308374;color: white" onclick="submitLightsplitterinfo()">保存</button>
+                <button class="btn " type="button" style="background:#308374;color: white" onclick="closeLightsplitterinfo()">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+

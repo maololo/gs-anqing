@@ -347,7 +347,7 @@ function getLayerTreeData(){
 	$.ajax({
     	//请求地址                               
        url:"/T_POWERLAYERS/search.action",
-	   data:{"sort.C_ID":'ASC'},//设置请求参数 
+	   data:{"sort.C_ID":'DESC'},//设置请求参数 
 	   type:"post",//请求方法
 	   async:false, 
 	   dataType:"json",//设置服务器响应类型
@@ -356,6 +356,12 @@ function getLayerTreeData(){
 			var bounds=[115.902731511993,39.5010013847293,117.174121256339,40.0926220582295];
 			var layers = [];
 			var treeId=0;
+			var gaodeMapLayer = new ol.layer.Tile({  
+                source: new ol.source.XYZ({  
+                    url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'  
+                })  
+            });
+			layers.push(gaodeMapLayer);
 			for(var i in data){
 				//只加载默认图层在地图上
 				if(data[i].C_ISDEFAULTLAYER=="1" && data[i].C_ISSHOW=="1"){
@@ -377,6 +383,7 @@ function getLayerTreeData(){
 					    });
 					    var layer = new ol.layer.Vector({
 					        source: vector_Source
+					        
 					    });
 					layers.push(layer);
 					treeNodes[treeId] = {text:data[i].C_LAYERNAME,id:data[i].C_ID,layer:layer,bounds:data[i].C_BBOX,icon:"glyphicon glyphicon-file",state:{checked:true}}
@@ -401,7 +408,10 @@ function getLayerTreeData(){
 			    projection: 'EPSG:4326',
 			    layers:layers,
 			    view: new ol.View({
-			        projection: projection
+			        projection: projection,
+			        // 限制地图缩放最大级别为14，最小级别为10
+	                minZoom: 6,
+	                maxZoom: 35
 			    })
 			});
 			//禁用双击地图放大功能
@@ -918,7 +928,7 @@ function openDialg(url,title,field,dataFeatures){
 	    });
 	}
 //框选、多边形查询
-function boxQuery(type){
+function boxQuery(){
 	closeFunction();
   	drawGeometry = new ol.interaction.Draw({
         source:new ol.source.Vector(),
@@ -1023,6 +1033,38 @@ function polygonQuery(){
             ol.Observable.unByKey(listener);
           }, this);
 }
+
+//更改图层下拉框后查询属性
+function changeLayer(id){
+	 clearHighlightObj();
+	if(id != ""){
+		var node=$('#powerLayerTree').jstree().get_node(id);
+		var vector_Source = node.original.layer.getSource();
+		$('#filterFieldOptions').show();
+		var feature = vector_Source.getFeatures()[0];
+		//获取查询图层类型
+    	var layerTable = feature.id_.split('.');
+    	$("#filterField").empty();
+		$.ajax({
+	    	//请求地址                               
+	       url:"/"+layerTable[0]+"/querySpatialTableField.action",
+		   data:{},//设置请求参数 
+		   type:"post",//请求方法
+		   async:false, 
+		   dataType:"json",//设置服务器响应类型
+		  //success：请求成功之后执行的回调函数   data：服务器响应的数据
+		   success:function(data){
+			   $("#filterField").append("<option value=''>请选择字段</option>");
+			   for(var i in data){
+				   if(data[i].FIELD !=null && data[i].VALUE !="ID" && data[i].VALUE !="OBJECTID"){
+           				$("#filterField").append("<option value='"+data[i].VALUE+"'>"+data[i].FIELD+"</option>");
+				   }
+			   }
+		   }
+	   });
+		
+	}
+}
 //框选和多边形弹窗中的查询按钮
 function queryFeature(){
 	var id = $('#powLayes1').val();
@@ -1036,7 +1078,7 @@ function queryFeature(){
 			$('#fieldValue').focus();
 			swal('请给'+field+'相应的值！','',"warning");
 		}else{
-			$(".modal-content").mLoading("show");  
+//			$(".modal-content").mLoading("show");  
 			var node=$('#powerLayerTree').jstree().get_node(id);
 			var vector_Source = node.original.layer.getSource();  
 	        selectEvent = new ol.interaction.Select();
@@ -1713,3 +1755,205 @@ function queryParams(params) {
 //		"search.C_HAPPENDTIME*eq":$("#HAPPENDTIME").val()
 	}
 };
+
+ 
+
+/**
+ * JS动态加载
+ * @param src js路径
+ * @constructor
+ */
+function LoadJS(src,tableName,callback){
+	var css =  document.createElement("link");
+	css.type = "text/css";
+	css.rel = "stylesheet";
+	css.id ="css";
+	if(css.readyState){ // IE
+		css.onreadystatechange = function(){
+			if(css.readyState == "loaded" || css.readyState == "complete"){
+				script.onreadystatechange = null;
+				if (!$.isEmptyObject(callback)){
+					callback();
+				}
+			}
+		};
+	}else{ // FF, Chrome, Opera, ...
+		css.onload = function(){
+			if (!$.isEmptyObject(callback)){
+				callback();
+			}
+		};
+	}
+	$("#css").remove();
+	var findex = src.lastIndexOf("/");
+	var lindex = src.lastIndexOf(".");
+	var csssrc = src.substr(findex+1,lindex-findex-1);
+	css.href = "/css/"+csssrc+"/"+csssrc+".css";
+	document.getElementsByTagName("head")[0].appendChild(css);
+	
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	if(script.readyState){ // IE
+		script.onreadystatechange = function(){
+			if(script.readyState == "loaded" || script.readyState == "complete"){
+				script.onreadystatechange = null;
+				if (!$.isEmptyObject(callback)){
+					callback();
+				}else{
+					try
+						{init(tableName);}
+					catch(err)
+					{console.info("异步加载的js中，未定义init方法");	}
+				}
+			}
+		};
+	}else{ // FF, Chrome, Opera, ...
+		script.onload = function(){
+			if (!$.isEmptyObject(callback)){
+				callback();
+			}else{
+				try
+				{init(tableName);}
+				catch(err)
+				{console.info("异步加载的js中，未定义init方法");	}
+			}
+		};
+	}
+	script.src = src;
+	document.getElementsByTagName("head")[0].appendChild(script);
+} 
+function res(url,outlink,common,self,callback){
+	var tableName = "";
+	var findex = url.lastIndexOf("/");
+	var lindex = url.lastIndexOf(".");
+	var jssrc = url.substr(findex+1,lindex-findex-1);
+	/*if(common == 1){
+		tableName = jssrc;
+		jssrc = "common";
+	}*/
+	var js = "/js/"+jssrc+"/"+jssrc+".js";
+	if(self != undefined && self !=''){
+		var childNodes = self.parentNode.parentNode.parentNode.childNodes;
+		$('#center-title').html(childNodes[0].innerText+" / "+self.innerHTML);
+	}
+	if(outlink==1){
+		var content = '<iframe scrolling="no" frameborder="0"  src="'+url+'" style="width:100%;height:100%;"></iframe>';  
+	 	$('#center-bottom').html(content);
+	}else{
+		
+		$(".content-top").find("span").eq(4).text(self.innerHTML);
+		 $.jsPanel({
+		    id:self.innerHTML,
+		    //position:    'center',
+		    theme:   "#308374",
+		    contentSize: {width: 'auto', height: 'auto'},
+		    headerTitle: self.innerHTML,
+		    border:      '1px solid #066868',
+		    contentAjax: {
+		   url: url,
+		   autoload: true,
+		    done: function (data, textStatus, jqXHR, panel) {
+         	 LoadJS(js,tableName,callback);
+           }
+		   },
+		   callback:    function () {
+		   this.content.css("padding", "5px");
+		  }
+		 });
+		
+	}
+}
+
+/*var title='test'
+var id='test3213416'
+var url ="/test/test.action"
+function res(url,title,id){
+	LoadJS(url);
+    $(".content-top").find("span").eq(4).text(title);
+	 $.jsPanel({
+	 id:			 id,
+	 //position:    'center',
+	 theme:       "#308374",
+	 contentSize: {width: 'auto', height: 'auto'},
+	 headerTitle: title,
+	 border:      '1px solid #066868',
+	 contentAjax: {
+	 url: url,
+	 autoload: true
+	 },
+	 callback:    function () {
+	 this.content.css("padding", "5px");
+	 }
+	 });
+}
+*/
+/**//**
+ * JS动态加载
+ * @param src js路径
+ * @constructor
+ *//*
+function LoadJS(url,callback)
+{
+    var findex = url.lastIndexOf("/");
+    var lindex = url.lastIndexOf(".");
+    var jssrc = url.substr(findex+1,lindex-findex-1);
+    var js = "js/"+jssrc+".js";
+    var css =  document.createElement("link");
+    css.type = "text/css";
+    css.rel = "stylesheet";
+    css.id ="css";
+    if(css.readyState){ // IE
+        css.onreadystatechange = function(){
+            if(css.readyState == "loaded" || css.readyState == "complete"){
+                script.onreadystatechange = null;
+                if (!$.isEmptyObject(callback)){
+                    callback();
+                }
+            }
+        };
+    }else{ // FF, Chrome, Opera, ...
+        css.onload = function(){
+            if (!$.isEmptyObject(callback)){
+                callback();
+            }
+        };
+    }
+    $("#css").remove();
+    css.href = "css/"+jssrc+".css";
+    document.getElementsByTagName("head")[0].appendChild(css);
+
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    if(script.readyState){ // IE
+        script.onreadystatechange = function(){
+            if(script.readyState == "loaded" || script.readyState == "complete"){
+                script.onreadystatechange = null;
+                if (!$.isEmptyObject(callback)){
+                    callback();
+                }else{
+                    try
+                    {init();}
+                    catch(err)
+                    {console.info("异步加载的js中，未定义init方法");	}
+                }
+            }
+        };
+    }else{ // FF, Chrome, Opera, ...
+        script.onload = function(){
+            if (!$.isEmptyObject(callback)){
+                callback();
+            }else{
+                try
+                {init();}
+                catch(err)
+                {console.info("异步加载的js中，未定义init方法");	}
+            }
+        };
+    }
+    script.src = js;
+    document.getElementsByTagName("head")[0].appendChild(script);
+}
+
+
+
+}*/

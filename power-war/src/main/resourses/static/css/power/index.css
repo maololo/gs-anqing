@@ -91,6 +91,10 @@ a:focus, a:hover {
 	background:#01675e;
 }
 /*头部结束*/
+.sweet-alert {
+  left: 50%;
+  top: 50%;
+}
 /*左侧导航栏开始*/
 .left_nav{
     width: 160px;

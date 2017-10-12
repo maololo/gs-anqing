@@ -147,7 +147,7 @@ function LoadJS(src,tableName,callback)
 	}
 	script.src = src;
 	document.getElementsByTagName("head")[0].appendChild(script);
-}
+} 
 function res(url,outlink,common,self,callback){
 	var tableName = "";
 	var findex = url.lastIndexOf("/");
