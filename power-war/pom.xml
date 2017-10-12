@@ -9,7 +9,7 @@
   </parent>
   <artifactId>power-war</artifactId>
   <name>power-war</name>
-  <properties>
+  <properties><!-- 测试分支备份 -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
