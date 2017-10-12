@@ -1823,7 +1823,6 @@ function LoadJS(src,tableName,callback){
 	document.getElementsByTagName("head")[0].appendChild(script);
 } 
 function res(url,outlink,common,self,callback){
-	url=url.toLocaleLowerCase();
 	var tableName = "";
 	var findex = url.lastIndexOf("/");
 	var lindex = url.lastIndexOf(".");
