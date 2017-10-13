@@ -1,0 +1,99 @@
+<script type="text/javascript">
+initSelectpicker('光缆类型',"TYPE");
+initSelectpicker('电压等级','VOLTAGECLASS');
+initSelectpicker('敷设方式','LAYWAY');
+
+function initSelectpicker(val,id){
+	$.ajax({
+		url:"/T_ENUMERATE/search.action",
+    	data:{"search.C_TYPE*eq":val,"sort.C_SORTID":'ASC'},//设置请求参数 
+    	type:"post",//请求方法 
+        dataType: "Json",
+        async:false,
+        success: function (data) {
+            if (data!="" ||data!=null) {               
+                for(var i=0;i<data.length;i++) {
+                	$('#'+id+'.selectpicker').append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
+                }
+                $("#"+id).selectpicker('refresh');
+               
+            }
+        }
+    })
+}
+</script>
+<div class="modal-body" style="padding: 5px;width:500px;">
+                <div style="background: #ebedec;">
+                    <form class="form-horizontal" style="padding: 10px" id="sd_opticalcablesection_form">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label" >编号:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="ID" id="ID"/>
+                            </div>
+                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">名称:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="NAME" id="NAME"/>
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+				            <label for="inputEmail3" class="col-sm-2 control-label" >光缆类型:</label>
+                            <div class="col-sm-4" >
+                                <select id="TYPE" name="TYPE" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">芯数:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="CORENUM" id="CORENUM"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label" >线路电压等级:</label>
+                            <div class="col-sm-4" >
+                                <select id="VOLTAGECLASS" name="VOLTAGECLASS" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">长度:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="LENGTH" id="LENGTH"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label" >敷设方式:</label>
+                            <div class="col-sm-4" >
+                                <select id="LAYWAY" name="LAYWAY" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label" >起点:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="STARTID" id="STARTID"/>
+                            </div>
+                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">终点:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="ENDID" id="ENDID"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label" >资产单位:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="ASSETUNIT" id="ASSETUNIT"/>
+                            </div>
+                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">维护单位:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="MAINTENANCEUNIT" id="MAINTENANCEUNIT"/>
+                            </div>
+                            
+                        </div>
+                        <div class="text-center">
+                            <button class="text-but" type="button"  onclick="saveFeature()">保存</button>
+                            <button class="text-but"  type="button" onclick="unSaveFeature()">关闭</button>
+                        </div>
+       </form>
+    </div>
+ </div>
+ 

@@ -171,8 +171,8 @@ function initLayerTree(){
 	                        var type = layer.getSource().getFeatures()[0].getGeometry().getType().toLowerCase();
 	                        if (type == "point") {
 	                            type = "Point";
-	                        } else if (type == "line") {
-	                            type = "Line"
+	                        } else if (type == "linestring") {
+	                            type = "LineString"
 	                        }
 	                        //画矢量图形
 	                        var draw = new ol.interaction.Draw({
@@ -216,9 +216,11 @@ function initLayerTree(){
 	                        map.addInteraction(select);
 	                        select.on('select',
 	                        function(e) {
-	                            if (e.selected[0] != undefined && e.selected[0].id_.split(".")[0] != editObject.layer_name) {
-	                                modify.setActive(false);
-	                            } else {
+	                            if (e.selected[0] == undefined ) {
+	                            	modify.setActive(true);
+	                            } else if(e.selected[0].id_.split(".")[0] != editObject.layer_name){
+	                            	modify.setActive(false);
+	                            }else {
 	                                modify.setActive(true);
 	                                //保存数据
 	                                editObject.feature = e.selected[0];
@@ -945,8 +947,8 @@ function changeFilterField(fieldValue){
             }
            
         }else{
-        	$('#filterFieldInput').show();
         	$('#filterFieldSelect').hide();
+        	$('#filterFieldInput').show();
         }
 	}
 	
@@ -954,7 +956,7 @@ function changeFilterField(fieldValue){
 
 //根据字段结果查询枚举表
 function queryEnumerateByField(field){
-	var data="";
+	var fieldData="";
 	$.ajax({
 		url:"/T_ENUMERATE/search.action",
     	data:{"search.C_TYPE*eq":field,"sort.C_SORTID":'ASC'},//设置请求参数 
@@ -962,11 +964,11 @@ function queryEnumerateByField(field){
         dataType: "Json",
         async:false,
         success: function (data) {
-        	data = data;
+        	fieldData = data;
             
         }
     })
-    return data;
+    return fieldData;
 }
 
 
@@ -1931,6 +1933,7 @@ function saveFeature(){
 	if(editObject !=""){
 		var featureType = editObject.layer_name;
 		var editType = editObject.editType;
+		var fea = editObject.feature;
 		
 		//获取属性字段的json
 		var attributeJson = getFormJson(featureType.toLowerCase()+"_form");
@@ -1938,13 +1941,13 @@ function saveFeature(){
 		for(var field in attributeJson){
 			//如果输入内容为空，将其改为null
 			if(attributeJson[field] ==""){
-				editObject.feature.set(field,null);
+				fea.set(field,null);
 			}else{
-				editObject.feature.set(field,attributeJson[field]);
+				fea.set(field,attributeJson[field]);
 			}
 		}
 		
-		var feature = editObject.feature.clone();//此处clone 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
+		var feature = fea.clone();//此处clone 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
 		var geo = feature.getGeometry();
 		// 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
 		geo.applyTransform(function(flatCoordinates, flatCoordinates2, stride) {
@@ -1955,7 +1958,6 @@ function saveFeature(){
 				flatCoordinates[j + 1] = y;
 			}
 		});
-		feature.set('SHAPE',geo);
 		
 		if(editType == "add"){
 			//设置featureID
@@ -1969,6 +1971,7 @@ function saveFeature(){
 //	        feature.setGeometryName('SHAPE');
 //	        feature.setGeometry(geo);
 		}
+		feature.set('SHAPE',geo);
 		editWFSFeature([feature],editType,featureType);
 		editObject = {};
 		//关闭属性弹窗
@@ -2045,4 +2048,13 @@ function editWFSFeature(features,editType,featureType){
 	 //重新渲染地图
     map.render();
 	swal("保存成功",'',"success");
+}
+
+
+
+function  test(){
+	map.getView().setZoom(30);
+	map.getView().setCenter([114.31,30.52]);
+//	map.getView().setCenter(ol.proj.fromLonLat([-72.980624870461128, 48.161307640513321]));
+	
 }
