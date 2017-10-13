@@ -34,9 +34,10 @@ function showMenu(){
 	        		left_nav2_menu = left_nav2_menu+'<li><a href="javascript:"><span class="iconfont '+imgSrc+'"></span></a><ul class="foldsecond"><li><a href="javascript:">'+menuData.text+'<span class="iconfont icon-xiala" style="float:right"></span></a><ul class="foldthird" style="display: none">';
 	        		if(childrenData!=undefined){
 	        			for(var j=0;j<childrenData.length;j++){
-	        				var icon = childrenData[j].attributes.C_ICONCLS;
-	        				left_nav1_menu = left_nav1_menu+"<li ><a href='javascript:;' onclick=res('"+childrenData[j].attributes.C_URL+"','"+childrenData[j].attributes.C_ISOUTLINK + "','"+childrenData[j].attributes.C_ISCOMMON + "',this);>"+childrenData[j].text+"</a></li>";
-	        				left_nav2_menu = left_nav2_menu+"<li ><a href='javascript:;' onclick=res('"+childrenData[j].attributes.C_URL+"','"+childrenData[j].attributes.C_ISOUTLINK + "','"+childrenData[j].attributes.C_ISCOMMON + "',this);>"+childrenData[j].text+"</a></li>";
+	        				if(childrenData[j].id!="51"){
+	        					left_nav1_menu = left_nav1_menu+"<li ><a href='javascript:;' onclick=res('"+childrenData[j].attributes.C_URL+"','"+childrenData[j].attributes.C_ISOUTLINK + "','"+childrenData[j].attributes.C_ISCOMMON + "',this);>"+childrenData[j].text+"</a></li>";
+	        					left_nav2_menu = left_nav2_menu+"<li ><a href='javascript:;' onclick=res('"+childrenData[j].attributes.C_URL+"','"+childrenData[j].attributes.C_ISOUTLINK + "','"+childrenData[j].attributes.C_ISCOMMON + "',this);>"+childrenData[j].text+"</a></li>";
+	        				}
 	        			} 
 	        			left_nav1_menu = left_nav1_menu+"</ul></li>";
 	        			left_nav2_menu = left_nav2_menu+"</ul></li></ul></li>";

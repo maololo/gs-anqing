@@ -459,18 +459,19 @@ function getLayerTreeData() {
 	var treeNodes = new Array();
 	$
 			.ajax({
-				// 请求地址
+				//请求地址                               
 				url : "/T_POWERLAYERS/search.action",
 				data : {
 					"sort.C_ID" : 'DESC'
-				},// 设置请求参数
-				type : "post",// 请求方法
+				},//设置请求参数 
+				type : "post",//请求方法
 				async : false,
-				dataType : "json",// 设置服务器响应类型
-				// success：请求成功之后执行的回调函数 data：服务器响应的数据
+				dataType : "json",//设置服务器响应类型
+				//success：请求成功之后执行的回调函数   data：服务器响应的数据
 				success : function(data) {
-					var bounds = [ 115.902731511993, 39.5010013847293,
-							117.174121256339, 40.0926220582295 ];
+					var bounds=[115.902731511993,39.5010013847293,117.174121256339,40.0926220582295];
+//					var bounds = [ 117.044453027202, 30.5066687301743,
+//							117.110272065313, 30.5599371735666 ];
 					var layers = [];
 					var treeId = 0;
 					var gaodeMapLayer = new ol.layer.Tile(
@@ -482,32 +483,202 @@ function getLayerTreeData() {
 							});
 					layers.push(gaodeMapLayer);
 					for ( var i in data) {
-						// 只加载默认图层在地图上
+						//只加载默认图层在地图上
 						if (data[i].C_ISDEFAULTLAYER == "1"
 								&& data[i].C_ISSHOW == "1") {
-							// bounds = data[i].C_BBOX;
+							//					bounds = data[i].C_BBOX;
 							var wfsParams = {
 								service : 'WFS',
 								version : '1.1.0',
 								request : 'GetFeature',
-								typeName : data[i].C_LAYER, // 图层名称，可以是单个或多个
-								outputFormat : 'application/json'// 'text/javascript',
-																	// //重点，不要改变
+								typeName : data[i].C_LAYER, //图层名称，可以是单个或多个
+								outputFormat : 'application/json'//'text/javascript',  //重点，不要改变
 							};
-							var vector_Source = new ol.source.Vector({
-								wrapX : false,
-								format : new ol.format.GeoJSON(),
-								url : data[i].C_LAYERURL + '?'
-										+ $.param(wfsParams),
-								// url:'http://172.16.15.147:8080/geoserver/anqing/wfs?'+
-								// $.param(wfsParams),
-								strategy : ol.loadingstrategy.bbox,
-								projection : 'EPSG:4326'
-							});
-							var layer = new ol.layer.Vector({
-								source : vector_Source
+							var vector_Source = new ol.source.Vector(
+									{
+										wrapX : false,
+										format : new ol.format.GeoJSON(),
+										url : data[i].C_LAYERURL + '?'
+												+ $.param(wfsParams),
+//										url : 'http://172.16.15.147:8080/geoserver/anqing/wfs?'
+//												+ $.param(wfsParams),
+										strategy : ol.loadingstrategy.bbox,
+										projection : 'EPSG:4326'
+									});
+							var scale = 1.8;
+							var imgHeight = 18;
+							var layerStyle = null;
+							if (data[i].C_LAYERNAME == "接头盒")
+								layerStyle = new ol.style.Style({
+									image : new ol.style.Icon({
+										src : '../../images/接头盒.svg',
+										scale : scale
+									})
+								});
+							else if (data[i].C_LAYERNAME == "通信杆塔")
+								layerStyle = new ol.style.Style({
+									image : new ol.style.Icon({
+										src : '../../images/通信杆塔.svg',
+										scale : scale
+									})
+								});
+							else if (data[i].C_LAYERNAME == "人井")
+								layerStyle = new ol.style.Style({
+									image : new ol.style.Icon({
+										src : '../../images/人井.svg',
+										scale : scale
+									})
+								});
+							else if (data[i].C_LAYERNAME == "余缆")
+								layerStyle = new ol.style.Style({
+									image : new ol.style.Icon({
+										src : '../../images/余缆.svg',
+										scale : scale
+									})
+								});
+							var layer;
+							if (layerStyle == null) {
+								if (data[i].C_LAYERNAME == "局站")
+									layer = new ol.layer.Vector(
+											{
+												source : vector_Source,
+												style : function(feature) {
+													if (feature.get('TYPE') == '机房大楼')
+														return new ol.style.Style(
+																{
+																	image : new ol.style.Icon(
+																			{
+																				src : '../../images/机房.svg',
+																				scale : scale
+																			}),
+																	text : new ol.style.Text(
+																			{
+																				text : feature
+																						.get('NAME'),
+																				offsetY : Math
+																						.sqrt(imgHeight
+																								* scale) / 2 + 20,
+																				font : '20px Calibri,sans-serif', // 字体与大小
+																				fill : new ol.style.Fill(
+																						{ // 文字填充色
+																							color : '#0000ff'
+																						})
+																			})
+																});
+													else if (feature
+															.get('TYPE') == '光交箱')
+														return new ol.style.Style(
+																{
+																	image : new ol.style.Icon(
+																			{
+																				src : '../../images/光交箱.svg',
+																				scale : scale
+																			}),
+																	text : new ol.style.Text(
+																			{
+																				text : feature
+																						.get('NAME'),
+																				offsetY : Math
+																						.sqrt(imgHeight
+																								* scale) / 2 + 20,
+																				font : '20px Calibri,sans-serif', // 字体与大小
+																				fill : new ol.style.Fill(
+																						{ // 文字填充色
+																							color : '#0000ff'
+																						})
+																			})
+																});
+													else
+														return new ol.style.Style(
+																{
+																	image : new ol.style.Icon(
+																			{
+																				src : '../../images/变电站.svg',
+																				scale : scale
+																			}),
+																	text : new ol.style.Text(
+																			{
+																				text : feature
+																						.get('NAME'),
+																				offsetY : Math
+																						.sqrt(imgHeight
+																								* scale) / 2 + 20,
+																				font : '20px Calibri,sans-serif', // 字体与大小
+																				fill : new ol.style.Fill(
+																						{ // 文字填充色
+																							color : '#0000ff'
+																						})
+																			})
+																});
+												}
+											});
+								else if (data[i].C_LAYERNAME == "光缆段") {
+									layer = new ol.layer.Vector(
+											{
+												source : vector_Source,
+												style : function(feature) {
+													return new ol.style.Style(
+															{
+																fill : new ol.style.Fill(
+																		{
+																			color : 'rgba(0, 0, 0, 1)'
+																		}),
+																stroke : new ol.style.Stroke(
+																		{
+																			color : 'rgba(0, 0, 0, 1)',
+																			width : feature
+																					.get('CORENUM') == null ? 1
+																					: feature
+																							.get('CORENUM') / 12
+																		})
+															});
 
-							});
+												}
+											});
+									layer.setTextPathStyle(
+													function(feature) {
+														return [ new ol.style.Style(
+																{
+																	text : new ol.style.TextPath(
+																			{
+																				text : feature
+																						.get('TYPE')
+																						+ '/'
+																						+ feature
+																								.get('CORENUM')
+																						+ '芯/'
+																						+ feature
+																								.get('LENGTH')
+																						+ '米',
+																				font : "16px Calibri,sans-serif",
+																				fill : new ol.style.Fill(
+																						{
+																							color : "#0000ff"
+																						}),
+																				stroke : new ol.style.Stroke(
+																						{
+																							color : "#0000ff",
+																							width : 0
+																						}),
+																				textBaseline : 'bottom',
+																				textAlign : 'center',
+																				rotateWithView : true,
+																				textOverflow : 'visible',
+																				minWidth : 0
+																			}),
+																	geometry : null
+																}) ]
+													}, 0.00005);
+
+								} else
+									layer = new ol.layer.Vector({
+										source : vector_Source
+									});
+							} else
+								layer = new ol.layer.Vector({
+									source : vector_Source,
+									style : layerStyle
+								});
 							layers.push(layer);
 							treeNodes[treeId] = {
 								text : data[i].C_LAYERNAME,
@@ -529,7 +700,7 @@ function getLayerTreeData() {
 						global : false
 					});
 
-					// 初始化地图
+					//初始化地图
 					map = new ol.Map({
 						controls : ol.control.defaults({
 							attribution : false,
@@ -545,7 +716,7 @@ function getLayerTreeData() {
 							maxZoom : 35
 						})
 					});
-					// 禁用双击地图放大功能
+					//禁用双击地图放大功能
 					map
 							.getInteractions()
 							.getArray()
@@ -2301,15 +2472,16 @@ function getFormJson(form) {
 
 // 编辑操作
 function editWFSFeature(features, editType, featureType) {
+	var featureNS = "http://" + queryWFSURL() + "/anqing";
 	var WFSTSerializer = new ol.format.WFS({
-		featureNS : "http://172.16.15.147:8080/anqing",
+		featureNS : featureNS,
 		featureType : "anqing:" + featureType,
 		version : '2.0.0'
 	});
 	var featObject;
 	if (editType == 'add') {
 		featObject = WFSTSerializer.writeTransaction(features, null, null, {
-			featureNS : 'http://172.16.15.147:8080/anqing',// 为创建工作区时的命名空间URI
+			featureNS : featureNS,// 为创建工作区时的命名空间URI
 			featurePrefix : "anqing",
 			version : '2.0.0',
 			featureType : featureType, // feature对应图层
@@ -2317,7 +2489,7 @@ function editWFSFeature(features, editType, featureType) {
 		});
 	} else if (editType == 'update') {
 		featObject = WFSTSerializer.writeTransaction(null, features, null, {
-			featureNS : 'http://172.16.15.147:8080/anqing',// 为创建工作区时的命名空间URI
+			featureNS : featureNS,// 为创建工作区时的命名空间URI
 			featurePrefix : "anqing",// 作为前缀
 			featureType : featureType,
 			version : '2.0.0',
@@ -2325,7 +2497,7 @@ function editWFSFeature(features, editType, featureType) {
 		});
 	} else if (editType == 'delete') {
 		featObject = WFSTSerializer.writeTransaction(null, null, features, {
-			featureNS : 'http://172.16.15.147:8080/anqing',// 为创建工作区时的命名空间URI
+			featureNS : featureNS,// 为创建工作区时的命名空间URI
 			featurePrefix : "anqing",// 作为前缀
 			featureType : featureType, // feature对应图层
 			version : '2.0.0',
@@ -2337,11 +2509,9 @@ function editWFSFeature(features, editType, featureType) {
 	// 将参数转换为xml格式数据
 	var featString = serializer.serializeToString(featObject);
 	var request = new XMLHttpRequest();
-	request.open('POST', 'http://172.16.15.147:8080/geoserver/wfs?service=wfs');
+	request.open('POST', 'http://'+queryWFSURL()+'/geoserver/wfs?service=wfs');
 	request.setRequestHeader('Content-Type', 'text/xml');
 	request.send(featString);
-	// 刷新
-	// editObject.source.refresh();
 	// 重新渲染地图
 	map.render();
 	swal("保存成功", '', "success");
