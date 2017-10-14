@@ -12,6 +12,10 @@ var measureTooltip = ""; // 测量结果对象
 var index=""; //导航
 
 $(function() {
+	var mapWidth = document.documentElement.clientWidth;
+	var mapHeight = document.documentElement.clientHeight;
+	document.getElementById("openlayersID").style.width= mapWidth-160 +"px";
+	document.getElementById("openlayersID").style.height= mapHeight-100 +"px";
 	initLayerTree();// 初始图层列表
 	$('.inactive').click(
 			function() {
@@ -50,6 +54,7 @@ $(function() {
 		$(".hamburgerimg").css("display", "inline-block");
 		$(".content-top").css("margin-left", "-90px");
 		$("#right-sidebar").css("margin-left", "-90px");
+		document.getElementById("openlayersID").style.width= mapWidth-70 +"px";
 	});
 
 	$(".hamburgerimg").click(function() {
@@ -59,6 +64,7 @@ $(function() {
 		$(".hamburger").css("display", "inline-block");
 		$(".content-top").css("margin-left", "0px");
 		$("#right-sidebar").css("margin-left", "0px");
+		document.getElementById("openlayersID").style.width= mapWidth-160 +"px";
 	});
 	/* 左侧导航栏折叠菜单悬浮二级菜单效果效果 */
 	$(".nav1>ul>li").hover(
@@ -103,13 +109,28 @@ $(function() {
 	
 	 /*定位点击切换效果*/
     $("#accuratePositioning").click(function () {
-        $(".switch").css("display","block")
-        $(".switchDu").css("display","none")
-    })
-    $("#secondPositioning").click(function () {
-        $(".switch").css("display","none")
-        $(".switchDu").css("display","block")
-    })
+		var flag = duChgDFM();
+		if(flag){
+			$(".switch").css("display","block");
+			$(".switchDu").css("display","none");
+		}
+	});
+	
+	$("#secondPositioning").click(function () {
+		var flag = dFMChgDu();
+		if(flag){
+			$(".switch").css("display","none");
+		    $(".switchDu").css("display","block");
+		}
+	});
+	
+	$("#duFix").click(function(){
+		duFix();
+	});
+	
+	$("#dFMFix").click(function(){
+		dFMFix()
+	});
 	/** 拖拽模态框 */
 	/** 拖拽模态框 */
 	var dragModal = {
@@ -272,9 +293,12 @@ function initLayerTree() {
 													});
 											map.addInteraction(select);
 											select.on('select',function(e) {
+												// 获取查询图层类型
+												var code = e.selected[0].values_.ID.substring(0,4);
+												var layerType = queryLayerNameByPMSID(code);
 																if (e.selected[0] == undefined) {
 																	modify.setActive(true);
-																} else if (e.selected[0].id_.split(".")[0] != editObject.layer_name) {
+																} else if (layerType != editObject.layer_name) {
 																	modify.setActive(false);
 																} else {
 																	modify.setActive(true);
@@ -306,55 +330,70 @@ function initLayerTree() {
 											var select = new ol.interaction.Select();
 											map.addInteraction(select);
 											select.on('select',function(e) {
-																if (select.getFeatures().getArray().length == 0) {
-																} else if (e.selected[0].id_.split(".")[0] != layer_type) {
-																	var name = getLayerNameTitle(layer_name);
-																	swal('不能删除!','此数据不属于'+ name+ '图层',"warning");
-																} else {
-																	swal({
-																				title : "确定删除此数据？",
-																				text : "删除后不可恢复,请谨慎操作!",
-																				type : "warning",
-																				showCancelButton : true,
-																				confirmButtonColor : "#DD6B55",
-																				confirmButtonText : "确定",
-																				cancelButtonText : "取消",
-																				closeOnConfirm : false
-																			},
-																			function(
-																					isConfirm) {
-																				if (isConfirm) {
-																					// 获取当前图层
-																					var layer = obj.original.layer;
-																					editWFSFeature(
-																							e.target.getFeatures().getArray(),
-																							'delete',
-																							layer_type);
-																					layer.getSource().removeFeature(e.target.getFeatures()
-																											.getArray()[0]);
-																					e.target.getFeatures().clear();
-																					map.removeInteraction(select);
-																					swal("删除成功",'',"success");
-																				} else {
-																					map.removeInteraction(select);
-																				}
+												// 获取当前图层名
+												var code = e.selected[0].values_.ID.substring(0,4);
+												var type = queryLayerNameByPMSID(code);
+												if (select.getFeatures().getArray().length == 0) {
+												} else if (type != layer_type) {
+													var name = getLayerNameTitle(type);
+													swal('不能删除!','此数据不属于'+ name+ '图层',"warning");
+												} else {
+													swal({
+														title : "确定删除此数据？",
+														text : "删除后不可恢复,请谨慎操作!",
+														type : "warning",
+														showCancelButton : true,
+														confirmButtonColor : "#DD6B55",
+														confirmButtonText : "确定",
+														cancelButtonText : "取消",
+														closeOnConfirm : false
+													},function(isConfirm) {
+														if (isConfirm) {
+															// 获取当前图层
+															var layer = obj.original.layer;
+															editWFSFeature(
+																	e.target.getFeatures().getArray(),
+																	'delete',
+																	layer_type);
+															layer.getSource().removeFeature(e.target.getFeatures()
+																					.getArray()[0]);
+															e.target.getFeatures().clear();
+															map.removeInteraction(select);
+															swal("删除成功",'',"success");
+														} else {
+															map.removeInteraction(select);
+														}
 
-																			});
+													});		
 
-																}
-															});
+												}
+											});				
 
 										} else {
 											swal('根节点不能删除!', '', "warning");
 										}
 									}
 								},
-								"定位" : {
+								"属性表" : {
+									"label" : "属性表",
+									"action" : function(data) {
+										clearOnMapEvent(); // 清除主动添加到地图上的事件
+										var inst = jQuery.jstree.reference(data.reference);
+										var obj = inst.get_node(data.reference);
+										if (obj.children.length == 0 && obj.parent != "#") {
+											var features = obj.original.layer.getSource().getFeatures();
+											openDialg("/attributeList/attributeList.action", obj.text+"表信息","queryAll", features);
+										} else {
+											swal('根节点不能定位!', '', "warning");
+										}
+									}
+								},
+/*								"定位" : {
 									"label" : "定位",
 									"action" : function(data) {
 										clearOnMapEvent(); // 清除主动添加到地图上的事件
 										var inst = jQuery.jstree
-												.reference(data.reference);
+										.reference(data.reference);
 										var obj = inst.get_node(data.reference);
 										if (obj.children.length == 0 && obj.parent != "#") {
 											// 定位到添加的图层位置
@@ -365,7 +404,7 @@ function initLayerTree() {
 										}
 									}
 								},
-							}
+*/							}
 						},
 						"core" : {
 							/*
@@ -385,8 +424,7 @@ function initLayerTree() {
 				if (childrens.length > 0) {
 					for (var i = 0; i < childrens.length; i++) {
 						var id = childrens[i].id;
-						var nodeLayer = $('#powerLayerTree').jstree().get_node(
-								"#" + id);
+						var nodeLayer = $('#powerLayerTree').jstree().get_node("#" + id);
 						nodeLayer.original.layer.setVisible(true);
 					}
 				} else {
@@ -438,9 +476,7 @@ function getLayerTreeData() {
 				dataType : "json",//设置服务器响应类型
 				//success：请求成功之后执行的回调函数   data：服务器响应的数据
 				success : function(data) {
-					var bounds=[115.902731511993,39.5010013847293,117.174121256339,40.0926220582295];
-//					var bounds = [ 117.044453027202, 30.5066687301743,
-//							117.110272065313, 30.5599371735666 ];
+					var bounds = [ 117.044453027202, 30.5066687301743,117.110272065313, 30.5599371735666 ];
 					var layers = [];
 					var treeId = data.length-1;
 					var gaodeMapLayer = new ol.layer.Tile(
@@ -687,7 +723,6 @@ function getLayerTreeData() {
 							maxZoom : 22
 						})
 					});
-					map.setSize([1760,850]);
 					//禁用双击地图放大功能
 					map.getInteractions().getArray().forEach(
 									function(interaction) {
@@ -747,7 +782,8 @@ function measureOnMap(value) {
 		source : new ol.source.Vector(),
 		style : new ol.style.Style({
 			stroke : new ol.style.Stroke({
-				color : '#ffcc33',
+//				color : '#ffcc33',
+				color : 'red',
 				size : 2
 			})
 		})
@@ -857,17 +893,17 @@ function createMeasureTooltip() {
  */
 function formatLength(line) {
 	var length;
-	var geodesic = false; // true:计算平面距离；false:计算球面距离
+	var geodesic = true; // true:计算平面距离；false:计算球面距离
 	if (geodesic) {
 		var coordinates = line.getCoordinates();
 		length = 0;
-		var sourceProj = map.getView().getProjection();
+//		var sourceProj = map.getView().getProjection();
 		var wgs84Sphere = new ol.Sphere(6378137);
 		for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-			var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
-			var c2 = ol.proj.transform(coordinates[i + 1], sourceProj,
-					'EPSG:4326');
-			length += wgs84Sphere.haversineDistance(c1, c2);
+//			var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
+//			var c2 = ol.proj.transform(coordinates[i + 1], sourceProj,
+//					'EPSG:4326');
+			length += wgs84Sphere.haversineDistance(coordinates[i], coordinates[i + 1]);
 		}
 	} else {
 		length = Math.round(line.getLength() * 100) / 100;
@@ -890,7 +926,7 @@ function formatLength(line) {
  */
 function formatArea(polygon) {
 	var area;
-	var geodesic = false; // true:计算平面面积；false:计算球面面积
+	var geodesic = true; // true:计算平面面积；false:计算球面面积
 	if (geodesic) {
 		var sourceProj = map.getView().getProjection();
 		var geom =
@@ -1037,34 +1073,52 @@ function openDialg(url, title, field, dataFeatures) {
 						root);
 
 				$('#assemblageQueryOptions1').hide();
-				$('#assemblageQueryOptions2').hide();
+				$('#queryAllOptions').hide();
 				if (field == 'radioQuery') {
 					// 获取查询图层类型
-					var layerType = dataFeatures[0].id_.split('.');
+					var code = dataFeatures[0].values_.ID.substring(0,4);
+					var layerType = queryLayerNameByPMSID(code);
 					// 展示数据
-					displayData(dataFeatures, layerType[0]);
+					displayData(dataFeatures, layerType);
 
 				} else if (field == 'boxQuery' || field == 'polygonQuery') {
+					$('#assemblageQueryOptions1').show();
 					$("#powLayes1").empty();
 					$("#powLayes1").append("<option value=''>请选择图层</option>");
 					for (var i = 0; i < childrens.length; i++) {
-						var node = $('#powerLayerTree').jstree().get_node(
-								childrens[i].id);
-						$("#powLayes1").append(
-								"<option value='" + node.original.id + "'>"
-										+ node.original.text + "</option>");
+						var node = $('#powerLayerTree').jstree().get_node(childrens[i].id);
+						$("#powLayes1").append("<option value='" + node.original.id + "'>"+ node.original.text + "</option>");
 					}
-					$('#assemblageQueryOptions1').show();
-				}/*
-					 * else if(field == 'assemblageQuery'){
-					 * $("#powLayes2").empty(); $("#powLayes2").append("<option
-					 * value=''>请选择图层</option>"); for(var i=0;i<childrens.length;i++){
-					 * var
-					 * node=$('#powerLayerTree').jstree().get_node(childrens[i].id);
-					 * $("#powLayes2").append("<option
-					 * value='"+node.original.id+"'>"+node.original.text+"</option>"); }
-					 * $('#assemblageQueryOptions2').show(); }
-					 */
+				}else if(field == 'queryAll'){
+					$('#queryAllOptions').show();
+					// 获取查询图层类型
+					var code = dataFeatures[0].values_.ID.substring(0,4);
+					var layerTable = queryLayerNameByPMSID(code);
+					$("#filterField2").empty();
+					$.ajax({
+						// 请求地址
+						url : "/" + layerTable + "/querySpatialTableField.action",
+						data : {},// 设置请求参数
+						type : "post",// 请求方法
+						async : false,
+						dataType : "json",// 设置服务器响应类型
+						// success：请求成功之后执行的回调函数 data：服务器响应的数据
+						success : function(data) {
+							$("#filterField2").append("<option value=''>请选择字段</option>");
+							for ( var i in data) {
+								if (data[i].FIELD != null && data[i].VALUE != "ID"
+										&& data[i].VALUE != "OBJECTID") {
+									$("#filterField2").append(
+											"<option value='" + data[i].VALUE + "'>"+ data[i].FIELD + "</option>");
+								}
+							}
+						}
+					});
+					
+					// 展示数据
+					displayData(dataFeatures, layerTable);
+			     }
+					 
 				$('#search').modal('hide');// 隐藏查询模态框
 			}
 		},
@@ -1186,14 +1240,15 @@ function changeLayer(id) {
 	if (id != "") {
 		var node = $('#powerLayerTree').jstree().get_node(id);
 		var vector_Source = node.original.layer.getSource();
-		$('#filterFieldOptions').show();
+//		$('#filterFieldOptions').show();
 		var feature = vector_Source.getFeatures()[0];
 		// 获取查询图层类型
-		var layerTable = feature.id_.split('.');
+		var code = feature.values_.ID.substring(0,4);
+		var layerTable = queryLayerNameByPMSID(code);
 		$("#filterField").empty();
 		$.ajax({
 			// 请求地址
-			url : "/" + layerTable[0] + "/querySpatialTableField.action",
+			url : "/" + layerTable + "/querySpatialTableField.action",
 			data : {},// 设置请求参数
 			type : "post",// 请求方法
 			async : false,
@@ -1205,8 +1260,7 @@ function changeLayer(id) {
 					if (data[i].FIELD != null && data[i].VALUE != "ID"
 							&& data[i].VALUE != "OBJECTID") {
 						$("#filterField").append(
-								"<option value='" + data[i].VALUE + "'>"
-										+ data[i].FIELD + "</option>");
+								"<option value='" + data[i].VALUE + "'>"+ data[i].FIELD + "</option>");
 					}
 				}
 			}
@@ -1215,27 +1269,27 @@ function changeLayer(id) {
 	}
 }
 // 更改图层下拉框后查询属性
-function changeFilterField(fieldValue) {
+function changeFilterField(fieldValue,divId) {
 	if (fieldValue != "请选择字段") {
 		if (fieldValue.indexOf("(") > 0) {
 			fieldValue = fieldValue.substring(0, fieldValue.indexOf("("));
 		}
 		var data = queryEnumerateByField(fieldValue);
 		if (data != "" && data != null) {
-			$('#filterFieldInput').hide();
-			$('#filterFieldSelect').show();
-			$("#filterFieldSelectValue").empty();
-			$("#filterFieldSelectValue").append(
+			$('#filterFieldInput'+divId).hide();
+			$('#filterFieldSelect'+divId).show();
+			$("#filterFieldSelectValue"+divId).empty();
+			$("#filterFieldSelectValue"+divId).append(
 					"<option value=''>请选择字段</option>");
 			for (var i = 0; i < data.length; i++) {
-				$('#filterFieldSelectValue').append(
+				$('#filterFieldSelectValue'+divId).append(
 						"<option value=" + data[i].C_VALUE + ">"
 								+ data[i].C_NAME + "</option>");
 			}
 
 		} else {
-			$('#filterFieldSelect').hide();
-			$('#filterFieldInput').show();
+			$('#filterFieldSelect'+divId).hide();
+			$('#filterFieldInput'+divId).show();
 		}
 	}
 
@@ -1287,28 +1341,23 @@ function queryFeature() {
 			$(valueId).focus();
 			swal('请给过滤字段相应的值！', '', "warning");
 		} else {
-			// $(".modal-content").mLoading("show");
-			// var node=$('#powerLayerTree').jstree().get_node(id);
-			// var vector_Source = node.original.layer.getSource();
-			// selectEvent = new ol.interaction.Select();
-			// map.addInteraction(selectEvent);
-			// highlightObj = selectEvent.getFeatures();
-			var filterValue = value == "" ? "*" : value;
+//			var filterValue = value == "" ? "*" : value;
+//			var field =  $('#filterField').val();
+//			var filterField = field == "" ? "ID" : value;
 			var layer_name = queryLayerNameByID(id);
 			var featureNS = "http://" + queryWFSURL() + "/pipeline";
 			var featureRequest = new ol.format.WFS().writeGetFeature({
 				srsName : 'EPSG:4326',
 				// featureNS: 'http://172.16.15.147:8080/pipeline',
-				featureNS : featureNS,
-				featurePrefix : 'osm',
+//				featureNS : featureNS,
+				featurePrefix : 'anqing',
 				featureTypes : [ layer_name ],
 				outputFormat : 'application/json',
 				geometryName : "the_geom",
 				filter : ol.format.filter.and(
 				// ol.format.filter.equalTo('QSDW', '*'),
-				ol.format.filter.bbox('the_geom', boxExtent, 'EPSG:2439'),
-						ol.format.filter.like($('#filterField').val(),
-								filterValue))
+				ol.format.filter.bbox('SHAPE', boxExtent, 'EPSG:4326'),
+				ol.format.filter.like($('#filterField').val(),filterValue))
 			});
 
 			// 然后发布请求并将接收到数据在表格中显示
@@ -1326,26 +1375,41 @@ function queryFeature() {
 					$('#wfsFeatureTable').bootstrapTable('removeAll');
 				} else {
 					// 获取查询图层类型
-					var layerType = features[0].id_.split('.');
-					displayData(features, layerType[0]);
+					var code = features[0].values_.ID.substring(0,4);
+					var layerType = queryLayerNameByPMSID(code);
+					displayData(features, layerType);
 					$(".modal-content").mLoading("hide");
 				}
 			});
 
-			/*
-			 * var timingFunction=setInterval(function(){ var
-			 * selectedFeatures=[];
-			 * vector_Source.forEachFeatureInExtent(boxExtent, function(feature) {
-			 * selectedFeatures.push(feature); highlightObj.push(feature); });
-			 * if(selectedFeatures.length==0){ clearInterval(timingFunction);
-			 * $(".modal-content").mLoading("hide");
-			 * swal('没有查到符合条件的数据','',"warning");
-			 * $('#wfsFeatureTable').bootstrapTable('removeAll'); }else{
-			 * //获取查询图层类型 var layerType = selectedFeatures[0].id_.split('.');
-			 * displayData(selectedFeatures,layerType[0]);
-			 * $(".modal-content").mLoading("hide"); } //关闭定时函数
-			 * clearInterval(timingFunction); },1000);
-			 */
+			/*$(".modal-content").mLoading("show");  
+			var node=$('#powerLayerTree').jstree().get_node(id);
+			var vector_Source = node.original.layer.getSource();  
+	        selectEvent = new ol.interaction.Select();
+			  map.addInteraction(selectEvent);
+	          highlightObj = selectEvent.getFeatures();
+	        
+	        var timingFunction=setInterval(function(){
+	        	var selectedFeatures=[];	
+	        	vector_Source.forEachFeatureInExtent(boxExtent, function(feature) {
+	        		selectedFeatures.push(feature);
+	        		highlightObj.push(feature);
+	        	});			
+	        	if(selectedFeatures.length==0){
+	        		clearInterval(timingFunction);
+	        		$(".modal-content").mLoading("hide");
+	        		swal('没有查到符合条件的数据','',"warning");
+	        		$('#wfsFeatureTable').bootstrapTable('removeAll');
+		        }else{
+		        	$(".modal-content").mLoading("hide");
+		        	// 获取查询图层类型
+					var code = selectedFeatures[0].values_.ID.substring(0,4);
+					var layerType = queryLayerNameByPMSID(code);
+		        	displayData(selectedFeatures,layerType);
+		        }
+	        	//关闭定时函数
+	        	clearInterval(timingFunction);
+	        },1000);*/
 		}
 	}
 
@@ -1364,6 +1428,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -1436,6 +1501,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -1448,6 +1514,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -1502,6 +1569,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -1514,6 +1582,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -1577,6 +1646,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -1589,6 +1659,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -1643,6 +1714,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -1655,6 +1727,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -1709,6 +1782,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -1722,6 +1796,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -1786,7 +1861,7 @@ function displayData(features, layerType) {
 			valign : 'top',
 			sortable : true,
 			formatter : function(value, row, index) {
-				return row.values_.STARTID;
+				return formatterfeatureName(row.values_.STARTID);
 			}
 		}, {
 			field : 'ENDID',
@@ -1795,7 +1870,7 @@ function displayData(features, layerType) {
 			valign : 'top',
 			sortable : true,
 			formatter : function(value, row, index) {
-				return row.values_.ENDID;
+				return formatterfeatureName(row.values_.ENDID);
 			}
 		}, {
 			field : 'ASSETUNIT',
@@ -1821,6 +1896,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -1833,6 +1909,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -1914,6 +1991,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -1926,6 +2004,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -2007,6 +2086,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -2019,6 +2099,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'top',
 			sortable : true,
+			visible : false,
 			formatter : function(value, row, index) {
 				return row.values_.ID;
 			}
@@ -2100,6 +2181,7 @@ function displayData(features, layerType) {
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
+			width : '125px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -2116,6 +2198,7 @@ function displayData(features, layerType) {
 		pagination : true,
 		queryParamsType : "limit",
 		singleSelect : false,
+		undefinedText:"",
 		contentType : "application/x-www-form-urlencoded",
 		pageSize : 10,
 		pageNumber : 1,
@@ -2127,6 +2210,29 @@ function displayData(features, layerType) {
 		// height: 480,
 		columns : columns
 	});
+}
+
+//根据feature ID格式化 feature名称
+function formatterfeatureName(id){
+	var name = null;
+	if(id == null){
+		return name;
+	}
+	// 获取查询图层类型
+	var code = id.substring(0,4);
+	var layer_type = queryLayerNameByPMSID(code);
+	//根据图层名获取对应layertree的Id
+	var layertreeID = queryIdByLayerName(layer_type);
+	//根据 layertree的Id获取节点对象
+	 var node=$('#powerLayerTree').jstree().get_node("#"+layertreeID);
+	 var features = node.original.layer.getSource().getFeatures();
+	 for(var i in features){
+		 if(features[i].values_.ID == id){
+			 name = features[i].values_.NAME;
+			 break;
+		 }
+	 }
+	 return name;
 }
 // bootstrap table操作按钮 （查询结果表）
 window.operateEventsFeature = {
@@ -2144,7 +2250,8 @@ window.operateEventsFeature = {
 		}, function(isConfirm) {
 			if (isConfirm) {
 				// 获取当前图层名
-				var layer_type = row.id_.split(".")[0];
+				var code = row.values_.ID.substring(0,4);
+				var layer_type = queryLayerNameByPMSID(code);
 				//根据图层名获取对应layertree的Id
 				var id = queryIdByLayerName(layer_type);
 				//根据 layertree的Id获取节点对象
@@ -2164,8 +2271,9 @@ window.operateEventsFeature = {
 	'click .RoleOfEditFeature' : function(e, value, row, index) {
 		// 将jspanel弹窗缩成一行
 		propertyListWindow.smallify();
-		// 获取当前图层名
-	    var layer_type = row.id_.split(".")[0];
+		// 获取查询图层类型
+		var code = row.values_.ID.substring(0,4);
+		var layer_type = queryLayerNameByPMSID(code);
 		//根据图层名获取对应layertree的Id
 		var id = queryIdByLayerName(layer_type);
 		//根据 layertree的Id获取节点对象
@@ -2216,9 +2324,12 @@ window.operateEventsFeature = {
 		// 设置要素高亮
 		highlightObj = selectEvent.getFeatures();
 		highlightObj.push(feature);
-		// 获取要素的几何范围
-		var extent = feature.getGeometry().getExtent();
-		map.getView().fit(extent, map.getSize());
+		// 获取要素的经纬度
+//		var extent = feature.getGeometry().getExtent();
+		var latlon = feature.getGeometry().flatCoordinates;
+//		map.getView().fit(extent, map.getSize());
+		map.getView().setCenter(latlon);
+	    map.render();
 	}
 };
 /**
@@ -2301,6 +2412,27 @@ function queryLayerNameByID(id) {
 	});
 	return layer_name;
 }
+// 根据系统编码查询空间数据图层名称
+function queryLayerNameByPMSID(PMSID) {
+	var layer_name = "";
+	$.ajax({
+		// 请求地址
+		url : "/SYSTEMCODE/search.action",
+		data : {
+			"search.CODE*eq" : PMSID
+		},// 设置请求参数
+		type : "post",// 请求方法
+		async : false,
+		dataType : "json",// 设置服务器响应类型
+		// success：请求成功之后执行的回调函数 data：服务器响应的数据
+		success : function(data) {
+			if (data != "") {
+				layer_name = data[0].TABLENAME;
+			}
+		}
+	});
+	return layer_name;
+}
 
 
 function queryWFSURL() {
@@ -2364,23 +2496,22 @@ function jsPanelAttributeInfo() {
 							});
 							map.addInteraction(modify);
 						} else if (editObject.editType == "update") {
+							//回写数据
 							var feature = editObject.feature.values_;
 							for ( var id in feature) {
-								if (id != "geometry"
-										&& id != "ID"
-										&& document.getElementById(id).type == "select-one") {
-									$('#' + id)
-											.selectpicker('val', feature[id]);
-								} else {
-									$('#' + id).val(feature[id]);
-								}
+								if (id != "SHAPE" && id != "ID" && id !="geometry" ) {
+									if(document.getElementById(id).type== "select-one"){
+										$('#' + id) .selectpicker('val', feature[id]);
+									}else {
+										$('#' + id).val(feature[id]);
+									}
+								} 
 							}
 						}
 					}
 				},
 				callback : function(panel) {
 					// this.content.css("padding", "15px");
-
 				}
 			});
 }
@@ -2490,6 +2621,10 @@ function saveFeature() {
 			}
 		}
 
+		if (editType == "add") {
+			// 设置featureID
+			setFeatureID(fea, featureType);
+		} 
 		var feature = fea.clone();// 此处clone
 									// 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
 		var geo = feature.getGeometry();
@@ -2503,10 +2638,7 @@ function saveFeature() {
 			}
 		});
 
-		if (editType == "add") {
-			// 设置featureID
-			setFeatureID(feature, featureType);
-		} else if (editType == "update") {
+		if (editType == "update") {
 			feature.setId(editObject.feature.getId()); // 注意ID是必须，通过ID才能找到对应修改的feature
 
 			// 此处需要将原有的geometry空间字段删除，否则提交不成功，如果服务空间表空间就是geometry，则不需要处理
@@ -2515,8 +2647,9 @@ function saveFeature() {
 			// feature.setGeometryName('SHAPE');
 			// feature.setGeometry(geo);
 		}
+		
 		feature.set('SHAPE', geo);
-		editWFSFeature([ feature ], editType, featureType);
+		editWFSFeature([feature], editType, featureType);
 		if(editObject.table && $('#wfsFeatureTable')!=""){
 			$('#wfsFeatureTable').bootstrapTable('updateRow', {index: editObject.index, row: feature.values_});
 		}
@@ -2599,17 +2732,319 @@ function fullView(){
 	var bounds = [ 117.044453027202, 30.5066687301743,
 					117.110272065313, 30.5599371735666 ];
 	  map.getView().fit(bounds, map.getSize());
-//	  map.render();
+	  map.render();
 }
 
+/************** 经纬度验证、定位 BEGIN ******************/
+function isEmpty(val){
+	if(val == undefined || val == "" || val == null){  
+		return true;
+	} else {
+		return false;
+	}
+}
 
+(function($){  
+    $.fn.serializeJson=function(){  
+        var serializeObj={};  
+        var array=this.serializeArray();  
+        var str=this.serialize();  
+        $(array).each(function(){  
+            if(serializeObj[this.name]){  
+                if($.isArray(serializeObj[this.name])){  
+                    serializeObj[this.name].push(this.value);  
+                }else{  
+                    serializeObj[this.name]=[serializeObj[this.name],this.value];  
+                }  
+            }else{  
+                serializeObj[this.name]=this.value;   
+            }  
+        });  
+        return serializeObj;  
+    };  
+})(jQuery);
+
+/**
+ * 验证经度
+ */
+function validLonDu(val){
+	var state; 
+	var lonReg= /^-?((0|1?[0-7]?[0-9]?)(([.][0-9]{1,4})?)|180(([.][0]{1,4})?))$/;
+    state = lonReg.test(val);   
+    if(state){  
+        return true;  
+    }else{  
+        return false;  
+    }  
+}
+
+function validLonDFM(v){
+	var state; 
+	var lonTest1 = /^((\d|[1-9]\d|1[0-7]\d)[°](\d|[0-5]\d)[′](\d|[0-5]\d)(\.\d{1,6})?[\″]$)|(180[°]0[′]0[\″]$)/;  
+	var lonTest2 = /^((\d|[1-9]\d|1[0-7]\d)[°](\d|[0-5]\d)(\.\d{1,6})?[′]$)|(180[°]0[′]$)/;  
+	var lonTest3 = /^((\d|[1-9]\d|1[0-7]\d)(\.\d{1,6})?[°]$)|(180[°]$)/;
+    var s1 = v.split("°");  
+    if(s1[1] != '' && s1[1] != null){  
+        var s2 = s1[1].split("′");  
+        if(s2[1] != '' && s2[1] != null){  
+            var s3 = s2[1].split("″");  
+            state = lonTest1.test(v);  
+        }else{  
+            state = lonTest2.test(v);  
+        }  
+    }else{  
+        state =  lonTest3.test(v);   
+    }  
+    if(state){  
+        return true;  
+    }else{  
+        return false;  
+    } 
+}
+
+/**
+ * 验证緯度
+ */
+function validLatDu(val){
+	var state; 
+	var latReg= /^-?((0|[1-8]?[0-9]?)(([.][0-9]{1,4})?)|90(([.][0]{1,4})?))$/; 
+	state =  latReg.test(val);   
+   	if(state){  
+   		return true;  
+   	}else{  
+   		return false;  
+   	}  
+}
+
+function validLatDFM(v){
+	var state;  
+	var latTest1 = /^((\d|[1-8]\d)[°](\d|[0-5]\d)[′](\d|[0-5]\d)(\.\d{1,6})?[\″]$)|(90[°]0[′]0[\″]$)/;  
+    var latTest2 = /^((\d|[1-8]\d)[°](\d|[0-5]\d)(\.\d{1,6})?[′]$)|(90[°]0[′]$)/;  
+    var latTest3 = /^((\d|[1-8]\d)(\.\d{1,6})?[°]$)|(90[°]$)/;  
+    var s1 = v.split("°");  
+    if(s1[1] != '' && s1[1] != null){  
+    	var s2 = s1[1].split("′");  
+    	if(s2[1] != '' && s2[1] != null){  
+    		var s3 = s2[1].split("″");  
+           	state = latTest1.test(v);  
+    	}else{  
+    		state = latTest2.test(v);  
+    	}  
+    }else{  
+    	state =  latTest3.test(v);   
+         
+    }  
+    if(state){  
+    	return true;  
+    }else{  
+    	return false;  
+    } 
+}
+
+/**
+ * 将度转换成为度分秒 
+ */
+function duConvertDFM(val) {
+	var s1 = val.split(".");
+	var d = s1[0];
+	if(isEmpty(s1[1])){
+		s1[1] = 0;
+	}
+	var temp = "0." + s1[1]
+	var temp = String(temp * 60);
+	var s2 = temp.split(".");
+	var f = s2[0];
+	if(isEmpty(s2[1])){
+		s2[1] = 0;
+	}
+	temp = "0." + s2[1];
+	temp = temp * 60;
+	var m = temp.toFixed(2);
+	return d + "°" + f + "′" + m + "″";  
+}
+
+/**
+ * 度分秒转换成为度
+ */
+function dFMConvertDu(value) {
+	var d  = value.split("°")[0];  
+    var f = value.split("°")[1].split("′")[0];  
+    var m = value.split("°")[1].split("′")[1].split('″')[0];
+	var f = parseFloat(f) + parseFloat(m/60);
+	var du = parseFloat(f/60) + parseFloat(d);		
+	return du;
+}
+
+/**
+ * 获取度分秒经纬度
+ */
+function getLonDFM(){
+	var lonDFM;
+	var dfm = $("#lonDFMFrom").serializeJson();
+	var lonD = dfm.lonD;
+	var lonF = dfm.lonF;
+	var lonM = dfm.lonM;
+	if(!isEmpty(lonD) && !isEmpty(lonF) && !isEmpty(lonM)){
+		lonDFM = lonD + "°" + lonF + "′" + lonM + '″';
+	}else if(!isEmpty(lonD) && !isEmpty(lonF) && isEmpty(lonM)){
+		lonDFM = lonD + "°" + lonF + "′";
+	}else if(!isEmpty(lonD) && isEmpty(lonF) && isEmpty(lonM)){
+		lonDFM = lonD + "°";
+	}else{
+		lonDFM = "";
+	}
+	return lonDFM;
+}
+
+function getLatDFM(){
+	var latDFM;
+	var dfm = $("#LatDFMFrom").serializeJson();
+	var latD = dfm.latD;
+	var latF = dfm.latF;
+	var latM = dfm.latM;
+	if(!isEmpty(latD) && !isEmpty(latF) && !isEmpty(latM)){
+		latDFM = latD + "°" + latF + "′" + latM + '″';
+	}else if(!isEmpty(latD) && !isEmpty(latF) && isEmpty(latM)){
+		latDFM = latD + "°" + latF + "′";
+	}else if(!isEmpty(latD) && isEmpty(latF) && isEmpty(latM)){
+		latDFM = latD + "°";
+	}else{
+		latDFM = "";
+	}
+	return latDFM;
+}
+
+/**
+ * 经纬度切换
+ */
+function dFMChgDu(){
+	var lon;
+	var lonDFM = getLonDFM();
+	if(!isEmpty(lonDFM)){
+		if(!validLonDFM(lonDFM)){
+			swal('请填写正确的经度数据!', '', "warning");
+			return false;
+		}
+		lon = dFMConvertDu(lonDFM);
+		$("#lon").val(lon);
+	}
+	var lat;
+	var latDFM = getLatDFM();
+	if(!isEmpty(latDFM)){
+		if(!validLatDFM(latDFM)){
+			swal('请填写正确的纬度数据!', '', "warning");
+			return false;
+		}
+		lat = dFMConvertDu(latDFM);
+		$("#lat").val(lat);
+	}
+	return true;
+}
+
+function duChgDFM(){
+	var du = $("#duFrom").serializeJson();
+	var lon = du.lon;
+	var lat = du.lat;
+	if(!isEmpty(lon)){
+		if(!validLonDu(lon)){
+			swal('请填写正确的经度数据!', '', "warning");
+			return false;
+		}
+		var lonDFM = duConvertDFM(lon);
+		var d = lonDFM.split("°")[0];  
+        var f = lonDFM.split("°")[1].split("′")[0];  
+        var m = lonDFM.split("°")[1].split("′")[1].split('″')[0];
+        if(!isEmpty(d)){
+        	$("#lonD").val(d);
+        }
+        if(!isEmpty(f)){
+        	$("#lonF").val(f);
+        }
+        if(!isEmpty(m)){
+        	$("#lonM").val(m);
+        }
+	}
+	if(!isEmpty(lat)){
+		if(!validLatDu(lat)){
+			swal('请填写正确的纬度数据!', '', "warning");
+			return false;
+		}
+		var latDFM = duConvertDFM(lat);
+		var latD = latDFM.split("°")[0];  
+        var latF = latDFM.split("°")[1].split("′")[0];  
+        var latM = latDFM.split("°")[1].split("′")[1].split('″')[0]; 
+        if(!isEmpty(latD)){
+        	$("#latD").val(latD);
+        }
+        if(!isEmpty(latF)){
+        	$("#latF").val(latF);
+        }
+        if(!isEmpty(latM)){
+        	$("#latM").val(latM);
+        }
+	}
+	return true;
+}
+
+/**
+ * 度数定位
+ */
+function duFix(){
+	var du = $("#duFrom").serializeJson();
+	var lon = du.lon;
+	var lat = du.lat;
+	if(!isEmpty(lon) && !isEmpty(lat)){
+		if(!validLonDu(lon)){
+			swal('请填写正确的经度数据!', '', "warning");
+			return;
+		}
+		if(!validLatDu(lat)){
+			swal('请填写正确的纬度数据!', '', "warning");
+			return;
+		}
+		map.getView().setCenter([parseInt(lon), parseInt(lat)]);
+	    map.render();
+    }else{
+    	swal('请填写正确的经纬度!', '', "warning");
+		return;
+    }
+}
+
+/**
+ * 度分秒定位
+ */
+function dFMFix(){
+	var lon;
+	var lat;
+	var lonDFM = getLonDFM();
+	var latDFM = getLatDFM();
+	if(!isEmpty(lonDFM) && !isEmpty(latDFM)){
+		if(!validLonDFM(lonDFM)){
+			swal('请填写正确的经度数据!', '', "warning");
+			return;
+		}
+		if(!validLatDFM(latDFM)){
+			swal('请填写正确的纬度数据!', '', "warning");
+			return;
+		}
+		lon = dFMConvertDu(lonDFM);
+		lat = dFMConvertDu(latDFM);
+		map.getView().setCenter([parseInt(lon), parseInt(lat)]);
+	    map.render();
+	}else{
+		swal('请填写正确的经纬度!', '', "warning");
+		return;
+	}
+}
+/************** 经纬度验证、定位 END ******************/
 
 
 
 
 function test() {
-	map.getView().setZoom(30);
+//	map.getView().setZoom(30);
 	map.getView().setCenter([ 114.31, 30.52 ]);
+    map.render();
 	// map.getView().setCenter(ol.proj.fromLonLat([-72.980624870461128,
 	// 48.161307640513321]));
 

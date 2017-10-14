@@ -111,7 +111,7 @@ function init(){
             align: 'center',
             valign: 'top',
             sortable: true,
-//	    	visible: false ,// 该列隐藏，界面不显示
+            width : '125px',
             events: operateEvents,//给按钮注册事件
             formatter: operateFormatter,//表格中增加按钮
         }]

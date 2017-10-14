@@ -7,11 +7,11 @@
             <span id="assemblageQueryOptions1" style="display: none">
                <div class="check">
                                                        查询图层：<select  id="powLayes1" onchange="changeLayer(this.options[this.options.selectedIndex].value)"  style="width:150px;margin-right:60px;"></select>
-                                                                 过滤字段：<select  id="filterField" name="filterField" onchange="changeFilterField(this.options[this.options.selectedIndex].text)"style="width:100px;">
+                                                                 过滤字段：<select  id="filterField1" name="filterField1" onchange="changeFilterField(this.options[this.options.selectedIndex].text,'1')"style="width:100px;">
                            </select>
-                           <span id="filterFieldSelect" style="display: none"><select  id="filterFieldSelectValue"  style="width:100px;">
+                           <span id="filterFieldSelect1" style="display: none"><select  id="filterFieldSelectValue1"  style="width:100px;">
                            </select></span>
-                           <span id="filterFieldInput" style="display: none"><input type="text" id="filterFieldInputValue" style="height: 30px;"/></span>
+                           <span id="filterFieldInput1" style="display: none"><input type="text" id="filterFieldInputValue1" style="height: 30px;"/></span>
                            <!-- <span id="filterFieldDate" style="display: none"><div class='input-group date' id='checkfilterFieldDate'>
 					           <input type='text' class="form-control" id="filterFieldDateValue"/> <span
 						       class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span> </span>
@@ -20,44 +20,17 @@
                </div>
             </span>
             
-            <!-- <span id="assemblageQueryOptions2" style="display: none">
-                <div class="check">
-                                                             查询图层：<select  id="powLayes2"  style="width:150px;margin-right:60px;"></select>
-                                                          通讯单位：<select  id="communicate" name="communicate" style="width:180px;margin-right:60px;">
-                         <option value ="*">请选择</option> 
-                         <option value ="电信">电信</option> 
-                         <option value ="联通">联通</option> 
-                         <option value ="移动">移动</option> 
-                         <option value ="联通*移动">联通&移动</option> 
-                         <option value ="电信*联通*移动">电信&联通&移动</option>
-                    </select>
-                                                            探测单位：<select  id="detectionUnit" name="detectionUnit" style="width:225px;">
-                          <option value ="*">请选择</option> 
-                         <option value ="保定金迪地下管线探测工程有限公司">保定金迪地下管线探测工程有限公司</option> 
-                         <option value ="正元地理信息有限责任公司">正元地理信息有限责任公司</option> 
-                         <option value ="四川省第三测绘工程院">四川省第三测绘工程院</option> 
-                    </select>
-                </div>
-                <div class="check">
-                                                        所在道路：<select  id="roadAddress" name="roadAddress" style="width:150px;margin-right:60px;">
-                          <option value ="*">请选择</option> 
-                         <option value ="国庆街">国庆街</option> 
-                         <option value ="中山路">中山路</option> 
-                         <option value ="革新街">革新街</option> 
-                         <option value ="巴山街">巴山街</option> 
-                         <option value ="雨阳街">雨阳街</option>
-                    </select>
-                                                           是否锁定：<select  id="is_Lock" name="is_Lock" style="width:100px;margin-right:60px;">
-                         
-                         <option value ="*">请选择</option> 
-                         <option value ="锁定">是</option> 
-                         <option value ="非锁定">否</option>
-                    </select>
-                    <button type="button"  class="btn btn-primary" onclick="regionQuery()" style="float: right;margin-right:40px;"> 框选</button>
-                    <button type="button"  class="btn btn-primary" onclick="combinationQuery()" style="float: right;margin-right: 20px;" >查询</button>
-                </div>
+            <span id="queryAllOptions" style="display: none">
+                <div class="check" style="padding-left: 560px;">
+                                                                 过滤字段：<select  id="filterField2" name="filterField2" onchange="changeFilterField(this.options[this.options.selectedIndex].text,'2')"style="width:100px;">
+                           </select>
+                           <span id="filterFieldSelect2" style="display: none"><select  id="filterFieldSelectValue2"  style="width:100px;">
+                           </select></span>
+                           <span id="filterFieldInput2" style="display: none"><input type="text" id="filterFieldInputValue2" style="height: 30px;"/></span>
+                       <button type="button"  class="btn btn-primary" onclick="queryClientFeature()" style="float: right;margin-right: 20px;margin-top: 6px;" >查询</button>
+               </div>
                 
-            </span> -->
+            </span>
             
               
       <table id="wfsFeatureTable" style="overflow:auto;"></table> 
