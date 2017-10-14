@@ -58,7 +58,7 @@ function init(){
 //		height: 400,
         columns: [{
             field: 'C_CODE',
-            title: '设备ID',
+            title: '设备编号',
             align: 'center',
             valign: 'top',
             sortable: true

@@ -30,11 +30,11 @@
 <script  type="text/javascript" src="/iconfont/iconfont.js"></script>
 <script type="text/javascript" src="/lib/jstree/jstree.min.js"></script>
 <script type="text/javascript" src="/lib/bootstrap/bootstrap.min.js"></script>
-<script type="text/javascript" src="/lib/bootstrap/table/bootstrap-table.js"></script>
-<script type="text/javascript" src="/lib/bootstrap/3.3.0/js/bootstrap-table-zh-CN.min.js"></script>
 <script type="text/javascript" src="/lib/bootstrap/datetimepicker/bootstrap-datetimepicker.js" charset="utf-8"></script>
 <script type="text/javascript" src="/lib/bootstrap/datetimepicker/bootstrap-datetimepicker.zh-CN.js" charset="utf-8"></script>
 <script type="text/javascript" src="/lib/bootstrap/3.3.0/js/bootstrap-select.js"></script>
+<script type="text/javascript" src="/lib/bootstrap/table/bootstrap-table.js"></script>
+<script type="text/javascript" src="/lib/bootstrap/3.3.0/js/bootstrap-table-zh-CN.min.js"></script>
 <script type="text/javascript" src="/js/power/default.js"></script>
 <script type="text/javascript" src="/js/power/index.js"></script>
 <body>
@@ -84,7 +84,7 @@
     <div class="modal" data-backdrop="static" id="measureBtn" >
         <div class="modal-sm" style="width: 250px;">
             <div class="modal-content" style="padding-top: 0px">
-                <div class="modal-header" style="background: #005a52;padding:0px;">
+                <div class="modal-header" style="background: #005a52;padding:1px;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;line-height:normal"><span aria-hidden="true">&times;</span></button>
                     <h4 style="padding-left: 10px;color: white;font-size: 14px;">量算</h4>
                 </div>
@@ -110,7 +110,7 @@
     <div class="modal" data-backdrop="static" id="layerMangerBtn">
         <div class="modal-sm">
             <div class="modal-content" style="padding-top: 0px">
-                <div class="modal-header" style="background: #005a52;padding:0px;">
+                <div class="modal-header" style="background: #005a52;padding:1px;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;line-height:normal"><span aria-hidden="true">&times;</span></button>
                     <h4 style="padding-left: 10px;color: white;font-size: 14px;">图层管理</h4>
                 </div>
@@ -125,7 +125,7 @@
     <div class="modal" id="bookmark"  data-backdrop="static" >
         <div class="modal-sm">
             <div class="modal-content" style="padding-top: 0px">
-                <div class="modal-header" style="background: #005a52;padding:0px;">
+                <div class="modal-header" style="background: #005a52;padding:1px;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
                     <h4 style="padding-left: 10px;color: white;font-size: 14px;">书签管理</h4>
                 </div>
@@ -161,7 +161,7 @@
     <div class="modal" data-backdrop="static" id="search" >
         <div class="modal-sm" style="width: 250px;">
             <div class="modal-content" style="padding-top: 0px">
-                <div class="modal-header" style="background: #005a52;padding:0px;">
+                <div class="modal-header" style="background: #005a52;padding:1px;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
                     <h4 style="padding-left: 10px;color: white;font-size: 14px;">查询管理</h4>
                 </div>
@@ -183,82 +183,71 @@
         </div>
     </div>
     <!--定位模态框-->
-    <div class="modal" data-backdrop="static" id="position" >
+      <div class="modal" data-backdrop="static" id="position">
         <div class="modal-sm">
             <div class="modal-content" style="padding-top: 0px">
-                <div class="modal-header" style="background: #005a52;padding:0px;">
+                <div class="modal-header" style="background: #005a52;padding:1px;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
                     <h4 style="padding-left: 10px;color: white;font-size: 14px;">定位</h4>
                 </div>
                 <div class="modal-body">
-
-                    <form class="form-horizontal" style="margin-top: 20px;">
+                    <form class="form-horizontal switchDu" style="margin-top: 20px;">
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-3 control-label">经度：</label>
-                            <div class="col-sm-8" >
+                            <div class="col-sm-5" >
                                 <input type="text" class="form-control" >
                             </div>
                             <span style="display: inline-block;margin-top: 5px;">度</span>
                         </div>
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-3 control-label">纬度：</label>
-                            <div class="col-sm-8" >
+                            <div class="col-sm-5" >
                                 <input type="text" class="form-control" >
                             </div>
                             <span style="display: inline-block;margin-top: 5px;">度</span>
                         </div>
                         <div class="text-center">
-                            <button class="btn" type="button" style="background: #1b726a;color: white" data-toggle="modal" data-target="#accuratePositioning">切换</button>
+                            <button class="btn" type="button" style="background: #1b726a;color: white" id="accuratePositioning">切换</button>
                             <button class="btn" type="button" style="background: #1b726a;color: white">定位</button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--切换定位模态框-->
-    <div class="modal" data-backdrop="static" id="accuratePositioning" >
-        <div class="modal-dialog" style="width:350px">
-            <div class="modal-content" style="padding-top: 0px">
-                <div class="modal-header" style="background: #005a52;padding:0px;">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
-                    <h4 style="padding-left: 10px;color: white;font-size: 14px;">定位</h4>
-                </div>
-                <div class="modal-body">
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <label for="exampleInputName2">经度：</label>
-                            <input type="text" class="form-control" style="width: 60px;">
-                            <span>度</span>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" class="form-control" style="width: 60px;">
-                            <span>分</span>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" class="form-control" style="width: 60px;">
-                            <span>秒</span>
-                        </div>
-                    </form>
-                    <form class="form-inline" style="margin-top: 20px;">
-                        <div class="form-group">
-                            <label for="exampleInputName2">纬度：</label>
-                            <input type="text" class="form-control" style="width: 60px;">
-                            <span>度</span>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" class="form-control" style="width: 60px;">
-                            <span>分</span>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" class="form-control" style="width: 60px;">
-                            <span>秒</span>
-                        </div>
-                        <div class="text-center" style="margin-top: 20px;">
-                            <button class="btn" type="button" style="background: #1b726a;color: white" >切换</button>
+                    <div class="switch" style="display: none">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="exampleInputName2">经度：</label>
+                                <input type="text" class="form-control" style="width:50px;">
+                                <span>度</span>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control" style="width:50px;">
+                                <span>分</span>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control" style="width:50px;">
+                                <span>秒</span>
+                            </div>
+                        </form>
+                        <form class="form-inline" style="margin-top: 20px;">
+                            <div class="form-group">
+                                <label for="exampleInputName2">纬度：</label>
+                                <input type="text" class="form-control" style="width:50px;">
+                                <span>度</span>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control" style="width:50px;">
+                                <span>分</span>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control" style="width:50px;">
+                                <span>秒</span>
+                            </div>
+                        </form>
+                        <div class="text-center" style="margin-top:15px;">
+                            <button class="btn" type="button" style="background: #1b726a;color: white" id="secondPositioning">切换</button>
                             <button class="btn" type="button" style="background: #1b726a;color: white">定位</button>
                         </div>
-                    </form>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -271,7 +260,7 @@
             <button type="button" class="btn btn-inverse" title="缩小" onClick="zoomOutMap()"><span class="iconfont icon-suoxiaochuangkou"></span></button>
             <button type="button" class="btn btn-inverse" title="框选放大" onClick="right_click_box(1)" ><span><img src="/images/box-amplification.png" alt=""></span></button>
             <button type="button" class="btn btn-inverse" title="框选缩小" onClick="right_click_box(-1)" ><span><img src="/images/box-narrow-down.png" alt=""></span></button>
-            <button type="button" class="btn btn-inverse" title="全幅" onClick="" ><span class="iconfont icon-quantu"></span></button>
+            <button type="button" class="btn btn-inverse" title="全幅" onClick="fullView()" ><span class="iconfont icon-quantu"></span></button>
             <button type="button" class="btn btn-inverse" title="图层管理" data-toggle="modal" data-target="#layerMangerBtn"><span class="iconfont icon-tuceng"></span></button>
             <button type="button" class="btn btn-inverse" title="书签" data-toggle="modal" data-target="#bookmark"><span class="iconfont icon-shuqian"></span></button>
             <button type="button" class="btn btn-inverse" title="测量" data-toggle="modal" data-target="#measureBtn"><span class="iconfont icon-celiang"></span></button>

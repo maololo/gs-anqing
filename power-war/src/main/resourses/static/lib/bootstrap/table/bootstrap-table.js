@@ -2464,7 +2464,8 @@
             i, row, rowUniqueId;
 
         for (i = len - 1; i >= 0; i--) {
-            row = this.options.data[i];
+//        	row = this.options.data[i];
+            row = this.options.data[i].values_;
 
             if (row.hasOwnProperty(uniqueId)) { // uniqueId is a column
                 rowUniqueId = row[uniqueId];

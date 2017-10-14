@@ -9,6 +9,7 @@ var attributeInfoObj = ""; // 属性信息弹窗对象
 var geomObj = ""; // 测量时生成对象的图层
 var measureTooltipElement = ""; // 度量工具提示元素.
 var measureTooltip = ""; // 测量结果对象
+var index=""; //导航
 
 $(function() {
 	initLayerTree();// 初始图层列表
@@ -94,11 +95,21 @@ $(function() {
 		$(".modal-backdrop").remove();
 
 	})
-	$('.modal').on('shown.bs.modal', function() {
-		index = $(".modal").index(this);
-		$(this).modal('show');
-		$(".modal").not($(".modal:eq(" + index + ")")).hide();
-	})
+//	$('.modal').on('shown.bs.modal', function() {
+//		index = $(".modal").index(this);
+//		$(this).modal('show');
+//		$(".modal").not($(".modal:eq(" + index + ")")).hide();
+//	})
+	
+	 /*定位点击切换效果*/
+    $("#accuratePositioning").click(function () {
+        $(".switch").css("display","block")
+        $(".switchDu").css("display","none")
+    })
+    $("#secondPositioning").click(function () {
+        $(".switch").css("display","none")
+        $(".switchDu").css("display","block")
+    })
 	/** 拖拽模态框 */
 	/** 拖拽模态框 */
 	var dragModal = {
@@ -195,9 +206,7 @@ $(function() {
 
 // 初始化图层列表
 function initLayerTree() {
-	$('#powerLayerTree')
-			.jstree(
-					{
+	$('#powerLayerTree').jstree({
 						"plugins" : [ "checkbox", "contextmenu", "wholerow" ],
 						"checkbox" : {
 							"whole_node" : false,
@@ -219,39 +228,25 @@ function initLayerTree() {
 												&& obj.parent != "#") {
 											// 获取当前图层及类型
 											var layer = obj.original.layer;
-											var type = layer.getSource()
-													.getFeatures()[0]
-													.getGeometry().getType()
-													.toLowerCase();
-											if (type == "point") {
-												type = "Point";
-											} else if (type == "linestring") {
-												type = "LineString"
-											}
+											var type = layer.getSource().getFeatures()[0].getGeometry().getType();
 											// 画矢量图形
 											var draw = new ol.interaction.Draw(
 													{
-														source : layer
-																.getSource(),
+														source : layer.getSource(),
 														geometryName : 'SHAPE',
 														type : (type)
 													});
 											map.addInteraction(draw);
-											draw
-													.on(
-															'drawend',
-															function(e) {
+											draw.on('drawend',function(e) {
 																// 保存编辑数据
 																editObject.feature = e.feature;
-																editObject.source = layer
-																		.getSource();
+																editObject.source = layer.getSource();
 																editObject.editType = "add";
 																editObject.layer_name = queryLayerNameByID(obj.id);
 																// 弹出属性窗口
 																jsPanelAttributeInfo();
 																// 关闭draw事件
-																map
-																		.removeInteraction(draw);
+																map.removeInteraction(draw);
 															}, this);
 										} else {
 											swal('根节点不能添加!', '', "warning");
@@ -273,28 +268,19 @@ function initLayerTree() {
 											var select = new ol.interaction.Select();
 											var modify = new ol.interaction.Modify(
 													{
-														features : select
-																.getFeatures()
+														features : select.getFeatures()
 													});
 											map.addInteraction(select);
-											select
-													.on(
-															'select',
-															function(e) {
+											select.on('select',function(e) {
 																if (e.selected[0] == undefined) {
-																	modify
-																			.setActive(true);
-																} else if (e.selected[0].id_
-																		.split(".")[0] != editObject.layer_name) {
-																	modify
-																			.setActive(false);
+																	modify.setActive(true);
+																} else if (e.selected[0].id_.split(".")[0] != editObject.layer_name) {
+																	modify.setActive(false);
 																} else {
-																	modify
-																			.setActive(true);
+																	modify.setActive(true);
 																	// 保存数据
 																	editObject.feature = e.selected[0];
-																	editObject.source = layer
-																			.getSource();
+																	editObject.source = layer.getSource();
 																	editObject.editType = "update";
 																	closeAttributeInfoObj();
 																	jsPanelAttributeInfo();
@@ -319,25 +305,13 @@ function initLayerTree() {
 											var layer_type = queryLayerNameByID(obj.id);
 											var select = new ol.interaction.Select();
 											map.addInteraction(select);
-											select
-													.on(
-															'select',
-															function(e) {
-																if (select
-																		.getFeatures()
-																		.getArray().length == 0) {
-																} else if (e.selected[0].id_
-																		.split(".")[0] != layer_type) {
+											select.on('select',function(e) {
+																if (select.getFeatures().getArray().length == 0) {
+																} else if (e.selected[0].id_.split(".")[0] != layer_type) {
 																	var name = getLayerNameTitle(layer_name);
-																	swal(
-																			'不能删除!',
-																			'此数据不属于'
-																					+ name
-																					+ '图层',
-																			"warning");
+																	swal('不能删除!','此数据不属于'+ name+ '图层',"warning");
 																} else {
-																	swal(
-																			{
+																	swal({
 																				title : "确定删除此数据？",
 																				text : "删除后不可恢复,请谨慎操作!",
 																				type : "warning",
@@ -353,29 +327,16 @@ function initLayerTree() {
 																					// 获取当前图层
 																					var layer = obj.original.layer;
 																					editWFSFeature(
-																							e.target
-																									.getFeatures()
-																									.getArray(),
+																							e.target.getFeatures().getArray(),
 																							'delete',
 																							layer_type);
-																					layer
-																							.getSource()
-																							.removeFeature(
-																									e.target
-																											.getFeatures()
+																					layer.getSource().removeFeature(e.target.getFeatures()
 																											.getArray()[0]);
-																					e.target
-																							.getFeatures()
-																							.clear();
-																					map
-																							.removeInteraction(select);
-																					swal(
-																							"删除成功",
-																							'',
-																							"success");
+																					e.target.getFeatures().clear();
+																					map.removeInteraction(select);
+																					swal("删除成功",'',"success");
 																				} else {
-																					map
-																							.removeInteraction(select);
+																					map.removeInteraction(select);
 																				}
 
 																			});
@@ -385,6 +346,22 @@ function initLayerTree() {
 
 										} else {
 											swal('根节点不能删除!', '', "warning");
+										}
+									}
+								},
+								"定位" : {
+									"label" : "定位",
+									"action" : function(data) {
+										clearOnMapEvent(); // 清除主动添加到地图上的事件
+										var inst = jQuery.jstree
+												.reference(data.reference);
+										var obj = inst.get_node(data.reference);
+										if (obj.children.length == 0 && obj.parent != "#") {
+											// 定位到添加的图层位置
+											var bbox = obj.original.bounds.split(',');
+											map.getView().fit(bbox, map.getSize());
+										} else {
+											swal('根节点不能定位!', '', "warning");
 										}
 									}
 								},
@@ -437,14 +414,7 @@ function initLayerTree() {
 				}
 			});
 
-	// 图层tree绑定单击事件 定位到图层场景
-	$('#powerLayerTree').bind('select_node.jstree', function(event, data) {
-		if (data.node.children.length == 0) {
-			// 定位到添加的图层位置
-			var bbox = data.node.original.bounds.split(',');
-			map.getView().fit(bbox, map.getSize());
-		}
-	});
+	
 }
 
 // 获取图层列表数据
@@ -457,8 +427,7 @@ function getLayerTreeData() {
 		}
 	};
 	var treeNodes = new Array();
-	$
-			.ajax({
+	$.ajax({
 				//请求地址                               
 				url : "/T_POWERLAYERS/search.action",
 				data : {
@@ -473,7 +442,7 @@ function getLayerTreeData() {
 //					var bounds = [ 117.044453027202, 30.5066687301743,
 //							117.110272065313, 30.5599371735666 ];
 					var layers = [];
-					var treeId = 0;
+					var treeId = data.length-1;
 					var gaodeMapLayer = new ol.layer.Tile(
 							{
 								source : new ol.source.XYZ(
@@ -500,8 +469,6 @@ function getLayerTreeData() {
 										format : new ol.format.GeoJSON(),
 										url : data[i].C_LAYERURL + '?'
 												+ $.param(wfsParams),
-//										url : 'http://172.16.15.147:8080/geoserver/anqing/wfs?'
-//												+ $.param(wfsParams),
 										strategy : ol.loadingstrategy.bbox,
 										projection : 'EPSG:4326'
 									});
@@ -690,14 +657,14 @@ function getLayerTreeData() {
 									checked : true
 								}
 							}
-							treeId++;
+							treeId--;
 						}
 					}
 					var projection = new ol.proj.Projection({
-						code : 'EPSG:4326',
-						units : 'm',
-						axisOrientation : 'neu',
-						global : false
+						  code: 'EPSG:4326',
+				          units: 'degrees',
+				          axisOrientation: 'neu',
+				          global: true
 					});
 
 					//初始化地图
@@ -705,22 +672,24 @@ function getLayerTreeData() {
 						controls : ol.control.defaults({
 							attribution : false,
 							zoom : false
-						}).extend([]),
+						}).extend([
+						           new ol.control.MousePosition(), //鼠标位置
+						            new ol.control.OverviewMap(),  //鸟瞰图控件
+						            new ol.control.ScaleLine(),  //比例尺
+						           ]),
 						target : 'openlayersID',
 						projection : 'EPSG:4326',
 						layers : layers,
 						view : new ol.View({
 							projection : projection,
-							// 限制地图缩放最大级别为14，最小级别为10
+							// 限制地图缩放最大级别为22，最小级别为6
 							minZoom : 6,
-							maxZoom : 35
+							maxZoom : 22
 						})
 					});
+					map.setSize([1760,850]);
 					//禁用双击地图放大功能
-					map
-							.getInteractions()
-							.getArray()
-							.forEach(
+					map.getInteractions().getArray().forEach(
 									function(interaction) {
 										if (interaction instanceof ol.interaction.DoubleClickZoom) {
 											map.removeInteraction(interaction);
@@ -1462,7 +1431,7 @@ function displayData(features, layerType) {
 				return row.values_.MAINTENANCEUNIT;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -1528,7 +1497,7 @@ function displayData(features, layerType) {
 				return row.values_.MAINTENANCEUNIT;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -1540,6 +1509,15 @@ function displayData(features, layerType) {
 		break;
 	case "SD_COMMUNICATIONPOLETOWER": // '通信杆塔':
 		columns = [ {
+			field : 'ID',
+			title : '编码',
+			align : 'center',
+			valign : 'top',
+			sortable : true,
+			formatter : function(value, row, index) {
+				return row.values_.ID;
+			}
+		},{
 			field : 'NAME',
 			title : '杆塔名称',
 			align : 'center',
@@ -1594,7 +1572,7 @@ function displayData(features, layerType) {
 				return row.values_.MAINTENANCEUNIT;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -1660,7 +1638,7 @@ function displayData(features, layerType) {
 				return row.values_.REMARK;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -1726,7 +1704,7 @@ function displayData(features, layerType) {
 				return row.values_.REMARK;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -1838,7 +1816,7 @@ function displayData(features, layerType) {
 				return row.values_.MAINTENANCEUNIT;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -1850,6 +1828,15 @@ function displayData(features, layerType) {
 		break;
 	case "SD_CABLEDUCT": // '电缆管道':
 		columns = [ {
+			field : 'ID',
+			title : '编码',
+			align : 'center',
+			valign : 'top',
+			sortable : true,
+			formatter : function(value, row, index) {
+				return row.values_.ID;
+			}
+		},{
 			field : 'PMSID',
 			title : 'PMS系统编码',
 			align : 'center',
@@ -1922,7 +1909,7 @@ function displayData(features, layerType) {
 				return row.values_.MAINTENANCEUNIT;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -1934,6 +1921,15 @@ function displayData(features, layerType) {
 		break;
 	case "SD_CABLETRENCH": // '电缆沟':
 		columns = [ {
+			field : 'ID',
+			title : '编码',
+			align : 'center',
+			valign : 'top',
+			sortable : true,
+			formatter : function(value, row, index) {
+				return row.values_.ID;
+			}
+		},{
 			field : 'PMSID',
 			title : 'PMS系统编码',
 			align : 'center',
@@ -2006,7 +2002,7 @@ function displayData(features, layerType) {
 				return row.values_.MAINTENANCEUNIT;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -2018,6 +2014,15 @@ function displayData(features, layerType) {
 		break;
 	case "SD_CABLETUNNEL": // '电缆隧道':
 		columns = [ {
+			field : 'ID',
+			title : '编码',
+			align : 'center',
+			valign : 'top',
+			sortable : true,
+			formatter : function(value, row, index) {
+				return row.values_.ID;
+			}
+		},{
 			field : 'PMSID',
 			title : 'PMS系统编码',
 			align : 'center',
@@ -2090,7 +2095,7 @@ function displayData(features, layerType) {
 				return row.values_.MAINTENANCEUNIT;
 			}
 		}, {
-			field : '操作',
+			field : 'OPERATE',
 			title : '操作',
 			align : 'center',
 			valign : 'middle',
@@ -2117,6 +2122,7 @@ function displayData(features, layerType) {
 		showColumns : false, // 不显示下拉框（选择显示的列）
 		sidePagination : "client",
 		queryParams : queryParams,// 分页参数
+		uniqueId:'ID',
 		// clickToSelect: true,
 		// height: 480,
 		columns : columns
@@ -2124,7 +2130,7 @@ function displayData(features, layerType) {
 }
 // bootstrap table操作按钮 （查询结果表）
 window.operateEventsFeature = {
-	'click .RoleOfdDeldte' : function(e, value, row, index) {
+	'click .RoleOfdDeldteFeature' : function(e, value, row, index) {
 		$(this).css("background", "#308374")
 		swal({
 			title : "确定删除此数据？",
@@ -2137,21 +2143,70 @@ window.operateEventsFeature = {
 			closeOnConfirm : false
 		}, function(isConfirm) {
 			if (isConfirm) {
-				// 获取当前图层
-				// var layer = obj.original.layer;
-				// editWFSFeature(e.target.getFeatures().getArray(),'delete',layer_type);
-				// layer.getSource().removeFeature(e.target.getFeatures().getArray()[0]);
-				// e.target.getFeatures().clear();
+				// 获取当前图层名
+				var layer_type = row.id_.split(".")[0];
+				//根据图层名获取对应layertree的Id
+				var id = queryIdByLayerName(layer_type);
+				//根据 layertree的Id获取节点对象
+				 var node=$('#powerLayerTree').jstree().get_node("#"+id);
+				 var layer = node.original.layer;
+
+				 //删除数据库Feature
+				 editWFSFeature([row],'delete',layer_type);
+				 //删除地图上的Feature
+				 layer.getSource().removeFeature(row);
+				 //删除bootstrapTable表格里的Feature
+				 $('#wfsFeatureTable').bootstrapTable('removeByUniqueId', row.values_.ID);
 				swal("删除成功", '', "success");
 			}
 		});
 	},
-	'click .RoleOfEdit' : function(e, value, row, index) {
-		rowData = row;
-		// $(this).css("background","#308374");
-		// openEquipmentDailog('/equipment/equipmentAdd.action','设备信息');
+	'click .RoleOfEditFeature' : function(e, value, row, index) {
+		// 将jspanel弹窗缩成一行
+		propertyListWindow.smallify();
+		// 获取当前图层名
+	    var layer_type = row.id_.split(".")[0];
+		//根据图层名获取对应layertree的Id
+		var id = queryIdByLayerName(layer_type);
+		//根据 layertree的Id获取节点对象
+		 var node=$('#powerLayerTree').jstree().get_node("#"+id);
+		 var layer = node.original.layer;
+		// 保存数据
+		
+		editObject.layer_name = layer_type;
+		editObject.feature = row;
+		editObject.source = layer.getSource();
+		editObject.editType = "update";
+		editObject.table = true;
+		editObject.index = index;
+		
+		clearHighlightObj();
+		
+		var select = new ol.interaction.Select();
+		// 设置要素高亮
+		highlightObj = select.getFeatures();
+		highlightObj.push(row);
+		var modify = new ol.interaction.Modify({
+			features : select.getFeatures()
+		});
+		map.addInteraction(select);
+		map.addInteraction(modify);
+		select.on('select',function(e) {
+			highlightObj={};
+					if (e.selected[0] != undefined && e.selected[0].id_ == row.id_) {
+						modify.setActive(true);
+					} else {
+						modify.setActive(false);
+					}
+				});
+		jsPanelAttributeInfo();
+		
+		// 获取要素的几何范围
+		var extent = row.getGeometry().getExtent();
+		map.getView().fit(extent, map.getSize());
+//		map.render();
 	},
-	'click .RoleOfPosition' : function(e, value, row, index) {
+	'click .RoleOfPositionFeature' : function(e, value, row, index) {
 		// 将jspanel弹窗缩成一行
 		propertyListWindow.smallify();
 		var feature = row;
@@ -2181,9 +2236,9 @@ function operationdateFormatter(value) {
 // bootstrap table操作按钮 （查询结果表）
 function operateFormatterFeature(val, row, index) {
 	return [
-			'<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
-			'<button class="RoleOfdDeldte  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>',
-			'<button class="RoleOfPosition  btn btn-sm rolebtn" style="background: none;outline:none;color: #bf824c" title="定位"><span  class=" glyphicon glyphicon-record  " ><span></button>'
+			'<button class="RoleOfEditFeature btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
+			'<button class="RoleOfdDeldteFeature  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>',
+			'<button class="RoleOfPositionFeature  btn btn-sm rolebtn" style="background: none;outline:none;color: #bf824c" title="定位"><span  class=" glyphicon glyphicon-record  " ><span></button>'
 
 	].join('');
 
@@ -2202,7 +2257,29 @@ function queryParams(params) {
 	}
 };
 
-// 根据id查询图层名称
+// 根据图层名称  查询 layerTree ID
+function queryIdByLayerName(layer_name) {
+	var id = "";
+	var layer = "anqing:"+layer_name;
+	$.ajax({
+		// 请求地址
+		url : "/T_POWERLAYERS/search.action",
+		data : {
+			"search.C_LAYER*eq" : layer
+		},// 设置请求参数
+		type : "post",// 请求方法
+		async : false,
+		dataType : "json",// 设置服务器响应类型
+		// success：请求成功之后执行的回调函数 data：服务器响应的数据
+		success : function(data) {
+			if (data != "") {
+				id = data[0].C_ID;
+			}
+		}
+	});
+	return id;
+}
+// 根据layerTree  id查询图层名称
 function queryLayerNameByID(id) {
 	var layer_name = "";
 	$.ajax({
@@ -2225,7 +2302,7 @@ function queryLayerNameByID(id) {
 	return layer_name;
 }
 
-// 根据id查询图层名称
+
 function queryWFSURL() {
 	var url = "";
 	$.ajax({
@@ -2271,11 +2348,7 @@ function jsPanelAttributeInfo() {
 					url : url,
 					autoload : true,
 					done : function(data, textStatus, jqXHR, panel) {
-						// 图层tree根节点
-						// var root
-						// =$('#powerLayerTree').jstree().get_node("#-1");
-						// var childrens =
-						// $('#powerLayerTree').jstree("get_children_dom",root);
+						
 						if (editObject.editType == "add") {
 							var select = new ol.interaction.Select();
 							var modify = new ol.interaction.Modify({
@@ -2444,6 +2517,9 @@ function saveFeature() {
 		}
 		feature.set('SHAPE', geo);
 		editWFSFeature([ feature ], editType, featureType);
+		if(editObject.table && $('#wfsFeatureTable')!=""){
+			$('#wfsFeatureTable').bootstrapTable('updateRow', {index: editObject.index, row: feature.values_});
+		}
 		editObject = {};
 		// 关闭属性弹窗
 		closeAttributeInfoObj();
@@ -2516,6 +2592,20 @@ function editWFSFeature(features, editType, featureType) {
 	map.render();
 	swal("保存成功", '', "success");
 }
+
+//全幅
+function fullView(){
+	closeFunction();
+	var bounds = [ 117.044453027202, 30.5066687301743,
+					117.110272065313, 30.5599371735666 ];
+	  map.getView().fit(bounds, map.getSize());
+//	  map.render();
+}
+
+
+
+
+
 
 function test() {
 	map.getView().setZoom(30);
