@@ -786,3 +786,9 @@ option:hover{
     outline: none;
     background: #005a52 !important;
 }
+
+.detail_icon{
+	background-image: url(/images/details.png);
+	width: 15px;
+	height: 15px;
+}

@@ -37,6 +37,9 @@ function init(){
         	rowData = row;
             $(this).css("background","#308374");
             openEquipmentDailog('/equipment/equipmentAdd.action','设备信息');
+        },
+        'click .RoleOfImage': function (e, value, row, index) {
+            openEquipmentDailog('/equipment/imgMessage.action','图片信息');
         }
     };
     $('#equipmentTable').bootstrapTable({
@@ -108,19 +111,18 @@ function init(){
         }, {
             field: '操作',
             title: '操作',
-            align: 'center',
+            align: 'right',
             valign: 'top',
             sortable: true,
-            width : '125px',
+            width : '330px',
             events: operateEvents,//给按钮注册事件
-            formatter: operateFormatter,//表格中增加按钮
+            formatter: operateFormatterEquipment,//表格中增加按钮
         }]
 
     });
 
     
     $(".rolebtn").hover(function () {
-       index=$(".rolebtn").index(this);
        $(this).css({"background":"#308374","color":"white"})
     },function () {
       $(this).css({"background":"none","color":"#666"})
@@ -173,11 +175,20 @@ function queryParams(params) {
 	}
 };
 
-function operateFormatter(val,row,index){
-    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
-        '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
-        /*'<button class="RoleOfPosition  btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color: #6688b5"><span  class=" glyphicon glyphicon-retweet " ><span></button>',
-        '<button class="RoleOfPosition  btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color: #bf824c" title="定位"><span  class=" glyphicon glyphicon-record  " ><span></button>'*/
+function operateFormatterEquipment(val,row,index){
+	var icon = ""
+	if(row.C_TYPE == "ODF"){
+		icon = '<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="光交图"><span class="gj_icon" style="display:block;" ></span></button>'+
+			   '<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线信息"><span class="pxinfo_icon" style="display:block;" ></span></button>'+
+			'<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线模块"><span class="pxmodule_icon" style="display:block;" ></span></button>';
+	}else if(row.C_TYPE == "分光器"){
+		icon ='<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="分光器"><span class="fgq_icon" style="display:block;" ></span></button>';
+	}
+    return  [icon+'<button class="RoleOfImage  btn btn-sm rolebtn" style="background: none;outline:none;color: #0ad6bd" title="图片查看"><span  class=" glyphicon glyphicon-picture  " ><span></button>',
+    	'<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
+        '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>',
+        '<button class="RoleOfPosition  btn btn-sm rolebtn" style="background: none;outline:none;color: #6688b5" title="局站"><span  class=" glyphicon glyphicon-retweet " ><span></button>',
+//        '<button class="RoleOfPosition  btn btn-sm rolebtn" style="background: none;outline:none;color: #bf824c" title="定位"><span  class=" glyphicon glyphicon-record  " ><span></button>',
     ].join('');
 }
 
