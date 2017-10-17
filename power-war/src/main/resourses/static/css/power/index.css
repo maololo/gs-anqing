@@ -726,11 +726,10 @@ table tr:nth-child(odd) {
     margin-top:8px;
 }
 #attributeInfo  .text{
-    margin-bottom: 15px;
+   /*  margin-bottom: 15px; */
 }
 
 .form-group{
-	
     margin-bottom: 15px;
 }
 #attributeInfo p button{
@@ -779,6 +778,12 @@ option:hover{
     background: #005a52 !important;
     padding-top: 0px;
     padding-bottom: 0px;
+}
+/* ol鼠标显示坐标位置样式 */
+.ol-mouse-position {
+    top: 97%;
+    right: 40%;
+    position: absolute;
 }
 
 /* 下拉框背景样式 */

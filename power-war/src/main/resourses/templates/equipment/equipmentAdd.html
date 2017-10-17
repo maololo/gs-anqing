@@ -4,25 +4,25 @@
     <form class="form-horizontal" style="margin-top: 20px;" id="equipment_form">
         
         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label" >设备ID:</label>
+                            <label for="C_CODE" class="col-sm-2 control-label" >设备ID:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="C_CODE" id="C_CODE"/>
                                 <input type="hidden" name="C_ID" id="C_ID"/>
                             </div>
-                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">名称:</label>
+                            <label for="C_NAME" class="col-sm-2 control-label" style="margin-left: -10px;">名称:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="C_NAME" id="C_NAME"/>
                             </div>
                             
                         </div>
                         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label" >设备类型:</label>
+                            <label for="C_TYPE" class="col-sm-2 control-label" >设备类型:</label>
                             <div class="col-sm-4" >
                                 <select id="C_TYPE" name="C_TYPE" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
-                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">所属局站:</label>
+                            <label for="C_STATIONID" class="col-sm-2 control-label" style="margin-left: -10px;">所属局站:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="C_STATIONID" id="C_STATIONID"/>
                             </div>
@@ -30,13 +30,13 @@
 				            
                         </div>
                         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label" >生产厂家:</label>
+                            <label for="C_MANUFACTURER" class="col-sm-2 control-label" >生产厂家:</label>
                             <div class="col-sm-4" >
                                 <select id="C_MANUFACTURER" name="C_MANUFACTURER" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
-                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">设备型号:</label>
+                            <label for="C_MODEL" class="col-sm-2 control-label" style="margin-left: -10px;">设备型号:</label>
                             <div class="col-sm-4" >
                                 <select id="C_MODEL" name="C_MODEL" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
@@ -45,14 +45,14 @@
                             
                         </div>
                         <div class="form-group">
-                          <label for="inputEmail3" class="col-sm-2 control-label" >投运日期:</label>
+                          <label for="C_RUNDATE" class="col-sm-2 control-label" >投运日期:</label>
                             <div class="col-sm-4">
                             <div class='input-group date' id='checkEquipmentDate'>
 					           <input type='text' class="form-control" name="C_RUNDATE" id="C_RUNDATE"/> <span
 						       class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span> </span>
 				            </div>
 				            </div>
-                           <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">运行状态:</label>
+                           <label for="C_RUNINGSTATE" class="col-sm-2 control-label" style="margin-left: -10px;">运行状态:</label>
                             <div class="col-sm-4" >
                                 <select id="C_RUNINGSTATE" name="C_RUNINGSTATE" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
@@ -61,7 +61,7 @@
                             
                         </div>
                         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label">备注:</label>
+                            <label for="C_REMARK" class="col-sm-2 control-label">备注:</label>
                             <div class="col-sm-10">
                                 <textarea class="form-control" rows="2" name="C_REMARK" id="C_REMARK"></textarea> 
                             </div>

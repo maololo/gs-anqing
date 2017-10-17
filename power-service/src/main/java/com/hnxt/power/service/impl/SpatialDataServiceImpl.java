@@ -26,7 +26,7 @@ public class SpatialDataServiceImpl  implements SpatialDataService{
 
 	@Override
 	public List<Map<String, Object>> getSpatialData(String modelName) {
-		// TODO Auto-generated method stub
-		return baseDao.executeSQL("SELECT distinct t1.column_name as value ,t2.comments as field FROM all_tab_cols t1 LEFT JOIN all_tab_comments t3 ON t1.table_name=t3.table_name LEFT JOIN all_col_comments t2 ON t1.table_name=t2.table_name AND t1.column_name=t2.column_name WHERE t1.table_name='"+modelName+"'");
+		// TODO Auto-generated method stub  distinct
+		return baseDao.executeSQL("SELECT DISTINCT t1.column_name as value ,t2.comments as field FROM all_tab_cols t1 LEFT JOIN all_tab_comments t3 ON t1.table_name=t3.table_name LEFT JOIN all_col_comments t2 ON t1.table_name=t2.table_name AND t1.column_name=t2.column_name WHERE t1.table_name='"+modelName+"'");
 	}
 }

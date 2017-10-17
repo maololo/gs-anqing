@@ -16,6 +16,8 @@ $('#C_VARNTYPE').selectpicker({
 initSelectpicker('局站类型',"TYPE");
 initSelectpicker('电压等级','VOLTAGE');
 initSelectpicker('行政区划','DISTRICT');
+initSelectpicker('资产单位','ASSETUNIT'); 
+initSelectpicker('维护单位','MAINTENANCEUNIT');
 
 function initSelectpicker(val,id){
 	$.ajax({
@@ -40,11 +42,11 @@ function initSelectpicker(val,id){
                 <div style="background: #ebedec;">
                     <form class="form-horizontal" style="padding: 10px" id="sd_station_form">
                         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label" >名称:</label>
+                            <label for="NAME" class="col-sm-2 control-label" >名称:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="NAME" id="NAME"/>
                             </div>
-                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">局站类型:</label>
+                            <label for="TYPE" class="col-sm-2 control-label" style="margin-left: -10px;">局站类型:</label>
                             <div class="col-sm-4" >
                                 <select id="TYPE" name="TYPE" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
@@ -52,14 +54,14 @@ function initSelectpicker(val,id){
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label">投运日期:</label>
+                            <label for="OPERATIONDATE" class="col-sm-2 control-label">投运日期:</label>
                             <div class="col-sm-4">
                             <div class='input-group date' id='checkDate'>
 					           <input type='text' class="form-control" name="OPERATIONDATE" id="OPERATIONDATE"/> <span
 						       class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span> </span>
 				            </div>
 				            </div>
-				            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">电压等级:</label>
+				            <label for="VOLTAGE" class="col-sm-2 control-label" style="margin-left: -10px;">电压等级:</label>
                             <div class="col-sm-4" >
                                 <select id="VOLTAGE" name="VOLTAGE" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
@@ -67,23 +69,27 @@ function initSelectpicker(val,id){
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label" >行政区划:</label>
+                            <label for="DISTRICT" class="col-sm-2 control-label" >行政区划:</label>
                             <div class="col-sm-4" >
                                 <select id="DISTRICT" name="DISTRICT" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
-                            <label for="inputEmail3" class="col-sm-2 control-label" style="margin-left: -10px;">资产单位:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="ASSETUNIT" id="ASSETUNIT"/>
+                            <label for="ASSETUNIT" class="col-sm-2 control-label" style="margin-left: -10px;">资产单位:</label>
+                            <div class="col-sm-4" >
+                                <select id="ASSETUNIT" name="ASSETUNIT" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="inputEmail3" class="col-sm-2 control-label">维护单位:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="MAINTENANCEUNIT" id="MAINTENANCEUNIT"/>
-                            </div>
+                         <div class="form-group">
                             
+                            <label for="MAINTENANCEUNIT" class="col-sm-2 control-label" >维护单位:</label>
+                            <div class="col-sm-4" >
+                                <select id="MAINTENANCEUNIT" name="MAINTENANCEUNIT" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="text-center">
                             <button class="text-but" type="button"  onclick="saveFeature()">保存</button>
