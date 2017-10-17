@@ -1,0 +1,43 @@
+<div style="min-width: 500px;min-height: 550px;">
+    <div class="equipment-header">
+        <button class="btn " type="button"style="background: #318375;color: white;margin-left: 10px;" >选择光缆</button>
+        <form class="form-inline" style="float: right;margin-right: 2rem">
+            <div class="form-group">
+                <label for="exampleInputName2">DMSAN :</label>
+                <select class="form-control" placeholder="LINGGG" style="width: 180px;">
+                    <option></option>
+                </select>
+            </div>
+            <button type="submit" class="btn" style="background: #318375;color: white;margin-left: 10px;">查询</button>
+        </form>
+    </div>
+        <p style="height:30px;background:#318375;margin-top: 10px;line-height:30px;text-align: center;color: white;font-size: 14px; ">故障光缆</p>
+        <table class="table" >
+            <thead>
+                <tr>
+                    <th>光缆名称</th>
+                    <th>起点名</th>
+                    <th>终点名</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>朝阳接头盒-新市立医院光交箱光缆</td>
+                    <td>朝阳接头盒</td>
+                    <td>新市立医院光交箱光缆</td>
+                </tr>
+            </tbody>
+        </table>
+    <div class="text-center">
+        <button class="btn" style="background: #318375;color: white;border-radius: 3px;" onclick="analysisData()">光缆故障分析</button>
+        <button class="btn" style="background: #318375;color: white;border-radius: 3px;margin-left: 10px;" onclick="removeData()">清理</button>
+    </div>
+    <div class="analysisResult">
+        <p style="height:30px;background:#318375;margin-top: 10px;line-height:30px;text-align: center;color: white;font-size: 14px; ">可选光缆路径</p>
+        <table id="trouble-tab" ></table>
+    </div>
+</div>
+<script>
+        // 表格数据源
+$(".addimg").addClass("addicon");
+</script>
