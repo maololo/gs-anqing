@@ -1389,7 +1389,7 @@ function queryFeature() {
 
 			// 然后发布请求并将接收到数据在表格中显示
 			var featureUrl = "http://" + queryWFSURL() + "/geoserver/wfs";
-			/*fetch(featureUrl, {
+			fetch(featureUrl, {
 				method : 'POST',
 				body : new XMLSerializer().serializeToString(featureRequest)
 			}).then(function(response) {
@@ -1407,7 +1407,7 @@ function queryFeature() {
 					displayData(features, layerType);
 					$(".table-content").mLoading("hide");
 				}
-			});*/
+			});
 
 		}
 	}
