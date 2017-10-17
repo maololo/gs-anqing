@@ -1569,7 +1569,7 @@ function getColumnsBylayerType(layerType){
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
-			width : '125px',
+			width : '180px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -2425,7 +2425,11 @@ function operationdateFormatter(value) {
 
 // bootstrap table操作按钮 （查询结果表）
 function operateFormatterFeature(val, row, index) {
-	return [
+	var detail = "";
+	if(row.values_.DISTRICT!=undefined){
+		detail = '<button class=" btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="设备信息"><span  class="detail_icon" style="display:block;"><span></button>'
+	}
+	return [detail+
 			'<button class="RoleOfEditFeature btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
 			'<button class="RoleOfdDeldteFeature  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>',
 			'<button class="RoleOfPositionFeature  btn btn-sm rolebtn" style="background: none;outline:none;color: #bf824c" title="定位"><span  class=" glyphicon glyphicon-record  " ><span></button>'
