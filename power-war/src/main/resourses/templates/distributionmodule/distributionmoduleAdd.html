@@ -1,49 +1,55 @@
  
-
+ <script>
+ blurData = getBlurDate(['SD_STATION']);
+ $('#C_STATIONID').typeahead({
+	    source: blurData,
+	    display: 'Name',
+	    val: 'ID'
+	});
+   
+ </script>
 <div style="width: 530px;">
     <form class="form-horizontal" style="margin-top: 20px;" id="distributionmodule_form">
         
         <div class="form-group">
-                            <label for="C_CODE" class="col-sm-2 control-label" >模块ID:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_CODE" id="C_CODE"/>
+                            <label for="C_MODULENAME" class="col-sm-2 control-label" >模块名称:</label>
+                             <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="C_MODULENAME" id="C_MODULENAME"/>
                                 <input type="hidden" name="C_ID" id="C_ID"/>
+                                <input type="hidden" name="C_CODE" id="C_CODE"/>
                             </div>
-                            <label for="C_STATIONID" class="col-sm-2 control-label" style="margin-left: -10px;">局站ID:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_STATIONID" id="C_STATIONID"/>
+                            <label for="C_STATIONID" class="col-sm-2 control-label" style="margin-left: -10px;">局站:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="C_STATIONID" name="C_STATIONID" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="text-but" type="button" title="选取站点" onclick="selectStartIDOrEndID('C_STATIONID')">选</button>
                             </div>
                             
                         </div>
                         <div class="form-group">
-                            <label for="C_MODULENAME" class="col-sm-2 control-label" >模块名称:</label>
-                             <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_MODULENAME" id="C_MODULENAME"/>
-                            </div>
-                            <label for="C_TERMINALROWNUM" class="col-sm-2 control-label" style="margin-left: -10px;">端子行数:</label>
+                            
+                            <label for="C_TERMINALROWNUM" class="col-sm-2 control-label" >端子行数:</label>
                             <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_TERMINALROWNUM" id="C_TERMINALROWNUM"/>
+                                <input type="text" class="form-control"  name="C_TERMINALROWNUM" id="C_TERMINALROWNUM" onblur="blurTerminalRownum()"/>
+                            </div>
+                            <label for="C_TERMINALCOLUMNNUM" class="col-sm-2 control-label" style="margin-left: -10px;">端子列数:</label>
+                             <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="C_TERMINALCOLUMNNUM" id="C_TERMINALCOLUMNNUM" onblur="blurTerminalColumnnum()" value="12"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="C_TERMINALCOLUMNNUM" class="col-sm-2 control-label" >端子列数:</label>
-                             <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_TERMINALCOLUMNNUM" id="C_TERMINALCOLUMNNUM"/>
-                            </div>
-                            <label for="C_CAPACITY" class="col-sm-2 control-label" style="margin-left: -10px;">容量:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_CAPACITY" id="C_CAPACITY"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                          <label for="C_RUNDATE" class="col-sm-2 control-label" >投运日期:</label>
+                            <label for="C_RUNDATE" class="col-sm-2 control-label" >投运日期:</label>
                             <div class="col-sm-4">
                             <div class='input-group date' id='checkDistributionmoduleDate'>
 					           <input type='text' class="form-control" name="C_RUNDATE" id="C_RUNDATE"/> <span
 						       class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span> </span>
 				            </div>
 				            </div>
-                            
+                            <label for="C_CAPACITY" class="col-sm-2 control-label" style="margin-left: -10px;">容量:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="C_CAPACITY" id="C_CAPACITY" readonly/>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="C_REMARK" class="col-sm-2 control-label">备注:</label>

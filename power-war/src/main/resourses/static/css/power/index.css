@@ -75,10 +75,10 @@ a:focus, a:hover {
 	padding-top:0px;
 	padding-bottom:0px;
 }
-.dropdown-menu>li a{
+.navbar-nav .dropdown-menu>li a{
     color: white;
 }
-.dropdown-menu>li a:hover{
+.navbar-nav .dropdown-menu>li a:hover{
 	background:#01675e;
 }
 /*头部结束*/
@@ -205,7 +205,9 @@ a:focus, a:hover {
 }
 .toolbar{
     position: absolute;
-    top: 5px;right: 10%;
+    top: 5px;
+    /* left: 84%; */
+    right: 2%;
     width: 40px;
     border-radius: 5px;
 }
@@ -240,11 +242,27 @@ a{
     display:block;
     float:left;
     margin:auto 0.5px;
-    width:60px;
-    height:30px;
+    width:100px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    height:36px;
+    line-height: 36px;
+}
+#tableContainer table tr {
+    white-space: nowrap;
+}
+#tableContainer table tr td button{
+    height: 30px;
+    line-height: 30px;
+}
+#tableContainer table tr td:hover{
+     /*width:auto;;*/
+    /* overflow: auto;
+    white-space: normal; */
 }
 #clickTips{
-   /* position:absolute;*/
+    position:absolute;
     left:3px;
     width:120px;
     padding:3px;
@@ -282,6 +300,10 @@ a{
     border: none;
     color: white;
 }
+
+/* *******书签样式结束******** */
+
+
 #toolbar a{outline: 0;}
 
 .btn-group>.btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
@@ -706,7 +728,10 @@ table tr:nth-child(odd) {
 .pagination table{
     float:right;
 }
-
+.fixed-table-pagination .pagination-detail, .fixed-table-pagination div.pagination {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
 /*------------------------------------------------属性字段样式--------------------------------------------*/
 #attributeInfo .control-label input{
     height: 32px;
@@ -787,13 +812,28 @@ option:hover{
 }
 
 /* 下拉框背景样式 */
-.bootstrap-select.btn-group .dropdown-menu {
-    outline: none;
-    background: #005a52 !important;
+.bootstrap-select .dropdown-menu>li a{
+    color: #666;
 }
-
+.bootstrap-select .dropdown-menu>li a:hover{
+	background:#01675e;
+	color: white;
+}
+.bootstrap-select .btn{
+	height:32px;
+}
+.bootstrap-select.form-control {
+    margin-bottom: 0;
+    padding: 0;
+    border: 1px solid #ccc;
+}
 .detail_icon{
 	background-image: url(/images/details.png);
 	width: 15px;
 	height: 15px;
+}
+
+.rolebtn:hover{
+	background: #308374 !important;
+    color: white !important;
 }

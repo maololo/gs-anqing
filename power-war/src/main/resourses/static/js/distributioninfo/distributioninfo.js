@@ -2,9 +2,8 @@
 var distributionInfo = "";
 var rowData="";//选择行数据
 function init(){
-    window.operateEvents = {
+    window.operateEventDistributionInfo = {
         'click .RoleOfdDeldte': function (e, value, row, index) {
-            $(this).css("background","#308374")
             swal({
         		  title: "确定删除?",
         		  type: "warning",
@@ -31,7 +30,6 @@ function init(){
         },
         'click .RoleOfEdit': function (e, value, row, index) {
         	rowData = row;
-            $(this).css("background","#308374");
             openDistributioninfoDailog('/distributioninfo/distributioninfoAdd.action','配线信息');
         }
     };
@@ -46,6 +44,7 @@ function init(){
 		contentType: "application/x-www-form-urlencoded",
 		pageSize: 10,
 		pageNumber:1,
+		undefinedText:"",
 //		search: true, //不显示 搜索框
 		showColumns: false, //不显示下拉框（选择显示的列）
 		sidePagination: "server", //服务端请求
@@ -109,19 +108,12 @@ function init(){
             sortable: true,
             width : '125px',
 //	    	visible: false ,// 该列隐藏，界面不显示
-            events: operateEvents,//给按钮注册事件
-            formatter: operateFormatter,//表格中增加按钮
+            events: operateEventDistributionInfo,//给按钮注册事件
+            formatter: operateFormatterDistributionInfo,//表格中增加按钮
         }]
 
     });
 
-    
-    $(".rolebtn").hover(function () {
-       index=$(".rolebtn").index(this);
-       $(this).css({"background":"#308374","color":"white"})
-    },function () {
-      $(this).css({"background":"none","color":"#666"})
-    });
     
 }
 
@@ -170,7 +162,7 @@ function queryParams(params) {
 	}
 };
 
-function operateFormatter(val,row,index){
+function operateFormatterDistributionInfo(val,row,index){
     return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
         '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style="margin-right:15px; background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
     ].join('');
@@ -181,6 +173,7 @@ function openDistributionInfoDailog(url,title){
 	distributionInfo = $.jsPanel({
 		headerControls: { controls: "closeonly" },
         id:			 "equipment",
+        dragit: {containment: [100, 0, 0,160]},
         position:    'center',
         theme:       "#308374",
         contentSize: {width: 'auto', height: 'auto'},

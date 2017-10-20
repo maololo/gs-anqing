@@ -1,3 +1,5 @@
+
+
 <script type="text/javascript">
 initSelectpicker('光缆类型',"TYPE");
 initSelectpicker('电压等级','VOLTAGECLASS');
@@ -23,9 +25,29 @@ function initSelectpicker(val,id){
         }
     })
 }
+function displayResult(item, val, text) {
+}
+blurData = getBlurDate(['SD_STATION']);
+$('#STARTID').typeahead({
+    source: blurData,
+    display: 'Name',
+    val: 'ID'
+    /* itemSelected: displayResult */
+    /* itemSelected: function(item, val, text) {
+    	return $('#STARTID2').val(val);
+    } */
+});
+ 
+$('#ENDID').typeahead({
+    source: blurData,
+    display: 'Name',
+    val: 'ID'
+    
+});
+ 
+
 </script>
 <div class="modal-body" style="padding: 5px;width:500px;">
-                <div style="background: #ebedec;">
                     <form class="form-horizontal" style="padding: 10px" id="sd_opticalcablesection_form">
                         <div class="form-group">
                             <label for="NAME" class="col-sm-2 control-label" >名称:</label>
@@ -66,33 +88,41 @@ function initSelectpicker(val,id){
                         </div>
                         <div class="form-group">
                             <label for="STARTID" class="col-sm-2 control-label" >起点:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="STARTID" id="STARTID"/>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="STARTID" name="STARTID" autocomplete="off" />
                             </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="text-but" type="button" title="选取站点" onclick="selectStartIDOrEndID('STARTID')">选</button>
+                            </div>
+                            
                             <label for="ENDID" class="col-sm-2 control-label" style="margin-left: -10px;">终点:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="ENDID" id="ENDID"/>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input  id="ENDID" name="ENDID" type="text" class="form-control" autocomplete="off" />
+                            </div>
+                            
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="text-but" type="button" title="选取站点" onclick="selectStartIDOrEndID('ENDID')">选</button>
                             </div>
                         </div>
                          <div class="form-group">
                             <label for="ASSETUNIT" class="col-sm-2 control-label">资产单位:</label>
-                            <div class="col-sm-4" >
-                                <select id="ASSETUNIT" name="ASSETUNIT" class="selectpicker show-tick form-control">
+                            <div class="col-sm-4 " >
+                                <select id="ASSETUNIT"  name="ASSETUNIT" class="selectpicker form-control">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
                             <label for="MAINTENANCEUNIT" class="col-sm-2 control-label" style="margin-left: -10px;">维护单位:</label>
                             <div class="col-sm-4" >
-                                <select id="MAINTENANCEUNIT" name="MAINTENANCEUNIT" class="selectpicker show-tick form-control">
+                                <select id="MAINTENANCEUNIT" name="MAINTENANCEUNIT" class="selectpicker show-tick form-control" style="padding: 6px 0px;">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
+                            
                         </div>
                         <div class="text-center">
-                            <button class="text-but" type="button"  onclick="saveFeature()">保存</button>
-                            <button class="text-but"  type="button" onclick="unSaveFeature()">关闭</button>
+                            <button class="btn" type="button" style="background:#308374;color: white" onclick="saveFeature()">保存</button>
+                            <button class="btn " type="button" style="background:#308374;color: white" onclick="unSaveFeature()">取消</button>
                         </div>
        </form>
-    </div>
  </div>
  

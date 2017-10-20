@@ -119,6 +119,7 @@ function LoadJS(src,tableName,callback){
 	document.getElementsByTagName("head")[0].appendChild(script);
 } 
 function res(url,outlink,common,self,callback){
+	var url = url.toLowerCase();
 	var tableName = "";
 	var findex = url.lastIndexOf("/");
 	var lindex = url.lastIndexOf(".");
@@ -137,6 +138,14 @@ function res(url,outlink,common,self,callback){
 	 	$('#center-bottom').html(content);
 	}else{
 		
+		var jsPanelID = window.jsPanel.activePanels.list;
+		for(var i in jsPanelID){
+			if(jsPanelID[i] == self.innerHTML){
+				jsPanel.activePanels.getPanel(jsPanelID[i]).close();
+				break;
+			}
+		}
+		
 		$(".content-top").find("span").eq(4).text(self.innerHTML);
 		
 		 $.jsPanel({
@@ -144,6 +153,7 @@ function res(url,outlink,common,self,callback){
 		             top:    100,
 		             left:   170
 		         },
+		    dragit: {containment: [100, 0, 0,160]},
 		    id:self.innerHTML,
 		    theme:   "#308374",
 		    contentSize: {width: 'auto', height: 'auto'},
@@ -164,96 +174,42 @@ function res(url,outlink,common,self,callback){
 	}
 }
 
-/*var title='test'
-var id='test3213416'
-var url ="/test/test.action"
-function res(url,title,id){
-	LoadJS(url);
-    $(".content-top").find("span").eq(4).text(title);
+function resPopover(url,title,callback){
+	var jsPanelID = window.jsPanel.activePanels.list;
+	for(var i in jsPanelID){
+		if(jsPanelID[i] == title){
+			jsPanel.activePanels.getPanel(jsPanelID[i]).close();
+			break;
+		}
+	}
+	
+	var tableName = "";
+	var url = url.toLowerCase();
+	var findex = url.lastIndexOf("/");
+	var lindex = url.lastIndexOf(".");
+	var jssrc = url.substr(findex+1,lindex-findex-1);
+	var js = "/js/"+jssrc+"/"+jssrc+".js";
 	 $.jsPanel({
-	 id:			 id,
-	 //position:    'center',
-	 theme:       "#308374",
-	 contentSize: {width: 'auto', height: 'auto'},
-	 headerTitle: title,
-	 border:      '1px solid #066868',
-	 contentAjax: {
-	 url: url,
-	 autoload: true
-	 },
-	 callback:    function () {
-	 this.content.css("padding", "5px");
-	 }
+		  maximizedMargin: {
+	             top:    100,
+	             left:   170
+	         },
+	    dragit: {containment: [100, 0, 0,160]},
+	    id:title,
+	    theme:   "#308374",
+	    contentSize: {width: 'auto', height: 'auto'},
+	    headerTitle: title,
+	    border:      '1px solid #066868',
+	    contentAjax: {
+	   url: url,
+	   autoload: true,
+	    done: function (data, textStatus, jqXHR, panel) {
+    	 LoadJS(js,tableName,callback);
+      }
+	   },
+	   callback:    function () {
+	   this.content.css("padding", "5px");
+	  }
 	 });
 }
-*/
-/**//**
- * JS动态加载
- * @param src js路径
- * @constructor
- *//*
-function LoadJS(url,callback)
-{
-    var findex = url.lastIndexOf("/");
-    var lindex = url.lastIndexOf(".");
-    var jssrc = url.substr(findex+1,lindex-findex-1);
-    var js = "js/"+jssrc+".js";
-    var css =  document.createElement("link");
-    css.type = "text/css";
-    css.rel = "stylesheet";
-    css.id ="css";
-    if(css.readyState){ // IE
-        css.onreadystatechange = function(){
-            if(css.readyState == "loaded" || css.readyState == "complete"){
-                script.onreadystatechange = null;
-                if (!$.isEmptyObject(callback)){
-                    callback();
-                }
-            }
-        };
-    }else{ // FF, Chrome, Opera, ...
-        css.onload = function(){
-            if (!$.isEmptyObject(callback)){
-                callback();
-            }
-        };
-    }
-    $("#css").remove();
-    css.href = "css/"+jssrc+".css";
-    document.getElementsByTagName("head")[0].appendChild(css);
 
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    if(script.readyState){ // IE
-        script.onreadystatechange = function(){
-            if(script.readyState == "loaded" || script.readyState == "complete"){
-                script.onreadystatechange = null;
-                if (!$.isEmptyObject(callback)){
-                    callback();
-                }else{
-                    try
-                    {init();}
-                    catch(err)
-                    {console.info("异步加载的js中，未定义init方法");	}
-                }
-            }
-        };
-    }else{ // FF, Chrome, Opera, ...
-        script.onload = function(){
-            if (!$.isEmptyObject(callback)){
-                callback();
-            }else{
-                try
-                {init();}
-                catch(err)
-                {console.info("异步加载的js中，未定义init方法");	}
-            }
-        };
-    }
-    script.src = js;
-    document.getElementsByTagName("head")[0].appendChild(script);
-}
-
-
-
-}*/

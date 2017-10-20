@@ -7,7 +7,6 @@ function init(){
 	
     window.operateEvents = {
         'click .RoleOfdDeldte': function (e, value, row, index) {
-            $(this).css("background","#308374")
             swal({
         		  title: "确定删除?",
         		  type: "warning",
@@ -34,7 +33,6 @@ function init(){
         },
         'click .RoleOfEdit': function (e, value, row, index) {
         	rowData = row;
-            $(this).css("background","#308374");
             openFcrelationshipDailog('/fcrelationship/fcrelationshipAdd.action','设备信息');
         }
     };
@@ -49,6 +47,7 @@ function init(){
 		contentType: "application/x-www-form-urlencoded",
 		pageSize: 10,
 		pageNumber:1,
+		undefinedText:"",
 //		search: true, //不显示 搜索框
 		showColumns: false, //不显示下拉框（选择显示的列）
 		sidePagination: "server", //服务端请求
@@ -110,14 +109,6 @@ function init(){
 
     });
 
-    
-    $(".rolebtn").hover(function () {
-       index=$(".rolebtn").index(this);
-       $(this).css({"background":"#308374","color":"white"})
-    },function () {
-      $(this).css({"background":"none","color":"#666"})
-    });
-    
 }
 
 function initFcrelationshipDailog(){
@@ -144,13 +135,26 @@ function initSelectpicker(val,id){
 }
 //设置传入参数
 function queryParams(params) {
-	return {
-		page_pn: params.pageNumber,
-		sColumn:params.sort,
-		order:params.order,
-		page_size: params.limit
-		
+	var params={};
+	if(filterFieldID==""){
+		params = {
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit
+			
+		}
+	}else{
+		params ={
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit,
+			"search.C_CODE*eq":filterFieldID
+		}
+		filterFieldID = "";
 	}
+	return params;
 };
 
 function operateFormatter(val,row,index){
@@ -163,6 +167,7 @@ function operateFormatter(val,row,index){
 function openFcrelationshipDailog(url,title){
 	fcrelationship = $.jsPanel({
         id:			 "fcrelationship",
+        dragit: {containment: [100, 0, 0,160]},
         headerControls: { controls: "closeonly" },
         position:    'center',
         theme:       "#308374",
@@ -194,7 +199,6 @@ function closeFcrelationship(){
 
 //添加
 function addFcrelationship(){
-	row = "";
 	rowData = "";
 	openFcrelationshipDailog('/fcrelationship/fcrelationshipAdd.action','纤芯承载信息');
 }

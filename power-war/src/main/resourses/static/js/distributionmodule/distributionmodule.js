@@ -2,12 +2,8 @@
 var eistributionmodule = "";
 var rowData="";//选择行数据
 function init(){
-	 
-
-	
-    window.operateEvents = {
+    window.operateEventDistributionmodule = {
         'click .RoleOfdDeldte': function (e, value, row, index) {
-            $(this).css("background","#308374")
             swal({
         		  title: "确定删除?",
         		  type: "warning",
@@ -34,7 +30,6 @@ function init(){
         },
         'click .RoleOfEdit': function (e, value, row, index) {
         	rowData = row;
-            $(this).css("background","#308374");
             openDistributionmoduleDailog('/distributionmodule/distributionmoduleAdd.action','配线模块信息');
         }
     };
@@ -49,6 +44,7 @@ function init(){
 		contentType: "application/x-www-form-urlencoded",
 		pageSize: 10,
 		pageNumber:1,
+		undefinedText:"",
 //		search: true, //不显示 搜索框
 		showColumns: false, //不显示下拉框（选择显示的列）
 		sidePagination: "server", //服务端请求
@@ -60,19 +56,21 @@ function init(){
             title: '模块ID',
             align: 'center',
             valign: 'top',
-            sortable: true
-        },{
-        	field: 'C_STATIONID',
-        	title: '局站ID',
-        	align: 'center',
-        	valign: 'top',
-        	sortable: true
+            sortable: true,
+            visible: false
         },{
             field: 'C_MODULENAME',
             title: '模块名称',
             align: 'center',
             valign: 'top',
             sortable: true
+        },{
+        	field: 'C_STATIONID',
+        	title: '局站',
+        	align: 'center',
+        	valign: 'top',
+        	sortable: true,
+        	formatter:function(value,row,index){return formatfeatureName(value);}
         },{
         	field: 'C_TERMINALROWNUM',
         	title: '端子行数',
@@ -111,20 +109,49 @@ function init(){
             valign: 'top',
             sortable: true,
             width : '125px',
-            events: operateEvents,//给按钮注册事件
-            formatter: operateFormatter,//表格中增加按钮
+            events: operateEventDistributionmodule,//给按钮注册事件
+            formatter: operateFormatterDistributionmodule,//表格中增加按钮
         }]
 
     });
 
     
-    $(".rolebtn").hover(function () {
-       index=$(".rolebtn").index(this);
-       $(this).css({"background":"#308374","color":"white"})
-    },function () {
-      $(this).css({"background":"none","color":"#666"})
-    });
-    
+}
+//端子行数离焦事件
+function blurTerminalRownum(){
+	var rownum = $("#C_TERMINALROWNUM").val().trim();
+	 var reg = /^[1-9]\d*$/;
+	 if(rownum!=""){
+		 if(reg.test(rownum)){
+			 var columnnum = $("#C_TERMINALCOLUMNNUM").val().trim();
+			 if(columnnum!=""){
+				 $("#C_CAPACITY").val(columnnum*rownum);
+			 }else{
+				 $("#C_CAPACITY").val('');
+			 }
+		 }else{
+			 $("#C_TERMINALROWNUM").focus();
+			 swal('端子行数只能为正整数!', '', "warning");
+		 }	 
+	 }
+}
+//端子列数离焦事件
+function blurTerminalColumnnum(){
+	var columnnum = $("#C_TERMINALCOLUMNNUM").val().trim();
+	 if(columnnum!=""){
+		 var reg = /^[1-9]\d*$/;
+		 if(reg.test(columnnum)){
+			 var rownum = $("#C_TERMINALROWNUM").val().trim();
+			 if(rownum!=""){
+				 $("#C_CAPACITY").val(columnnum*rownum);
+			 }else{
+				 $("#C_CAPACITY").val('');
+			 }
+		 }else{
+			 $("#C_TERMINALCOLUMNNUM").focus();
+			 swal('端子列数只能为正整数!', '', "warning");
+		 }	 
+	 }
 }
 
 function initDistributionmoduleDailog(){
@@ -148,7 +175,7 @@ function queryParams(params) {
 	}
 };
 
-function operateFormatter(val,row,index){
+function operateFormatterDistributionmodule(val,row,index){
     return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
         '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style="background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
     ].join('');
@@ -160,6 +187,7 @@ function openDistributionmoduleDailog(url,title){
 		headerControls: { controls: "closeonly" },
         id:			 "distributionmodule",
         position:    'center',
+        dragit: {containment: [100, 0, 0,160]},
         theme:       "#308374",
         contentSize: {width: 'auto', height: 'auto'},
         headerTitle: title,
@@ -171,6 +199,7 @@ function openDistributionmoduleDailog(url,title){
             	initDistributionmoduleDailog();
             	if(rowData!=""){
             		rowData.C_RUNDATE = DateTimeFormatter(rowData.C_RUNDATE);
+            		rowData.C_STATIONID = formatfeatureName(rowData.C_STATIONID);
             		initUpdateDistributionmodule(rowData);
             	}
               }
@@ -201,9 +230,6 @@ function initUpdateDistributionmodule(obj){
 		var data = document.getElementById(id);
 		if(data!=null && data.type == "select-one"){
  			 $('#'+id).selectpicker('val',obj[id]);
- 		 }else if(id=="C_CODE"){
- 			$("#"+id).attr("readonly","true");
- 			$('#'+id).val(obj[id]);
  		 }else{
  			 $('#'+id).val(obj[id]);
  		 }
@@ -215,8 +241,23 @@ function initUpdateDistributionmodule(obj){
  * 保存
  */
 function submitDistributionmoduleInfo(){
+	var distributionmoduleInfo = getFormJson('distributionmodule_form');
+	if(distributionmoduleInfo.C_ID==''){
+		distributionmoduleInfo.C_CODE = guid();
+	}
+	var distributionmoduleid = true;
+	//根据选择的模糊数据转换成空间数据ID
+	for(var i=0;i<blurData.length;i++){
+		if(blurData[i].Name == distributionmoduleInfo.C_STATIONID){
+			distributionmoduleInfo.C_STATIONID = blurData[i].ID;
+			distributionmoduleid = false;
+			break;
+		}
+	}
+	if(distributionmoduleid){distributionmoduleInfo.C_STATIONID=""}
+	blurData=[];
 	$.post('/T_DISTRIBUTIONMODULE/save.action',
-			$("#distributionmodule_form").serialize(),
+			distributionmoduleInfo,
 			function(result){
 		        closeDistributionmodule();
 		        swal(result.title,'',"success");

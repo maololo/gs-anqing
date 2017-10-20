@@ -1,64 +1,69 @@
- 
+ <script>
+ blurData = getBlurDate(['SD_STATION']);
+ $('#C_STATIONID').typeahead({
+	    source: blurData,
+	    display: 'Name',
+	    val: 'ID'
+	});
+   
+ </script>
 
 <div style="width:530px;">
     <form class="form-horizontal" style="margin-top: 20px;" id="equipment_form">
         
         <div class="form-group">
-                            <label for="C_CODE" class="col-sm-2 control-label" >设备ID:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_CODE" id="C_CODE"/>
-                                <input type="hidden" name="C_ID" id="C_ID"/>
-                            </div>
-                            <label for="C_NAME" class="col-sm-2 control-label" style="margin-left: -10px;">名称:</label>
+                            <label for="C_NAME" class="col-sm-2 control-label" >名称:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="C_NAME" id="C_NAME"/>
+                                <input type="hidden" name="C_ID" id="C_ID"/>
+                                <input type="hidden" name="C_CODE" id="C_CODE"/>
                             </div>
-                            
-                        </div>
-                        <div class="form-group">
-                            <label for="C_TYPE" class="col-sm-2 control-label" >设备类型:</label>
+                            <label for="C_TYPE" class="col-sm-2 control-label" style="margin-left: -10px;">设备类型:</label>
                             <div class="col-sm-4" >
                                 <select id="C_TYPE" name="C_TYPE" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
-                            <label for="C_STATIONID" class="col-sm-2 control-label" style="margin-left: -10px;">所属局站:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_STATIONID" id="C_STATIONID"/>
-                            </div>
-                            
-				            
                         </div>
                         <div class="form-group">
-                            <label for="C_MANUFACTURER" class="col-sm-2 control-label" >生产厂家:</label>
+                            <label for="C_STATIONID" class="col-sm-2 control-label" >所属局站:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="C_STATIONID" name="C_STATIONID" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="text-but" type="button" title="选取站点" onclick="selectStartIDOrEndID('C_STATIONID')">选</button>
+                            </div>
+                            <label for="C_MANUFACTURER" class="col-sm-2 control-label" style="margin-left: -10px;">生产厂家:</label>
                             <div class="col-sm-4" >
                                 <select id="C_MANUFACTURER" name="C_MANUFACTURER" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
-                            <label for="C_MODEL" class="col-sm-2 control-label" style="margin-left: -10px;">设备型号:</label>
+				            
+                        </div>
+                        <div class="form-group">
+                            
+                            <label for="C_MODEL" class="col-sm-2 control-label" >设备型号:</label>
                             <div class="col-sm-4" >
                                 <select id="C_MODEL" name="C_MODEL" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
-                            
-                        </div>
-                        <div class="form-group">
-                          <label for="C_RUNDATE" class="col-sm-2 control-label" >投运日期:</label>
+                            <label for="C_RUNDATE" class="col-sm-2 control-label" style="margin-left: -10px;">投运日期:</label>
                             <div class="col-sm-4">
                             <div class='input-group date' id='checkEquipmentDate'>
 					           <input type='text' class="form-control" name="C_RUNDATE" id="C_RUNDATE"/> <span
 						       class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span> </span>
 				            </div>
 				            </div>
-                           <label for="C_RUNINGSTATE" class="col-sm-2 control-label" style="margin-left: -10px;">运行状态:</label>
+                        </div>
+                        <div class="form-group">
+                           <label for="C_RUNINGSTATE" class="col-sm-2 control-label">运行状态:</label>
                             <div class="col-sm-4" >
                                 <select id="C_RUNINGSTATE" name="C_RUNINGSTATE" class="selectpicker show-tick form-control">
                                  <option value ="">请选择</option>
                                 </select>
                             </div>
-                            
                         </div>
                         <div class="form-group">
                             <label for="C_REMARK" class="col-sm-2 control-label">备注:</label>

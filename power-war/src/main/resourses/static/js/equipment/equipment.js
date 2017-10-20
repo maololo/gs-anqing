@@ -2,13 +2,8 @@
 var equipment = "";
 var rowData="";//选择行数据
 function init(){
-	 
-
-	
-    window.operateEvents = {
+    window.operateEventsEquipment = {
         'click .RoleOfdDeldte': function (e, value, row, index) {
-            $(this).css("background","#308374")
-           // openDelect('equipment/delecte.html','设备管理')
             swal({
         		  title: "确定删除?",
         		  type: "warning",
@@ -35,11 +30,28 @@ function init(){
         },
         'click .RoleOfEdit': function (e, value, row, index) {
         	rowData = row;
-            $(this).css("background","#308374");
+        	closeEquipment();
             openEquipmentDailog('/equipment/equipmentAdd.action','设备信息');
         },
         'click .RoleOfImage': function (e, value, row, index) {
+        	closeEquipment();
             openEquipmentDailog('/equipment/imgMessage.action','图片信息');
+        },
+        'click .RoleOfToEquipment': function (e, value, row, index) {
+        	closePropertyListWindow();
+        	var stationID = row.C_STATIONID;
+        	// 获取查询图层类型
+			var layerName = queryLayerNameByPMSID(stationID.substring(0,4));
+			var node = getLayerNodeByName(layerName);
+			var features = node.layer.getSource().getFeatures();
+			var feature = '';
+			for(var i in features){
+				if(features[i].values_.ID==stationID){
+					feature = features[i];
+					break;
+				}
+			}
+			openDialg("/attributeList/attributeList.action", node.text+"表信息","queryAll", [feature],layerName);
         }
     };
     $('#equipmentTable').bootstrapTable({
@@ -53,6 +65,7 @@ function init(){
 		contentType: "application/x-www-form-urlencoded",
 		pageSize: 10,
 		pageNumber:1,
+		undefinedText:"",
 //		search: true, //不显示 搜索框
 		showColumns: false, //不显示下拉框（选择显示的列）
 		sidePagination: "server", //服务端请求
@@ -64,7 +77,8 @@ function init(){
             title: '设备编号',
             align: 'center',
             valign: 'top',
-            sortable: true
+            sortable: true,
+            visible: false
         },{
             field: 'C_NAME',
             title: '名称',
@@ -82,7 +96,8 @@ function init(){
         	title: '所属局站',
         	align: 'center',
         	valign: 'top',
-        	sortable: true
+        	sortable: true,
+        	formatter:function(value,row,index){return formatfeatureName(value);}
         },{
         	field: 'C_MANUFACTURER',
         	title: '生产厂家',
@@ -115,19 +130,12 @@ function init(){
             valign: 'top',
             sortable: true,
             width : '330px',
-            events: operateEvents,//给按钮注册事件
-            formatter: operateFormatterEquipment,//表格中增加按钮
+            events: operateEventsEquipment,//给按钮注册事件
+            formatter: operateFormatterEquipment//表格中增加按钮
         }]
 
     });
 
-    
-    $(".rolebtn").hover(function () {
-       $(this).css({"background":"#308374","color":"white"})
-    },function () {
-      $(this).css({"background":"none","color":"#666"})
-    });
-    
 }
 
 function initEquipmentDailog(){
@@ -166,13 +174,25 @@ function initSelectpicker(val,id){
 }
 //设置传入参数
 function queryParams(params) {
-	return {
-		page_pn: params.pageNumber,
-		sColumn:params.sort,
-		order:params.order,
-		page_size: params.limit
-		
+	var params={};
+	if(filterFieldID==""){
+		params = {
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit
+		}
+	}else{
+		params ={
+				page_pn: params.pageNumber,
+				sColumn:params.sort,
+				order:params.order,
+				page_size: params.limit,
+				"search.C_STATIONID*eq":filterFieldID
+		}
+		filterFieldID = "";
 	}
+	return params;
 };
 
 function operateFormatterEquipment(val,row,index){
@@ -187,7 +207,7 @@ function operateFormatterEquipment(val,row,index){
     return  [icon+'<button class="RoleOfImage  btn btn-sm rolebtn" style="background: none;outline:none;color: #0ad6bd" title="图片查看"><span  class=" glyphicon glyphicon-picture  " ><span></button>',
     	'<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
         '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>',
-        '<button class="RoleOfPosition  btn btn-sm rolebtn" style="background: none;outline:none;color: #6688b5" title="局站"><span  class=" glyphicon glyphicon-retweet " ><span></button>',
+        '<button class="RoleOfToEquipment  btn btn-sm rolebtn" style="background: none;outline:none;color: #6688b5" title="局站"><span  class=" glyphicon glyphicon-retweet " ><span></button>',
 //        '<button class="RoleOfPosition  btn btn-sm rolebtn" style="background: none;outline:none;color: #bf824c" title="定位"><span  class=" glyphicon glyphicon-record  " ><span></button>',
     ].join('');
 }
@@ -199,6 +219,7 @@ function openEquipmentDailog(url,title){
         id:			 "equipment",
         position:    'center',
         theme:       "#308374",
+        dragit: {containment: [100, 0, 0,160]},
         contentSize: {width: 'auto', height: 'auto'},
         headerTitle: title,
         border:      '1px solid #066868',
@@ -209,6 +230,7 @@ function openEquipmentDailog(url,title){
             	initEquipmentDailog();
             	if(rowData!=""){
             		rowData.C_RUNDATE = DateTimeFormatter(rowData.C_RUNDATE);
+            		rowData.C_STATIONID = formatfeatureName(rowData.C_STATIONID);
             		initUpdateEquipment(rowData);
             	}
               }
@@ -230,6 +252,7 @@ function closeEquipment(){
 function addEquipment(){
 	row = "";
 	rowData = "";
+	closeEquipment();
 	openEquipmentDailog('/equipment/equipmentAdd.action','设备信息');
 }
 
@@ -239,9 +262,6 @@ function initUpdateEquipment(obj){
 		var data = document.getElementById(id);
 		if(data!=null && data.type == "select-one"){
  			 $('#'+id).selectpicker('val',obj[id]);
- 		 }else if(id=="C_CODE"){
- 			$("#"+id).attr("readonly","true");
- 			$('#'+id).val(obj[id]);
  		 }else{
  			 $('#'+id).val(obj[id]);
  		 }
@@ -253,8 +273,23 @@ function initUpdateEquipment(obj){
  * 保存
  */
 function submitEquipmentInfo(){
+	var equipmentInfo = getFormJson('equipment_form');
+	if(equipmentInfo.C_ID==''){
+		equipmentInfo.C_CODE = '0410'+guid();
+	}
+	var stationid = true;
+	//根据选择的模糊数据转换成空间数据ID
+	for(var i=0;i<blurData.length;i++){
+		if(blurData[i].Name == equipmentInfo.C_STATIONID){
+			equipmentInfo.C_STATIONID = blurData[i].ID;
+			stationid = false;
+			break;
+		}
+	}
+	if(stationid){equipmentInfo.C_STATIONID=""}
+	blurData=[];
 	$.post('/T_EQUIPMENT/save.action',
-			$("#equipment_form").serialize(),
+			equipmentInfo,
 			function(result){
 		        closeEquipment();
 		        swal(result.title,'',"success");
