@@ -26,4 +26,15 @@ public interface SpatialDataService {
      */
    public  List<Map<String, Object>> getSpatialData(String modelName);
 
+   /**
+    * @Title getMultiConditionData 多条件查询数据
+    * @Description  通过空间数据表名称获取数据集合
+    * @param modelName 空间数据表名称
+    * @Return L	ist<Map<String, Object>   集合 
+    * @Throws 
+    * @Date  2017年9月29日
+    * @修改历史  
+    *     1. [2017年9月29日]创建文件 hbx
+    */
+   public  List<Map<String, Object>> getMultiConditionData(String modelName,Map<String, Object> map);
 }

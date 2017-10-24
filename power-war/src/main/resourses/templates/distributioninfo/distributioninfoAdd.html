@@ -1,78 +1,319 @@
- 
+<div style="min-width: 600px; max-height: 500px; overflow-y:auto; overflow-x:hidden;">
+	<form class="form-horizontal" style="margin-top: 20px;" id="distributioninfo_form">
+		<div class="form-group">
+			<label for="C_CODE" class="col-sm-2 control-label">配线信息编号:</label>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" name="C_CODE" id="C_CODE" />
+				<input type="hidden" name="C_ID" id="C_ID" />
+			</div>
+			<label for="C_DMID" class="col-sm-2 control-label" style="margin-left: -10px;">配线模块编号:</label>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" name="C_DMID" id="C_DMID" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="C_DISKID" class="col-sm-2 control-label">盘号:</label>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" name="C_DISKID" id="C_DISKID" />
+			</div>
+			<label for="C_OTHEREND" class="col-sm-2 control-label" style="margin-left: -10px;">对端（局站）:</label>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" name="C_OTHEREND" id="C_OTHEREND" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="C_NAME" class="col-sm-2 control-label">名称:</label>
+			<div class="col-sm-9">
+				<input type="text" class="form-control" name="C_NAME" id="C_NAME" />
+			</div>
+		</div>
+		<div class="terminalNub">
+		  	<div class="title">端子号1</div>
+		    <div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF1" class="col-sm-2 control-label">熔纤端:</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" name="C_FF1" id="C_FF1" />
+					</div>
+				<label for="C_FF1STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF1STATUS" name="C_FF1STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF1" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF1" id="C_JF1" />
+				</div>
+			</div>
+	  	</div>
+	  	
+	  	<div class="terminalNub">
+		  	<div class="title">端子号2</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF2" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF2" id="C_FF2" />
+				</div>
+				<label for="C_FF2STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF2STATUS" name="C_FF2STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF2" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF2" id="C_JF2" />
+				</div>
+			</div>
+	  	</div>
+	  	
+		<div class="terminalNub">
+		  	<div class="title">端子号3</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF3" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF3" id="C_FF3" />
+				</div>
+				<label for="C_FF3STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF3STATUS" name="C_FF3STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF3" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF3" id="C_JF3" />
+				</div>
+			</div>
+	  	</div>
 
-<div style="min-width: 350px;">
-    <form class="form-horizontal" style="margin-top: 20px;" id="distributioninfo_form">
-        
-        <div class="form-group">
-                            <label for="C_CODE" class="col-sm-2 control-label" >设备ID:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_CODE" id="C_CODE"/>
-                                <input type="hidden" name="C_ID" id="C_ID"/>
-                            </div>
-                            <label for="C_NAME" class="col-sm-2 control-label" style="margin-left: -10px;">名称:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_NAME" id="C_NAME"/>
-                            </div>
-                            
-                        </div>
-                        <div class="form-group">
-                            <label for="C_TYPE" class="col-sm-2 control-label" >设备类型:</label>
-                            <div class="col-sm-4" >
-                                <select id="C_TYPE" name="C_TYPE" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                            <label for="C_STATIONID" class="col-sm-2 control-label" style="margin-left: -10px;">所属局站:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_STATIONID" id="C_STATIONID"/>
-                            </div>
-                            
-				            
-                        </div>
-                        <div class="form-group">
-                            <label for="C_MANUFACTURER" class="col-sm-2 control-label" >生产厂家:</label>
-                            <div class="col-sm-4" >
-                                <select id="C_MANUFACTURER" name="C_MANUFACTURER" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                            <label for="C_MODEL" class="col-sm-2 control-label" style="margin-left: -10px;">设备型号:</label>
-                            <div class="col-sm-4" >
-                                <select id="C_MODEL" name="C_MODEL" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                            
-                        </div>
-                        <div class="form-group">
-                          <label for="C_RUNDATE" class="col-sm-2 control-label" >投运日期:</label>
-                            <div class="col-sm-4">
-                            <div class='input-group date' id='checkEquipmentDate'>
-					           <input type='text' class="form-control" name="C_RUNDATE" id="C_RUNDATE"/> <span
-						       class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span> </span>
-				            </div>
-				            </div>
-                           <label for="C_RUNINGSTATE" class="col-sm-2 control-label" style="margin-left: -10px;">运行状态:</label>
-                            <div class="col-sm-4" >
-                                <select id="C_RUNINGSTATE" name="C_RUNINGSTATE" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                            
-                        </div>
-                        <div class="form-group">
-                            <label for="C_REMARK" class="col-sm-2 control-label">备注:</label>
-                            <div class="col-sm-10">
-                                <textarea class="form-control" rows="2" name="C_REMARK" id="C_REMARK"></textarea> 
-                            </div>
-                        </div>
-        <div class="form-group">
-            <div class="text-center">
-                <button class="btn" type="button" style="background:#308374;color: white" onclick="submitDistributionInfo()">保存</button>
-                <button class="btn " type="button" style="background:#308374;color: white" onclick="closeDistributionInfo()">取消</button>
-            </div>
-        </div>
-    </form>
+		<div class="terminalNub">
+		  	<div class="title">端子号4</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF4" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF4" id="C_FF4" />
+				</div>
+				<label for="C_FF4STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF4STATUS" name="C_FF4STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF4" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF4" id="C_JF4" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="terminalNub">
+		  	<div class="title">端子号5</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF5" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF5" id="C_FF5" />
+				</div>
+				<label for="C_FF5STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF5STATUS" name="C_FF5STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF5" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF5" id="C_JF5" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="terminalNub">
+		  	<div class="title">端子号6</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF6" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF6" id="C_FF6" />
+				</div>
+				<label for="C_FF6STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF6STATUS" name="C_FF6STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF6" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF6" id="C_JF6" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="terminalNub">
+		  	<div class="title">端子号7</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF7" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF7" id="C_FF7" />
+				</div>
+				<label for="C_FF7STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF7STATUS" name="C_FF7STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF7" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF7" id="C_JF7" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="terminalNub">
+		  	<div class="title">端子号8</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF8" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF8" id="C_FF8" />
+				</div>
+				<label for="C_FF8STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF8STATUS" name="C_FF8STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF8" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF8" id="C_JF8" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="terminalNub">
+		  	<div class="title">端子号9</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF9" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF9" id="C_FF9" />
+				</div>
+				<label for="C_FF9STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF9STATUS" name="C_FF9STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF9" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF9" id="C_JF9" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="terminalNub">
+		  	<div class="title">端子号10</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF10" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF10" id="C_FF10" />
+				</div>
+				<label for="C_FF10STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF10STATUS" name="C_FF10STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF10" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF10" id="C_JF10" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="terminalNub">
+		  	<div class="title">端子号11</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF11" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF11" id="C_FF11" />
+				</div>
+				<label for="C_FF11STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF11STATUS" name="C_FF11STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF11" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF11" id="C_JF11" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="terminalNub">
+		  	<div class="title">端子号12</div>
+		  	<div class="form-group" style="margin-top: 15px;">
+				<label for="C_FF12" class="col-sm-2 control-label">熔纤端:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" name="C_FF12" id="C_FF12" />
+				</div>
+				<label for="C_FF12STATUS" class="col-sm-2 control-label" style="margin-left: -10px;">熔纤端使用状态:</label>
+				<div class="col-sm-4">
+					<select id="C_FF12STATUS" name="C_FF12STATUS" class="selectpicker show-tick form-control">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="C_JF12" class="col-sm-2 control-label">跳纤端:</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" name="C_JF12" id="C_JF12" />
+				</div>
+			</div>
+	  	</div>
+		
+		<div class="form-group">
+			<label for="C_EQUIPMENTCODE" class="col-sm-2 control-label">设备编码:</label>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" name="C_EQUIPMENTCODE" id="C_EQUIPMENTCODE"/>
+			</div>
+			<label for="C_OCSECTIONID" class="col-sm-2 control-label" style="margin-left: -10px;">所属光缆段编号:</label>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" name="C_OCSECTIONID" id="C_OCSECTIONID" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="C_REMARK" class="col-sm-2 control-label">备注:</label>
+			<div class="col-sm-9">
+				<textarea class="form-control" rows="2" name="C_REMARK" id="C_REMARK"></textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="text-center">
+				<button class="btn" type="button" style="background: #308374; color: white" onclick="submitDistributionInfo()">保存</button>
+				<button class="btn " type="button" style="background: #308374; color: white" onclick="closeDistributionInfo()">取消</button>
+			</div>
+		</div>
+	</form>
 </div>
 
 

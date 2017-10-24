@@ -56,5 +56,26 @@ public class SpatialDataController {
 		return result;
 	}
 	
+	/**
+	 * 
+	 * //TODO 多条件查询数据
+	 * @Title queryMultiCondition 
+	 * @Description TODO(根据分组编号查询角色信息) 
+	 * @param request
+	 * @param model
+	 * @return
+	 * @Return List<Map<String,Object>>    返回类型 
+	 * @Throws 
+	 * @Date  2016年12月2日
+	 * @修改历史  
+	 *     1. [2016年12月2日]创建文件 by 郑居广
+	 */
+	@ResponseBody
+	@RequestMapping(value ="/{modelName}/queryMultiConditionData.action")
+	public List<Map<String,Object>> queryMultiCondition(@PathVariable String modelName,@RequestParam Map<String,Object> map){
+		List<Map<String,Object>> result = spatialDataService.getMultiConditionData(modelName, map);
+		return result;
+	}
+	
 	
 }

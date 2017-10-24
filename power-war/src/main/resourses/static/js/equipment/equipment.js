@@ -52,6 +52,10 @@ function init(){
 				}
 			}
 			openDialg("/attributeList/attributeList.action", node.text+"表信息","queryAll", [feature],layerName);
+        },
+        'click .RoleOfLight': function (e, value, row, index) {
+        	rowData = row;
+            resPopover('/lightbox/lightbox.action','光交图');
         }
     };
     $('#equipmentTable').bootstrapTable({
@@ -181,16 +185,18 @@ function queryParams(params) {
 			sColumn:params.sort,
 			order:params.order,
 			page_size: params.limit
+			
 		}
 	}else{
 		params ={
-				page_pn: params.pageNumber,
-				sColumn:params.sort,
-				order:params.order,
-				page_size: params.limit,
-				"search.C_STATIONID*eq":filterFieldID
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit,
+			"search.C_STATIONID*eq":filterFieldID
 		}
 		filterFieldID = "";
+		$('#equipmentBody').hide();
 	}
 	return params;
 };
@@ -198,7 +204,7 @@ function queryParams(params) {
 function operateFormatterEquipment(val,row,index){
 	var icon = ""
 	if(row.C_TYPE == "ODF"){
-		icon = '<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="光交图"><span class="gj_icon" style="display:block;" ></span></button>'+
+		icon = '<button class="RoleOfLight btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="光交图"><span class="gj_icon" style="display:block;" ></span></button>'+
 			   '<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线信息"><span class="pxinfo_icon" style="display:block;" ></span></button>'+
 			'<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线模块"><span class="pxmodule_icon" style="display:block;" ></span></button>';
 	}else if(row.C_TYPE == "分光器"){

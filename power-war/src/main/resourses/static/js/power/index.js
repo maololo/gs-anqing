@@ -1981,7 +1981,7 @@ function getColumnsBylayerType(layerType){
 			align : 'center',
 			valign : 'middle',
 			sortable : true,
-			width : '140px',
+			width : '170px',
 			events : operateEventsFeature,// 给按钮注册事件
 			formatter : operateFormatterFeature
 		// 表格中增加按钮
@@ -2427,9 +2427,9 @@ window.operateEventsFeature = {
 	    map.render();
 	},'click .RoleOfFiberCore' : function(e, value, row, index) {
 		//查询纤芯信息
-		filterFieldID = row.values_.ID;
+		var  fiberCoreID = row.values_.ID;
 		var title='';
-		var titles = queryTableByData('T_B_MODULE',{});
+		var titles = queryTableByData('/T_B_MODULE/search.action',{});
 		for(var i in titles){
 			var url = titles[i].C_URL;
 			if(url==null){
@@ -2441,12 +2441,91 @@ window.operateEventsFeature = {
 				break;
 			}
 		}
-		resPopover('/FCRELATIONSHIP/FCRELATIONSHIP.action',title);
+//		resPopover('/FCRELATIONSHIP/FCRELATIONSHIP.action',title);
+		$.jsPanel({
+			id : title+1,
+			maximizedMargin : {
+				top : 100,
+				left : 170
+			},
+			dragit: {containment: [100, 0, 0,160]},
+			position : 'center',
+			theme : "rebeccapurple",
+			contentSize : {
+				width : 'auto',
+				height : 'auto'
+			},
+			headerTitle : title,
+			border : '2px solid rgb(7,102,104)',
+			contentAjax : {
+				url : '/fcrelationship/fcrelationship.action',
+				autoload : true,
+				done : function(data, textStatus, jqXHR, panel) {
+					var data = queryTableByData("/T_FCRELATIONSHIP/queryMultiConditionData.action",
+							{'C_STARTOCSECTIONID':fiberCoreID,
+						    'C_ENDOCSECTIONID':fiberCoreID,});
+					$('#fcrelationshipBody').hide();
+					if(data==''){
+						var startId = row.values_.STARTID;
+						var endId = row.values_.ENDID;
+						
+						var layertreeID = queryIdByLayerName('SD_OPTICALCABLESECTION');
+						//根据 layertree的Id获取节点对象
+						 var node=$('#powerLayerTree').jstree().get_node("#"+layertreeID);
+						 var features = node.original.layer.getSource().getFeatures();
+						 if(startId.substring(0,4)=='0402'){
+							 var id1="";
+							 for(var i in features){
+								 if(features[i].values_.ID != fiberCoreID ){
+									 if(features[i].values_.STARTID==startId ||features[i].values_.ENDID==startId){
+										 id1 = features[i].values_.ID;
+										 break;
+									 }
+								 }
+							 }
+							 var newData = queryTableByData("/T_FCRELATIONSHIP/queryMultiConditionData.action",
+										{'C_STARTOCSECTIONID':id1,
+									    'C_ENDOCSECTIONID':id1,});
+							 if(newData!=''){
+								 showFcrelationshipTable(newData);
+								 return;
+							 }
+						 }
+						 if(endId.substring(0,4)=='0402'){
+							 var id2="";
+							 for(var i in features){
+								 if(features[i].values_.ID != fiberCoreID ){
+									 if(features[i].values_.STARTID==endId || features[i].values_.ENDID==endId){
+										 id2 = features[i].values_.ID;
+										 break;
+									 }
+								 }
+							 }
+							 var newData = queryTableByData("/T_FCRELATIONSHIP/queryMultiConditionData.action",
+										{'C_STARTOCSECTIONID':id2,
+									    'C_ENDOCSECTIONID':id2,});
+							 if(newData!=''){
+								 showFcrelationshipTable(newData);
+								 return;
+							 }
+						 }
+						 showFcrelationshipTable('');
+
+					}else{
+						showFcrelationshipTable(data);
+					}
+						 
+				}
+			},
+			callback : function(panel) {
+				this.content.css("padding", "5px");
+			}
+		});
 	},'click .RoleOfEquipment' : function(e, value, row, index) {
 		//查询设备信息
 		filterFieldID = row.values_.ID;
 		var title='';
-		var titles = queryTableByData('T_B_MODULE',{});
+		var titles = queryTableByData('/T_B_MODULE/search.action',{});
 		for(var i in titles){
 			var url = titles[i].C_URL;
 			if(url==null){
@@ -2458,36 +2537,6 @@ window.operateEventsFeature = {
 				break;
 			}
 		}
-//		var jsPanelID = window.jsPanel.activePanels.list;
-//		for(var i in jsPanelID){
-//			if(jsPanelID[i] == '局站信息'){
-//				jsPanel.activePanels.getPanel(jsPanelID[i]).close();
-//				break;
-//			}
-//		}
-//		$.jsPanel({
-//			  maximizedMargin: {
-//		             top:    100,
-//		             left:   170
-//		         },
-//		    dragit: {containment: [100, 0, 0,160]},
-//		    id:value,
-//		    theme:   "#308374",
-//		    contentSize: {width: 'auto', height: 'auto'},
-//		    headerTitle: self.innerHTML,
-//		    border:      '1px solid #066868',
-//		    contentAjax: {
-//		   url: '/equipment/equipment.action,
-//		   autoload: true,
-//		    done: function (data, textStatus, jqXHR, panel) {
-//       	       $('#equipmentBody').hide();
-//          }
-//		   },
-//		   callback:    function () {
-//		   this.content.css("padding", "5px");
-//		  }
-//		 });
-//		resPopover('/EQUIPMENT/EQUIPMENT.action','局站信息');
 		resPopover('/EQUIPMENT/EQUIPMENT.action',title);
 	} 
 
@@ -2583,14 +2632,14 @@ function queryLayerNameByPMSID(PMSID) {
 
 /**
  * 根据data数据查询表
- * table: 'T_FCRELATIONSHIP'
+ * url: '/T_FCRELATIONSHIP/search.action'
  * data: {"search.CODE*eq" : "cod"}
 */
-function queryTableByData(table,data) {
+function queryTableByData(url,data) {
 	var newData = "";
 	$.ajax({
 		// 请求地址
-		url : "/"+table+"/search.action",
+		url : url,
 		data : data,// 设置请求参数
 		type : "post",// 请求方法
 		async : false,
@@ -3242,12 +3291,46 @@ function getBlurDate(tableNames){
 }
 
 
-
+/*function operateFormatterFcrelationship(val,row,index){
+    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
+        '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style="background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
+    ].join('');
+}
+window.operateEventFcrelationship = {
+        'click .RoleOfdDeldte': function (e, value, row, index) {
+            swal({
+        		  title: "确定删除?",
+        		  type: "warning",
+        		  showCancelButton: true,
+        		  confirmButtonColor: "#DD6B55",
+        		  confirmButtonText: "确定",
+        		  cancelButtonText: "取消",
+        		  closeOnConfirm: false
+        		},
+        		function(){
+        		$.post('/T_FCRELATIONSHIP/delete.action',
+              		{
+              	     "ID":row.C_ID
+              		},
+              		function(result){
+              			if (result.success){    
+              				swal(result.title,'',"success");
+              				$('#fcrelationshipTable').bootstrapTable('refresh');
+                          } else {
+                          	swal(result.title,'',"error");
+                          }
+                 },'json');
+        		});
+        },
+        'click .RoleOfEdit': function (e, value, row, index) {
+        	rowData = row;
+            openFcrelationshipDailog('/fcrelationship/fcrelationshipAdd.action','设备信息');
+        }
+    };*/
 function test() {
 //	map.getView().setZoom(30);
-	map.getView().setCenter([ 114.31, 30.52 ]);
-    map.render();
-	// map.getView().setCenter(ol.proj.fromLonLat([-72.980624870461128,
-	// 48.161307640513321]));
+	/*map.getView().setCenter([ 114.31, 30.52 ]);
+    map.render();*/
 
+//    var asdsd = queryTableByData("SD_OPTICALCABLESECTION",{});
 }

@@ -1,43 +1,43 @@
 
-//var fcrelationship = "";
-//var rowData="";//选择行数据
-function init(){
-	 
+var fcrelationship = "";
+var rowData="";//选择行数据
+$(function(){
+	window.operateEventFcrelationship = {
+			'click .RoleOfdDeldte': function (e, value, row, index) {
+				swal({
+					title: "确定删除?",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "确定",
+					cancelButtonText: "取消",
+					closeOnConfirm: false
+				},
+				function(){
+					$.post('/T_FCRELATIONSHIP/delete.action',
+							{
+						"ID":row.C_ID
+							},
+							function(result){
+								if (result.success){    
+									swal(result.title,'',"success");
+									$('#fcrelationshipTable').bootstrapTable('refresh');
+								} else {
+									swal(result.title,'',"error");
+								}
+							},'json');
+				});
+			},
+			'click .RoleOfEdit': function (e, value, row, index) {
+				rowData = row;
+				openFcrelationshipDailog('/fcrelationship/fcrelationshipAdd.action','设备信息');
+			}
+	};
+})
 
-	
-    /*window.operateEventFcrelationship = {
-        'click .RoleOfdDeldte': function (e, value, row, index) {
-            swal({
-        		  title: "确定删除?",
-        		  type: "warning",
-        		  showCancelButton: true,
-        		  confirmButtonColor: "#DD6B55",
-        		  confirmButtonText: "确定",
-        		  cancelButtonText: "取消",
-        		  closeOnConfirm: false
-        		},
-        		function(){
-        		$.post('/T_FCRELATIONSHIP/delete.action',
-              		{
-              	     "ID":row.C_ID
-              		},
-              		function(result){
-              			if (result.success){    
-              				swal(result.title,'',"success");
-              				$('#fcrelationshipTable').bootstrapTable('refresh');
-                          } else {
-                          	swal(result.title,'',"error");
-                          }
-                 },'json');
-        		});
-        },
-        'click .RoleOfEdit': function (e, value, row, index) {
-        	rowData = row;
-            openFcrelationshipDailog('/fcrelationship/fcrelationshipAdd.action','设备信息');
-        }
-    };*/
-    $('#fcrelationshipTable').bootstrapTable({
-    	url: '/T_FCRELATIONSHIP/queryPage.action',
+function showFcrelationshipTable(data){
+	$('#fcrelationshipTable').bootstrapTable({
+    	data: data,
 	    method:'post',
 	    striped: true,
 		dataType: "json",
@@ -50,7 +50,7 @@ function init(){
 		undefinedText:"",
 //		search: true, //不显示 搜索框
 		showColumns: false, //不显示下拉框（选择显示的列）
-		sidePagination: "server", //服务端请求
+		sidePagination: "client", //服务端请求
 		queryParams: queryParams,//分页参数
 		clickToSelect: true,
 //		height: 400,
@@ -114,10 +114,8 @@ function init(){
         }]
 
     });
-
 }
-
-/*function initFcrelationshipDailog(){
+function initFcrelationshipDailog(){
 	initSelectpicker('承载光路类型',"C_BEARERLIGHTPATHTYPE");
 }
 //初始化下拉列表
@@ -138,19 +136,10 @@ function initSelectpicker(val,id){
             }
         }
     })
-}*/
-//设置传入参数
-function queryParams(params) {
-		return {
-			page_pn: params.pageNumber,
-			sColumn:params.sort,
-			order:params.order,
-			page_size: params.limit
-			
-		}
-};
+}
 
-/*function operateFormatterFcrelationship(val,row,index){
+
+function operateFormatterFcrelationship(val,row,index){
     return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
         '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style="background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
     ].join('');
@@ -214,9 +203,9 @@ function initUpdateFcrelationship(obj){
 	rowData = "";
 }
 
-*//**
+/**
  * 保存
- *//*
+ */
 function submitFcrelationshipInfo(){
 	var fcrelationshipInfo = getFormJson('fcrelationship_form');
 	var flag1 = true,flag1 = true;
@@ -236,10 +225,10 @@ function submitFcrelationshipInfo(){
 	if(flag2){
 		fcrelationshipInfo.C_ENDOCSECTIONID = "";
 	}
-	if(fcrelationshipInfo.C_STARTOCSECTIONID == fcrelationshipInfo.C_ENDOCSECTIONID){
+	/*if(fcrelationshipInfo.C_STARTOCSECTIONID == fcrelationshipInfo.C_ENDOCSECTIONID){
 		$('#C_ENDOCSECTIONID').focus();
 		swal('开始光缆段不能与结束光缆段一样!', '', "warning");
-	}
+	}*/
 	$.post('/T_FCRELATIONSHIP/save.action',
 			fcrelationshipInfo,
 			function(result){
@@ -251,9 +240,9 @@ function submitFcrelationshipInfo(){
 
 
 
-*//**
+/**
  *  查询
- *//*
+ */
 function searchFcrelationshipInfo(){
 //	$(".equipment-header").mLoading("show");
 	$.post('/T_FCRELATIONSHIP/queryPage.action',
@@ -267,11 +256,11 @@ function searchFcrelationshipInfo(){
 //		        $(".equipment-header").mLoading("hide");
     },'json');
 }
-*//**
+/**
  * @requires jQuery
  * 
  * 格式化日期时间
- *//*
+ */
 function DateTimeFormatter(value) {
 	if (value == null || value == '') {
 		return '';
@@ -305,4 +294,4 @@ Date.prototype.format = function(format) {
 		if (new RegExp("(" + k + ")").test(format))
 			format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
 	return format;
-}*/
+}

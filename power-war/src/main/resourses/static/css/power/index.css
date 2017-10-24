@@ -827,13 +827,44 @@ option:hover{
     padding: 0;
     border: 1px solid #ccc;
 }
-.detail_icon{
+
+/* 操作按钮图标样式 */
+.rolebtn:hover{
+	background: #308374 !important;
+    color: white !important;
+}
+.rolebtn .image_icon{
+	background-image: url(/images/图片信息.png);
+	width: 18px;
+	height: 18px;
+}
+
+.rolebtn .detail_icon{
 	background-image: url(/images/details.png);
 	width: 15px;
 	height: 15px;
 }
 
-.rolebtn:hover{
-	background: #308374 !important;
-    color: white !important;
+.rolebtn .gj_icon{
+	background-image: url(/images/光交图.png);
+	width: 18px;
+	height: 18px;
+}
+
+.rolebtn .pxinfo_icon{
+	background-image: url(/images/配线信息.png);
+	width: 18px;
+	height: 18px;
+}
+
+.rolebtn .pxmodule_icon{
+	background-image: url(/images/配线模块信息.png);
+	width: 18px;
+	height: 18px;
+}
+
+.rolebtn .fgq_icon{
+	background-image: url(/images/分光器信息.png);
+	width: 18px;
+	height: 18px;
 }

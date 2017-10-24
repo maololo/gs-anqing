@@ -140,7 +140,7 @@ function res(url,outlink,common,self,callback){
 		
 		var jsPanelID = window.jsPanel.activePanels.list;
 		for(var i in jsPanelID){
-			if(jsPanelID[i] == self.innerHTML){
+			if(jsPanelID[i] == self.innerHTML+1){
 				jsPanel.activePanels.getPanel(jsPanelID[i]).close();
 				break;
 			}
@@ -177,7 +177,7 @@ function res(url,outlink,common,self,callback){
 function resPopover(url,title,callback){
 	var jsPanelID = window.jsPanel.activePanels.list;
 	for(var i in jsPanelID){
-		if(jsPanelID[i] == title){
+		if(jsPanelID[i] == title+1 || jsPanelID[i] == title){
 			jsPanel.activePanels.getPanel(jsPanelID[i]).close();
 			break;
 		}
@@ -195,7 +195,7 @@ function resPopover(url,title,callback){
 	             left:   170
 	         },
 	    dragit: {containment: [100, 0, 0,160]},
-	    id:title,
+	    id:title+1,
 	    theme:   "#308374",
 	    contentSize: {width: 'auto', height: 'auto'},
 	    headerTitle: title,

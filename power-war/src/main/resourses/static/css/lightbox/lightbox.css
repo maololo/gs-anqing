@@ -1,0 +1,106 @@
+.commentuse{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin-top: 8px;
+}
+#span1{
+    background: red;
+    border-radius: 50%;
+}
+#span2{
+    background: #059929;
+    border-radius: 50%;
+}
+#span3{
+    background:url("../images/malfunction.png");
+}
+#span4{
+    border-radius: 50%;
+    border: 1px solid #64a3e6;
+}
+#span5{
+    background: url("../images/safekeeping.png");
+}
+.opticGraph .formuse span{
+    margin-right: 5px;
+}
+input[type=checkbox] {
+    width: 18px;
+    height: 18px;
+}
+.bootstrap-table{
+    margin-top: 5px;
+}
+table thead, table tr {
+    border-top-style: none;
+    border-top-color: inherit;
+}
+table tr:nth-child(even):hover {
+    background: inherit;
+}
+tbody tr:nth-child(even){
+    background: #f7f7f7;
+}
+table tr:nth-child(odd):hover {
+    background: inherit;
+}
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: white;
+}
+table td, table th {
+    color:#666;
+}
+.bootstrap-table .table>thead>tr>th {
+    border-bottom: none;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    border-top: none;
+}
+.fixed-table-container thead th {
+    border-left: none;
+}
+.bootstrap-table .table {
+    border-bottom: none;
+}
+.fixed-table-container tbody td {
+    border-left: none;
+}
+.fixed-table-container {
+    border: none;
+}
+table thead{
+    background: #f7f7f7;
+}
+.clear{
+    clear: both;
+}
+.clearfix:before,.clearfix:after{
+    display: none;
+}
+.selected{
+    background:url("../images/malfunction.png");
+}
+.selecteds{
+    background: url("../images/safekeeping.png");
+}
+#Fiber-optic tbody td{
+	line-height: 30px;
+	text-align: center;
+    vertical-align: top;
+}
+input[name='btSelectAll']{
+	vertical-align: sub;
+}
+input[name='btSelectItem']{
+	vertical-align: middle;
+}
+.width-1{
+	width:5%;
+}
+.width-2{
+	width:6%;
+}
+.width-3{
+	width:16%;
+}

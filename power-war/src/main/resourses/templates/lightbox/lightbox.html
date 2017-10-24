@@ -1,0 +1,23 @@
+<div style="min-width: 750px;min-height: 600px;">
+    <div class="equipment-header opticGraph" style="position: relative;">
+	    <div class="btn-group btn-corner" style="display:inline-block; float: left; line-height: 38px; padding: 6px 0 6px 6px;">
+	        <button class="btn equipment-btn" id="addOptic" >新增熔纤盘</button>
+	        <button class="btn equipment-btn" id="delectOptic" style="background: #318375; color: white; margin-left:10px;">删除熔纤盘</button>
+	        <button class="btn equipment-btn" onclick="upRow()" style="background: #318375; color: white; margin-left:10px;">上移</button>
+	        <button class="btn equipment-btn" onclick="downRow()" style="background: #318375; color: white; margin-left:10px;">下移</button>
+        </div>
+        <div class="form-inline formuse" style="display:inline-block; float: right; margin-right:10px;">
+            <div class="form-group">
+                <span id="span1" class="commentuse"></span><span style="vertical-align: super;">在用</span>
+                <span id="span2" class="commentuse"></span><span style="vertical-align: super;">备用</span>
+                <span id="span3" class="commentuse" ></span><span style="vertical-align: super;">故障芯</span>
+                <span id="span4" class="commentuse"></span><span style="vertical-align: super;">空</span>
+                <span id="span5" class="commentuse" ></span><span style="vertical-align: super;">封存</span>
+            </div>
+        </div>
+    </div>
+    <div>
+	    <table id="Fiber-optic"></table>
+    </div>
+</div>
+

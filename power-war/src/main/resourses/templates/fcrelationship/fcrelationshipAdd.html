@@ -1,47 +1,79 @@
- 
+  <script>
+ blurData = getBlurDate(['SD_OPTICALCABLESECTION']);
+ $('#C_STARTOCSECTIONID').typeahead({
+	    source: blurData,
+	    display: 'Name',
+	    val: 'ID'
+	});
+   
+ $('#C_ENDOCSECTIONID').typeahead({
+	    source: blurData,
+	    display: 'Name',
+	    val: 'ID'
+	});
+   
+ function selectOpticalcablesectionID(inputID){
+		var select = new ol.interaction.Select();
+		map.addInteraction(select);
+		select.on('select',function(e) {
+			if (e.selected[0] != undefined ) {
+				var data = e.selected[0].values_;
+				var code = data.ID.substring(0,4);
+				if(code=='0406'){
+					$('#'+inputID).val(data.NAME);
+					map.removeInteraction(select);
+				}
+			}		 
+		});
+	}
+ </script>
 
 <div style="width: 530px;">
     <form class="form-horizontal" style="margin-top: 20px;" id="fcrelationship_form">
         
         <div class="form-group">
-                            <label for="C_CODE" class="col-sm-2 control-label" >编号:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_CODE" id="C_CODE"/>
-                                <input type="hidden" name="C_ID" id="C_ID"/>
+                            <label for="C_BEARERLIGHTPATHTYPE" class="col-sm-2 control-label" >承载光路类型:</label>
+                            <div class="col-sm-4" >
+                                 <input type="hidden" name="C_ID" id="C_ID"/>
+                                <select id="C_BEARERLIGHTPATHTYPE" name="C_BEARERLIGHTPATHTYPE" class="selectpicker show-tick form-control">
+                                 <option value ="" class="label">请选择</option>
+                                </select>
                             </div>
-                            <label for="C_STARTOCSECTIONID" class="col-sm-2 control-label" style="margin-left: -10px;">开始段光缆段编号:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_STARTOCSECTIONID" id="C_STARTOCSECTIONID"/>
-                            </div>
+                            
                             
                         </div>
                         <div class="form-group">
-                           <label for="C_STARTSERIALNUMBER" class="col-sm-2 control-label" >开始段纤芯序号:</label>
+                            <label for="C_STARTOCSECTIONID" class="col-sm-2 control-label" >开始光缆段:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="C_STARTOCSECTIONID" name="C_STARTOCSECTIONID" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="text-but" type="button" title="选取光缆段" onclick="selectOpticalcablesectionID('C_STARTOCSECTIONID')">选</button>
+                            </div>
+                            
+                            <label for="C_ENDOCSECTIONID" class="col-sm-2 control-label" style="margin-left: -10px;" >结束段光缆段:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="C_ENDOCSECTIONID" name="C_ENDOCSECTIONID" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="text-but" type="button" title="选取光缆段" onclick="selectOpticalcablesectionID('C_ENDOCSECTIONID')">选</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="C_STARTSERIALNUMBER" class="col-sm-2 control-label" >开始段纤芯序号:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="C_STARTSERIALNUMBER" id="C_STARTSERIALNUMBER"/>
                             </div>
-                            <label for="C_BEARERLIGHTPATHTYPE" class="col-sm-2 control-label" style="margin-left: -10px;">承载光路类型:</label>
-                            <div class="col-sm-4" >
-                                <select id="C_BEARERLIGHTPATHTYPE" name="C_BEARERLIGHTPATHTYPE" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-				            
-                        </div>
-                        <div class="form-group">
-                            <label for="C_ENDOCSECTIONID" class="col-sm-2 control-label" >结束段光缆段编号:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_ENDOCSECTIONID" id="C_ENDOCSECTIONID"/>
-                            </div>
+                            
                             <label for="C_ENDSERIALNUMBER" class="col-sm-2 control-label" style="margin-left: -10px;">结束段纤芯序号:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="C_ENDSERIALNUMBER" id="C_ENDSERIALNUMBER"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="C_BEARERCONTENT" class="col-sm-2 control-label" >承载内容:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_BEARERCONTENT" id="C_BEARERCONTENT"/>
+                            <label for="C_BEARERCONTENT" class="col-sm-2 control-label">承载内容:</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" rows="2" name="C_BEARERCONTENT" id="C_BEARERCONTENT"></textarea> 
                             </div>
                         </div>
         <div class="form-group">
