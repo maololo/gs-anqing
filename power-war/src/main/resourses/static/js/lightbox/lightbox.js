@@ -80,10 +80,6 @@ function init(){
             formatter: indexFormatter
 	    }
         ,{
-	    	field: 'C_ID',
-	    	visible: false
-	    }
-        ,{
         	field: 'C_CODE',
         	visible: false
         }
@@ -164,12 +160,23 @@ function init(){
             title: '备注',
             class: 'width-3',
             formatter: inputFormatter
-        }],
-        
+        },
+        {
+	    	field: 'C_ID',
+	    	visible: false
+	    }],
+	    onPostBody: function (data) {
+	    	if (!$.isEmptyObject(data)) {
+	    		var trList = $table.children().children("tr");
+	    		for(var i = 0; i < data.length; i++){
+	    			var row = data[i];
+	    			trList.eq(i + 1).find("input[name='c_id']").val(row.C_ID);
+	    		}
+	    	}
+        },
         formatLoadingMessage: function () {
             return "请稍等，正在加载中...";
         },
-        
         formatNoMatches: function () {
             return '无符合条件的记录';
         }
@@ -259,14 +266,14 @@ function init(){
 
 function updateRemark(){
 	var allData = [];
-	var rowData = $table.bootstrapTable('getOptions').data;
 	$("input[name='C_REMARK']").each(function(i, item){
 		// 盘号
 		var disk = $(this).parent().parent().find("span[class='c_disk']").text();
+		var c_id = $(this).parent().parent().find("input[name='c_id']").val();
 		var objData = {};
 		objData.C_DISKID = disk;
 		objData.C_REMARK = item.value;
-		objData["search.C_ID*eq"] = rowData[i].C_ID;
+		objData["search.C_ID*eq"] = c_id;
 		allData.push(objData);
     });
 	for(var j = 0; j < allData.length; j++){
@@ -290,7 +297,6 @@ function lightFormatter(val, row, index){
 	
 	if(!isEmpty(row.C_OCSECTIONID)){
 		var layertreeID = queryIdByLayerName('SD_OPTICALCABLESECTION');
-		//根据 layertree的Id获取节点对象
 		 var node=$('#powerLayerTree').jstree().get_node("#"+layertreeID);
 		 var features = node.original.layer.getSource().getFeatures();
 		 for(var i in features){
@@ -299,7 +305,6 @@ function lightFormatter(val, row, index){
 				 break;
 			 }
 		 }
-//		 return name;
 	}
 	
 	var f = this.field;
@@ -358,7 +363,7 @@ function lightFormatter(val, row, index){
 	
 	var m;
    	if(val == "在用"){
-   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:red;"><span>';
+   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:red;padding:3px 0;color:white">' + point_disk + "-" + parseInt(point_port) + '<span>';
    	}else if(val == "备用"){
    		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:#059929;"><span>';
    	}else if(val == "故障芯"){
@@ -374,7 +379,11 @@ function lightFormatter(val, row, index){
 }
 
 function indexFormatter(val, row, index){
-    return '<span class="c_disk">' + val + '</span>';
+    return '<span class="c_disk">' + val + '</span><input type="hidden" name="c_id" value=""/>';
+}
+
+function idFormatter(val, row, index){
+	$(this).parent().parent().find("input[name='c_id']").val(val);
 }
 
 function inputFormatter(val, row, index){
@@ -383,7 +392,6 @@ function inputFormatter(val, row, index){
 }
 
 function upRow(){
-	var allRowData = $table.bootstrapTable('getData');
 	$table.find("tr[class='selected']").each(function(){ 
     	var $tr = $(this);
     	var i = $tr.index();

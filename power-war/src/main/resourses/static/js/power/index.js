@@ -3,10 +3,10 @@ var boxExtent = ""; // 矩形、多边形查询的范围
 var drawGeometry = ""; // 鼠标画几何图形对象
 var highlightObj = []; // 查询后的高亮对象
 var propertyListWindow = ""; // 查询结果弹出框对象
-var selectEvent = "";
+var latlongObject = {}; // 根据经纬度创建的对象
 var editObject = {}; // 编辑对象
 var attributeInfoObj = ""; // 属性信息弹窗对象
-var layerData = {}; // 保存图层属性表数据
+var layerData = ''; // 保存图层属性表数据
 var geomObj = ""; // 测量时生成对象的图层
 var measureTooltipElement = ""; // 度量工具提示元素.
 var measureTooltip = ""; // 测量结果对象
@@ -429,8 +429,11 @@ function initLayerTree() {
 											if(features.length == 0){
 												swal('此图层没有数据!', '', "warning");
 											}else{
-												layerData.features = features;
+												latlongObject.source = obj.original.layer.getSource();
+												layerData = features;
 												var layerName = obj.original.name;
+												latlongObject.layerName = layerName;
+												latlongObject.type = getDrawType(layerName);
 												openDialg("/attributeList/attributeList.action", obj.text+"表信息","queryAll", features,layerName);
 											}
 										} else {
@@ -2414,7 +2417,7 @@ window.operateEventsFeature = {
 		propertyListWindow.smallify();
 		var feature = row;
 		clearHighlightObj();
-		selectEvent = new ol.interaction.Select();
+		var selectEvent = new ol.interaction.Select();
 		map.addInteraction(selectEvent);
 		// 设置要素高亮
 		highlightObj = selectEvent.getFeatures();
@@ -2677,10 +2680,17 @@ function queryWFSURL() {
 }
 
 // 弹出属性字段信息框
-function jsPanelAttributeInfo() {
-	var name = editObject.layer_name.toLowerCase();
-	var url = "/" + name + "/" + name + ".action";
-	var title = getLayerNodeByName(editObject.layer_name).text + "数据属性";
+function jsPanelAttributeInfo(Latlong) {
+	var name,url,title;
+	if(Latlong == undefined){
+		name =editObject.layer_name.toLowerCase();
+		url = "/" + name + "/" + name + ".action";
+		title = getLayerNodeByName(editObject.layer_name).text + "数据属性";
+	}else{
+		name =latlongObject.layerName.toLowerCase();
+		url = "/" + name + "/" + name + ".action";
+		title = getLayerNodeByName(latlongObject.layerName).text + "数据属性";
+	}
 	attributeInfoObj = $.jsPanel({
 				id : "attributeInfo",
 				headerControls : {
@@ -2698,34 +2708,39 @@ function jsPanelAttributeInfo() {
 					url : url,
 					autoload : true,
 					done : function(data, textStatus, jqXHR, panel) {
-						if (editObject.editType == "add") {
-							var select = new ol.interaction.Select();
-							var modify = new ol.interaction.Modify({
-								features : select.getFeatures()
-							});
-							map.addInteraction(select);
-							select.on('select', function(e) {
-								if (e.selected[0].id_ != undefined) {
-									modify.setActive(false);
-								} else {
-									modify.setActive(true);
-								}
-							});
-							map.addInteraction(modify);
-						} else if (editObject.editType == "update") {
-							//回写数据
-							var feature = editObject.feature.values_;
-							for ( var id in feature) {
-								if (id != "SHAPE" && id != "ID" && id !="geometry" ) {
-									if(document.getElementById(id).type== "select-one"){
-										$('#' + id) .selectpicker('val', feature[id]);
-									}else if(id=='ENDID' || id == 'STARTID'){
-										var value = formatfeatureName(feature[id]);
-										$('#' + id).val(value);
-									}else {
-										$('#' + id).val(feature[id]);
+						if(Latlong != undefined){
+							$('#'+name+'_coordinate').show();
+						}else{
+							$('#'+name+'_coordinate').hide();
+							if (editObject.editType == "add") {
+								var select = new ol.interaction.Select();
+								var modify = new ol.interaction.Modify({
+									features : select.getFeatures()
+								});
+								map.addInteraction(select);
+								select.on('select', function(e) {
+									if (e.selected[0].id_ != undefined) {
+										modify.setActive(false);
+									} else {
+										modify.setActive(true);
 									}
-								} 
+								});
+								map.addInteraction(modify);
+							} else if (editObject.editType == "update") {
+								//回写数据
+								var feature = editObject.feature.values_;
+								for ( var id in feature) {
+									if (id != "SHAPE" && id != "ID" && id !="geometry" ) {
+										if(document.getElementById(id).type== "select-one"){
+											$('#' + id) .selectpicker('val', feature[id]);
+										}else if(id=='ENDID' || id == 'STARTID'){
+											var value = formatfeatureName(feature[id]);
+											$('#' + id).val(value);
+										}else {
+											$('#' + id).val(feature[id]);
+										}
+									} 
+								}
 							}
 						}
 					}
@@ -2801,7 +2816,9 @@ function closeAttributeInfoObj() {
 function saveFeature() {
 	$("#attributeInfo").mLoading("show");
 	clearOnMapEvent();// 清除主动添加到地图上的事件
-	if (editObject != "") {
+	var edit = isEmptyObject(editObject);
+	var latlong = isEmptyObject(latlongObject);
+	if (!edit && latlong) {
 		var featureType = editObject.layer_name;
 		var editType = editObject.editType;
 		var fea = editObject.feature;
@@ -2862,7 +2879,7 @@ function saveFeature() {
 		}
 		
 		feature.set('SHAPE', geo);
-		editWFSFeature([feature], editType, featureType);
+//		editWFSFeature([feature], editType, featureType);
 		if(editType == "update" && $('#wfsFeatureTable').bootstrapTable('getData')!=""){
 			$('#wfsFeatureTable').bootstrapTable('updateRow', {index: editObject.index, row: feature.values_});
 			swal("修改成功", '', "success");
@@ -2874,6 +2891,22 @@ function saveFeature() {
 		closeAttributeInfoObj();
 		$("#attributeInfo").mLoading("hide");
 
+	}else{
+		var longitude = $('#longitude').val();
+		var longitude = $('#latitude').val();
+		if(latlongObject.type == 'Point'){
+			if(!validLonDu(longitude)){
+				$('#longitude').focus();
+				swal('经度填写不符合规范！', '经度范围0~180', "warning");
+			}
+			if(validLonDu(latitude)){
+				$('#latitude').focus();
+				swal('纬度填写不符合规范！', '经度范围0~90', "warning");
+			}
+		}else{
+			
+		}
+		latlongObject={};
 	}
 
 }
@@ -2998,7 +3031,7 @@ function validLonDFM(v){
 }
 
 /**
- * 验证緯度
+ * 验证纬度
  */
 function validLatDu(val){
 	var state; 
@@ -3290,43 +3323,25 @@ function getBlurDate(tableNames){
 	return name;
 }
 
-
-/*function operateFormatterFcrelationship(val,row,index){
-    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
-        '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style="background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
-    ].join('');
+//根据经纬度添加要素
+function addFeatureBylatlong(){
+//	var sdsd = latlongObject.layerName;
+//	var sdss = getDrawType(sdsd);
+//	if(sdss == 'Point'){
+//		
+//	}else if(sdss == 'LineString'){
+//		
+//	}
+	jsPanelAttributeInfo('Latlong');
 }
-window.operateEventFcrelationship = {
-        'click .RoleOfdDeldte': function (e, value, row, index) {
-            swal({
-        		  title: "确定删除?",
-        		  type: "warning",
-        		  showCancelButton: true,
-        		  confirmButtonColor: "#DD6B55",
-        		  confirmButtonText: "确定",
-        		  cancelButtonText: "取消",
-        		  closeOnConfirm: false
-        		},
-        		function(){
-        		$.post('/T_FCRELATIONSHIP/delete.action',
-              		{
-              	     "ID":row.C_ID
-              		},
-              		function(result){
-              			if (result.success){    
-              				swal(result.title,'',"success");
-              				$('#fcrelationshipTable').bootstrapTable('refresh');
-                          } else {
-                          	swal(result.title,'',"error");
-                          }
-                 },'json');
-        		});
-        },
-        'click .RoleOfEdit': function (e, value, row, index) {
-        	rowData = row;
-            openFcrelationshipDailog('/fcrelationship/fcrelationshipAdd.action','设备信息');
-        }
-    };*/
+
+//判断object对象是否为空
+function isEmptyObject(e) {  
+    var t;  
+    for (t in e)  
+        return !1;  
+    return !0  
+}  
 function test() {
 //	map.getView().setZoom(30);
 	/*map.getView().setCenter([ 114.31, 30.52 ]);
