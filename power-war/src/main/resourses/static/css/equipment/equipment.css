@@ -13,7 +13,7 @@
     margin-left: 10px;
     margin-top: -5px;
 }
-table thead, table tr {
+ table thead, table tr {
      border-top-style: none;
      border-top-color: inherit;
 }
@@ -29,6 +29,7 @@ table tr:nth-child(odd):hover {
 .table-striped>tbody>tr:nth-of-type(odd) {
      background-color: white;
 }
+
 table td, table th {
     color:#666;
 }
@@ -64,7 +65,7 @@ table thead{
 }
 #k .jsPanel-headerbar{
     display: none;
-}
+} 
 
 
 

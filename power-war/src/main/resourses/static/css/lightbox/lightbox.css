@@ -13,14 +13,14 @@
     border-radius: 50%;
 }
 #span3{
-    background:url("../images/malfunction.png");
+    background:url("/images/malfunction.png");
 }
 #span4{
     border-radius: 50%;
     border: 1px solid #64a3e6;
 }
 #span5{
-    background: url("../images/safekeeping.png");
+    background: url("/images/safekeeping.png");
 }
 .opticGraph .formuse span{
     margin-right: 5px;

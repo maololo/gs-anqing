@@ -4,6 +4,7 @@ var drawGeometry = ""; // 鼠标画几何图形对象
 var highlightObj = []; // 查询后的高亮对象
 var propertyListWindow = ""; // 查询结果弹出框对象
 var latlongObject = {}; // 根据经纬度创建的对象
+var excessiveObject = {}; // 过度对象
 var editObject = {}; // 编辑对象
 var attributeInfoObj = ""; // 属性信息弹窗对象
 var layerData = ''; // 保存图层属性表数据
@@ -250,6 +251,7 @@ $(function() {
 				source.removeFeature(editObject.feature);
 				editObject={};
 			}
+			latlongObject={};
 		}
 		
 	}); 
@@ -283,8 +285,7 @@ function initLayerTree() {
 											source.removeFeature(editObject.feature);
 											editObject={};
 										}
-										var inst = jQuery.jstree
-												.reference(data.reference);
+										var inst = jQuery.jstree.reference(data.reference);
 										var obj = inst.get_node(data.reference);
 										if (obj.children.length == 0
 												&& obj.parent != "#") {
@@ -429,11 +430,11 @@ function initLayerTree() {
 											if(features.length == 0){
 												swal('此图层没有数据!', '', "warning");
 											}else{
-												latlongObject.source = obj.original.layer.getSource();
+												excessiveObject.source = obj.original.layer.getSource();
 												layerData = features;
 												var layerName = obj.original.name;
-												latlongObject.layerName = layerName;
-												latlongObject.type = getDrawType(layerName);
+												excessiveObject.layerName = layerName;
+												excessiveObject.type = getDrawType(layerName);
 												openDialg("/attributeList/attributeList.action", obj.text+"表信息","queryAll", features,layerName);
 											}
 										} else {
@@ -1517,6 +1518,7 @@ function getColumnsBylayerType(layerType){
 			sortable : true,
 			visible : false,
 			formatter : function(value, row, index) {
+				value = row.values_.ID;
 				return row.values_.ID;
 			}
 		}, {
@@ -2360,7 +2362,8 @@ window.operateEventsFeature = {
 				 //删除地图上的Feature
 				 layer.getSource().removeFeature(row);
 				 //删除bootstrapTable表格里的Feature
-				 $('#wfsFeatureTable').bootstrapTable('removeByUniqueId', row.values_.ID);
+//				 $('#wfsFeatureTable').bootstrapTable('removeByUniqueId', row.values_.ID);
+				 $('#wfsFeatureTable').bootstrapTable('remove', {field: 'ID', values: row.values_.ID});
 				swal("删除成功", '', "success");
 			}
 		});
@@ -2803,6 +2806,8 @@ function unSaveFeature() {
 	if (editObject != "") {
 		editObject = {};
 	}
+	latlongObject={};
+	editObject={};
 	closeAttributeInfoObj();
 }
 // 空间数据属性弹出框
@@ -2879,11 +2884,12 @@ function saveFeature() {
 		}
 		
 		feature.set('SHAPE', geo);
-//		editWFSFeature([feature], editType, featureType);
-		if(editType == "update" && $('#wfsFeatureTable').bootstrapTable('getData')!=""){
+		editWFSFeature([feature], editType, featureType);
+		if(editType == "update" ){
 			$('#wfsFeatureTable').bootstrapTable('updateRow', {index: editObject.index, row: feature.values_});
 			swal("修改成功", '', "success");
 		}else if(editType == "add"){
+			$('#wfsFeatureTable').bootstrapTable('prepend', [feature]);
 			swal("保存成功", '', "success");
 		}
 		editObject = {};
@@ -2892,20 +2898,102 @@ function saveFeature() {
 		$("#attributeInfo").mLoading("hide");
 
 	}else{
-		var longitude = $('#longitude').val();
-		var longitude = $('#latitude').val();
-		if(latlongObject.type == 'Point'){
+		var layerName = latlongObject.layerName;
+		var type = latlongObject.type;
+		var source = latlongObject.source;
+		var fea = '';
+		
+		if(type == 'Point'){
+			var longitude = $('#longitude').val();
+			var latitude = $('#latitude').val();
 			if(!validLonDu(longitude)){
 				$('#longitude').focus();
 				swal('经度填写不符合规范！', '经度范围0~180', "warning");
 			}
-			if(validLonDu(latitude)){
+			if(!validLonDu(latitude)){
 				$('#latitude').focus();
 				swal('纬度填写不符合规范！', '经度范围0~90', "warning");
 			}
+		    fea =new ol.Feature( new ol.geom.Point([parseFloat(longitude),parseFloat(latitude)]));
 		}else{
-			
+			var data = $('#'+layerName.toLowerCase()+'_table').bootstrapTable('getData');
+			// 先保存数据
+			var latlongs=[];
+			if(data.length<2){
+				swal('经纬度数据至少要有两组！', '', "warning");
+				return;
+			}
+			for(var i in data){
+			    var map = {};
+			    var longKey = 'long'+data[i].ID;
+				var latKey = 'lat'+data[i].ID;
+				var longitude = $('.'+longKey).val();
+				if(!validLonDu(longitude)){
+					$('.'+latKey).focus();
+					swal('经度填写不符合规范！', '经度范围0~180', "warning");
+				}
+				var latitude = $('.'+latKey).val();
+				if(!validLatDu(latitude)){
+					$('.'+latKey).focus();
+					swal('纬度填写不符合规范！', '经度范围0~90', "warning");
+				}
+				latlongs.push([parseFloat(longitude),parseFloat(latitude)]);
+			}
+			fea =new ol.Feature( new ol.geom.LineString(latlongs));
 		}
+		// 获取属性字段的json
+		var attributeJson = getFormJson(layerName.toLowerCase() + "_form");
+		if(layerName == "SD_OPTICALCABLESECTION"){
+			var startid = true,endid=true;
+			//根据选择的模糊数据转换成空间数据ID
+			for(var i=0;i<blurData.length;i++){
+				if(blurData[i].Name == attributeJson.STARTID){
+					attributeJson.STARTID = blurData[i].ID;
+					startid = false;
+				}else if(blurData[i].Name == attributeJson.ENDID){
+					attributeJson.ENDID = blurData[i].ID;
+					endid = false;
+				}
+			}
+			if(startid){attributeJson.STARTID=""}
+			if(endid){attributeJson.ENDID=""}
+			blurData=[];
+		}
+		// 设置feature对应的属性
+		for ( var field in attributeJson) {
+			// 如果输入内容为空，将其改为null
+			if (attributeJson[field] == "") {
+				fea.set(field, null);
+			} else {
+				fea.set(field, attributeJson[field]);
+			}
+		}
+		
+		// 设置featureID
+		setFeatureID(fea, layerName);
+		source.addFeature(fea.clone());
+		
+		var feature = fea.clone();// 此处clone
+		// 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
+        var geo = feature.getGeometry();
+         // 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
+         geo.applyTransform(function(flatCoordinates, flatCoordinates2, stride) {
+            for (var j = 0; j < flatCoordinates.length; j += stride) {
+               var y = flatCoordinates[j];
+               var x = flatCoordinates[j + 1];
+               flatCoordinates[j] = x;
+               flatCoordinates[j + 1] = y;
+             }
+         });
+        feature.set('SHAPE', geo);
+        editWFSFeature([feature], 'add', layerName);
+
+        $('#wfsFeatureTable').bootstrapTable('prepend', [feature]);
+        swal("保存成功", '', "success");
+        // 关闭属性弹窗
+        closeAttributeInfoObj();
+        $("#attributeInfo").mLoading("hide");
+		
 		latlongObject={};
 	}
 
@@ -2996,9 +3084,11 @@ function isEmpty(val){
  * 验证经度
  */
 function validLonDu(val){
-	var state; 
-	var lonReg= /^-?((0|1?[0-7]?[0-9]?)(([.][0-9]{1,4})?)|180(([.][0]{1,4})?))$/;
-    state = lonReg.test(val);   
+	if(val.trim()==""){
+		return false;
+	}
+	var lonReg= /^-?((0|1?[0-7]?[0-9]?)(([.][0-9]{1,6})?)|180(([.][0]{1,6})?))$/;
+    var state = lonReg.test(val);   
     if(state){  
         return true;  
     }else{  
@@ -3034,9 +3124,11 @@ function validLonDFM(v){
  * 验证纬度
  */
 function validLatDu(val){
-	var state; 
-	var latReg= /^-?((0|[1-8]?[0-9]?)(([.][0-9]{1,4})?)|90(([.][0]{1,4})?))$/; 
-	state =  latReg.test(val);   
+	if(val.trim()==""){
+		return false;
+	}
+	var latReg= /^-?((0|[1-8]?[0-9]?)(([.][0-9]{1,6})?)|90(([.][0]{1,6})?))$/; 
+	var state =  latReg.test(val);   
    	if(state){  
    		return true;  
    	}else{  
@@ -3325,14 +3417,11 @@ function getBlurDate(tableNames){
 
 //根据经纬度添加要素
 function addFeatureBylatlong(){
-//	var sdsd = latlongObject.layerName;
-//	var sdss = getDrawType(sdsd);
-//	if(sdss == 'Point'){
-//		
-//	}else if(sdss == 'LineString'){
-//		
-//	}
+	latlongObject.source = excessiveObject.source;
+	latlongObject.layerName = excessiveObject.layerName;
+	latlongObject.type = excessiveObject.type;
 	jsPanelAttributeInfo('Latlong');
+	excessiveObject={};
 }
 
 //判断object对象是否为空
@@ -3342,6 +3431,13 @@ function isEmptyObject(e) {
         return !1;  
     return !0  
 }  
+
+
+
+
+
+
+
 function test() {
 //	map.getView().setZoom(30);
 	/*map.getView().setCenter([ 114.31, 30.52 ]);

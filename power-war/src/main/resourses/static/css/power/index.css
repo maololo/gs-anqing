@@ -620,6 +620,26 @@ input[type=checkbox]{
         .modal-header{
             cursor:move;
         }
+          @media screen and (max-width: 1440px){
+            .modal {
+                left: 70%;
+            }
+        }
+        @media screen and (min-width: 1441px) and (max-width: 1629px){
+            .modal {
+                left: 75%;
+            }
+        }
+        @media screen and (min-width: 1630px) and (max-width: 1920px){
+            .modal {
+                left: 80%;
+            }
+        }
+        .modal {
+            top: 110px;
+            right: inherit;
+            bottom: inherit;
+        }
         
 /*------------------------------------------ table styles ------------------------*/
 /* Border styles */
@@ -717,6 +737,60 @@ table tr:nth-child(odd) {
     background-color:#216a5d;
 }
 
+ table thead, table tr {
+     border-top-style: none;
+     border-top-color: inherit;
+}
+table tr:nth-child(even):hover {
+     background: inherit;
+}
+tbody tr:nth-child(even){
+    background: #f7f7f7;
+}
+table tr:nth-child(odd):hover {
+     background: inherit;
+}
+.table-striped>tbody>tr:nth-of-type(odd) {
+     background-color: white;
+}
+
+table td, table th {
+    color:#666;
+}
+.bootstrap-table .table>thead>tr>th {
+    border-bottom: none;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    border-top: none;
+}
+.fixed-table-container thead th {
+    border-left: none;
+}
+.bootstrap-table .table {
+     border-bottom: none;
+}
+.fixed-table-container tbody td {
+     border-left: none;
+}
+.fixed-table-container {
+    border: none;
+}
+table thead{
+    background: #f7f7f7;
+}
+#equipmentAdd .jsglyph-chevron-up{
+    display: none;
+}
+#equipmentAdd .jsglyph-minimize{
+    display: none;
+}
+#equipmentAdd .jsglyph-maximize{
+    display: none;
+}
+#k .jsPanel-headerbar{
+    display: none;
+}
+
 /* datagrid分页修改 */
 .datagrid-toolbar, .datagrid-pager{
     background: none;
@@ -769,7 +843,13 @@ table tr:nth-child(odd) {
 option:hover{
     background-color:#308374;
 }
-
+.equipment-btn{
+    background: #318375;
+    color: white;
+    height: 30px;
+    border-radius: 3px;
+    width: 65px;
+}
 /* 日历样式 */
 .table-condensed tr {
     line-height:15px;
@@ -868,3 +948,13 @@ option:hover{
 	width: 18px;
 	height: 18px;
 }
+
+
+
+
+
+
+/* 根据经纬度添加空间数据的input框样式 */
+.latlongInput{
+    width:120px;
+ }

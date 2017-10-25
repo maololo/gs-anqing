@@ -367,9 +367,9 @@ function lightFormatter(val, row, index){
    	}else if(val == "备用"){
    		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:#059929;"><span>';
    	}else if(val == "故障芯"){
-        m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm selecteds" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:none;"><span>';
+        m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm selecteds" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background:url(/images/malfunction.png);"><span>';
    	}else if(val == "封存"){
-   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm selecteds" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:none;"><span>';
+   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm selecteds" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background:url(/images/safekeeping.png);"><span>';
    	}else if(val == "空"){
    		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:1px solid #64a3e6;background-color:none;"><span>';
    	}else{

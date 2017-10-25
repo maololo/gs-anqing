@@ -21,7 +21,19 @@ function initSelectpicker(val,id){
     })
 }
 </script>
-<div class="modal-body" style="padding: 5px;width:500px;">
+<div class="modal-body" style="padding: 5px;width:500px;"> 
+         <form class="form-horizontal" style="padding: 10px 10px 0px 10px;display: none;" id="sd_personwell_coordinate">
+           <div class="form-group">
+              <label for="longitude" class="col-sm-2 control-label">经度:</label>
+                 <div class="col-sm-4">
+                     <input type="text" class="form-control"  name="longitude" id="longitude"/>
+                 </div>
+               <label for="latitude" class="col-sm-2 control-label" style="margin-left: -10px;">纬度:</label>
+                   <div class="col-sm-4">
+                       <input type="text" class="form-control"  name="latitude" id="latitude"/>
+                   </div>              
+          </div>
+       </form>
                     <form class="form-horizontal" style="padding: 10px" id="sd_personwell_form">
                         <div class="form-group">
                              <label for="NAME" class="col-sm-2 control-label">名称:</label>

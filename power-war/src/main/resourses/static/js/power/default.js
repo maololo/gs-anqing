@@ -149,13 +149,21 @@ function res(url,outlink,common,self,callback){
 		$(".content-top").find("span").eq(4).text(self.innerHTML);
 		
 		 $.jsPanel({
-			  maximizedMargin: {
-		             top:    100,
-		             left:   170
-		         },
-		    dragit: {containment: [100, 0, 0,160]},
+			 maximizedMargin: {
+	             top:    0,
+	             left:   10
+	         },
+	         dragit: {
+	             containment: [0, 0, 0,0]
+	         },
 		    id:self.innerHTML,
 		    theme:   "#308374",
+		    position: {
+	             my:  'center-top',
+	             at:  'center-top',
+	         },
+            onwindowresize: true,
+            container: "#right-sidebar",
 		    contentSize: {width: 'auto', height: 'auto'},
 		    headerTitle: self.innerHTML,
 		    border:      '1px solid #066868',

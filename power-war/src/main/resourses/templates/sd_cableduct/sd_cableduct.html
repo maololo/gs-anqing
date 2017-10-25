@@ -20,15 +20,173 @@ function initSelectpicker(val,id){
         }
     })
 }
+
+var sd_cableductId = 0;
+var date_table = [{ID:++sd_cableductId,LONG:"<input type='text' class='latlongInput long"+sd_cableductId+"' />",LAT:"<input type='text' class='latlongInput lat"+sd_cableductId+"' />"},
+                  {ID:++sd_cableductId,LONG:"<input type='text' class='latlongInput long"+sd_cableductId+"' />",LAT:"<input type='text' class='latlongInput lat"+sd_cableductId+"' />"}];
+$('#sd_cableduct_table').bootstrapTable({
+	data: date_table,
+   method:'post',
+   dataType: "json",
+   clickToSelect: false,
+   singleSelect:false,  //禁止多选
+   striped: true, // 隔行变色
+   uniqueId:'COODE',
+   undefinedText:"",
+   columns: [{
+   	field: 'checkbox',
+   	class: 'width-2',
+       checkbox : true
+   },{
+   	 field: 'ID',
+        title: '设备编号',
+        align: 'center',
+        valign: 'top',
+        sortable: true,
+        visible: false
+   },{
+   	
+   	field: 'COODE',
+       title: '序号',
+        formatter: indexFormatter
+   },{
+   	field: 'LONG',
+       title: '经度',
+   },{
+   	field: 'LAT',
+       title: '纬度',
+   }]
+});
+
+//添加一行
+function addTable(){
+	var data = $('#sd_cableduct_table').bootstrapTable('getData');
+	// 先保存数据
+	var latlongs=[];
+	for(var i in data){
+	    var map = {};
+		var longKey = 'long'+data[i].ID;
+		var latKey = 'lat'+data[i].ID;
+		map[longKey] = $('.'+longKey).val();
+		map[latKey] = $('.'+latKey).val();
+		latlongs.push(map);
+	}
+   // 添加
+	var $tab = $('#sd_cableduct_table');
+	$tab.bootstrapTable('append', [{ID:++sd_cableductId,LONG:"<input type='text' class='latlongInput long"+sd_cableductId+"' />",LAT:"<input type='text' class='latlongInput lat"+sd_cableductId+"' />"}]);
+	$tab.bootstrapTable('scrollTo', 'bottom');
+	// 回写保存的数据
+	for(var k in latlongs){
+		for(var l in latlongs[k]){
+			$('.'+l).val(latlongs[k][l]);
+		}
+	}
+	
+	/* $('#longInput').focus(); */
+}
+
+//删除一行
+function deleteTable(){
+	var ids = $.map($('#sd_cableduct_table').bootstrapTable('getSelections'), function (row) {
+       return row.ID;
+   });
+	if(ids.length==0){
+		swal('请先勾选需要删除的数据!', '', "warning");
+	}else {
+		swal({
+	  		  title: "确定删除?",
+	  		  type: "warning",
+	  		  showCancelButton: true,
+	  		  confirmButtonColor: "#DD6B55",
+	  		  confirmButtonText: "确定",
+	  		  cancelButtonText: "取消",
+	  		  closeOnConfirm: false
+		},
+		function(){
+			var data = $('#sd_cableduct_table').bootstrapTable('getData');
+			// 先保存数据
+			var latlongs=[];
+			for(var i in data){
+				for(var j in ids){
+					if(data[i].ID != ids[j]){
+						var map = {};
+						var longKey = 'long'+data[i].ID;
+						var latKey = 'lat'+data[i].ID;
+						map[longKey] = $('.'+longKey).val();
+						map[latKey] = $('.'+latKey).val();
+						latlongs.push(map);
+					}
+				}
+			}
+	        // 后删除
+			$('#sd_cableduct_table').bootstrapTable('remove', {
+	            field: 'ID',
+	            values: ids
+	        });
+			// 回写保存的数据
+			for(var k in latlongs){
+				for(var l in latlongs[k]){
+					$('.'+l).val(latlongs[k][l]);
+				}
+			}
+//			swal("删除成功！",'',"success");
+			swal.close();
+		});
+	}
+}
+function indexFormatter(val, row, index){
+   return  '<span class="coode">' + ++index + '</span><input type="hidden" name="xh" value="'+index+'"/>';
+}
+function upLatlongRow(){
+	$('#sd_cableduct_table').find("tr[class='selected']").each(function(){ 
+   	var $tr = $(this);
+   	var i = $tr.index();
+       if (i != 0) {
+           $tr.fadeOut().fadeIn();
+           $tr.prev().find("input[name='xh']").html(i + 1);
+           $tr.prev().find("span[class='coode']").html(i + 1);
+           $tr.prev().before($tr);
+           $tr.find("input[name='xh']").html(i);
+           $tr.find("span[class='coode']").html(i);
+       }
+	}) 
+}
+
+function downLatlongRow(){
+	$('#sd_cableduct_table').find("tr[class='selected']").each(function(){ 
+   	var $tr = $(this);
+   	var i = $tr.index();
+   	var lightData = $('#sd_cableduct_table').bootstrapTable('getData');
+   	if (i != lightData.length - 1) {
+           $tr.fadeOut().fadeIn();
+           $tr.next().find("input[name='xh']").html(i + 1);
+           $tr.next().find("span[class='coode']").html(i + 1);
+           $tr.next().after($tr);
+           $tr.find("input[name='xh']").html(i + 2);
+           $tr.find("span[class='coode']").html(i + 2);
+       }
+	}) 
+}
 </script>
 <div class="modal-body" style="padding: 5px;width:500px;">
+        <form class="form-horizontal" style="padding: 0px 10px;display: none;" id="sd_cableduct_coordinate">
+           <div class="form-group" style="padding-left: 15px;">
+              <button  class="btn equipment-btn search" type="button" onclick="addTable()">增加</button>
+              <button  class="btn equipment-btn search" type="button" onclick="deleteTable()">删除</button>
+              <button  class="btn equipment-btn search" type="button" onclick="upLatlongRow()">上移</button>
+              <button  class="btn equipment-btn search" type="button" onclick="downLatlongRow()">下移</button>
+          </div>
+          <div style="max-height:140px;overflow-x:hidden;overflow-y: auto;">
+              <table id="sd_cableduct_table" style="border: 1px solid #ccc;"></table>
+          </div>
+       </form>
                     <form class="form-horizontal" style="padding: 10px" id="sd_cableduct_form">
                         <div class="form-group">
                             <label for="PMSID" class="col-sm-2 control-label" >PMS编码:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="PMSID" id="PMSID"/>
                             </div>
-                            <label for="NAME" class="col-sm-2 control-label">隧道名称:</label>
+                            <label for="NAME" class="col-sm-2 control-label" style="margin-left: -10px;">隧道名称:</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control"  name="NAME" id="NAME"/>
                             </div>
