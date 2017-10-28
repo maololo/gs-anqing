@@ -237,6 +237,45 @@ a:focus, a:hover {
 a{
     text-decoration: none;
 }
+/*地图左上角工具栏*/
+.navbarToolbar{
+    position: absolute;
+    top: 5px;
+    left: 20px;
+}
+.navbarToolbar .btn-group>button:hover{
+    background-color: #005a52;
+}
+.navbarToolbar1{
+    float: left;
+    border: 1px solid #d7d7d9;
+    border-radius: 3px;
+}
+.navbarToolbar2{
+    margin-left: 5px;
+}
+.navbarToolbar2 button span{
+    color:#014e48 !important;
+    font-size:18px!important;
+    font-weight: 500 !important;
+}
+.navbarToolbar2 button:hover span{
+    color: white!important;
+}
+.navbarToolbar .btn-back{
+    background: #f9f9f9;
+    text-align: center;
+    outline: none;
+    width: 40px;
+    border-right: 1px solid #d7d7d9;
+}
+.navbarToolbar .btn-back:last-child{
+    border-right: none;
+}
+.navbarToolbar1 button,.navbarToolbar2 button{
+	padding:0px;
+}
+/*地图左上角工具栏结束*/
 /*书签*/
 #tableContainer table tr td,#tmpEditor{
     display:block;
@@ -333,7 +372,7 @@ a{
 }
 
 .btn {
-    display: inline-block;
+	display: inline-block;
    /* float: left;*/
     margin-bottom: 0;
     text-align: center;
@@ -342,20 +381,23 @@ a{
     cursor: pointer;
     -webkit-user-select: none;
     background-image: none;
-   /* height: 34px;*/
-  /*  padding: 8px 10px;*/
+    height: 34px;
     font-weight: 400;
-    line-height: 1.2;
     border: none;
     border-radius: 2px;
     vertical-align: middle;
     transition: border .25s linear,color .25s linear,background-color .25s linear;
     -webkit-font-smoothing: subpixel-antialiased;
     -webkit-transition: border .25s linear,color .25s linear,background-color .25s linear;
+	
+}
+.btn:hover{
+    color: white !important;
+    background: #044b45 !important;
 }
 
 .glyphicon{font-size: 16px;}
-#measureBtn span, #visBtn span,#settingBtn span{display: inline-block;margin-top: -4px;}
+#measureBtn span, #visBtn span,#settingBtn span{margin-top: -4px;}
 .dropDown-container {
    /* position: absolute;*/
     top: 100%;
@@ -597,15 +639,7 @@ input[type=checkbox]{
         .close{
             margin-right: 15px !important;
         }
-        .modal{
-            margin-top: 10%;
-        }
-        .modal {
-            top: 110px;
-            right: inherit;
-            bottom: inherit;
-            left: 80%;
-        }
+     
         .vakata-context{
             z-index: 10000;
         }
@@ -778,14 +812,7 @@ table td, table th {
 table thead{
     background: #f7f7f7;
 }
-#equipmentAdd .jsglyph-chevron-up{
-    display: none;
-}
-#equipmentAdd .jsglyph-minimize{
-    display: none;
-}
-#equipmentAdd .jsglyph-maximize{
-    display: none;
+
 }
 #k .jsPanel-headerbar{
     display: none;
@@ -909,6 +936,9 @@ option:hover{
 }
 
 /* 操作按钮图标样式 */
+.rolebtn{
+	 padding: 8px 10px; 
+}
 .rolebtn:hover{
 	background: #308374 !important;
     color: white !important;

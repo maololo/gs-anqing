@@ -437,8 +437,15 @@ function operateFormatter(val,row,index){
 
 function openDistributionInfoDailog(url,title){
 	distributionInfo = $.jsPanel({
-		id:"distributionInfo",
-		/*position:'center',*/
+		headerControls: {
+	    	maximize: 'remove',
+	        smallify: 'remove'
+	    },
+	    resizeit: {
+	        disable: true //禁止窗口大小调整
+	    },
+		id:"distributionInfoAdd",
+		position:'center',
 		theme:"#308374",
 		contentSize:{width: 'auto', height: 'auto'},
 		headerTitle:title,

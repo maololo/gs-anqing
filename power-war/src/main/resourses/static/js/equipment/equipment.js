@@ -51,7 +51,7 @@ function init(){
 					break;
 				}
 			}
-			openDialg("/attributeList/attributeList.action", node.text+"表信息","queryAll", [feature],layerName);
+			openDialg("/attributeList/attributeList.action", node.text+"表信息","queryAll", [feature],layerName,'none');
         },
         'click .RoleOfLight': function (e, value, row, index) {
         	rowData = row;
@@ -220,9 +220,15 @@ function operateFormatterEquipment(val,row,index){
 
 
 function openEquipmentDailog(url,title){
-	equipment = $.jsPanel({
-		 headerControls: { controls: "closeonly" },
-        id:			 "equipment",
+	equipment =$.jsPanel({
+		headerControls: {
+	    	maximize: 'remove',
+	        smallify: 'remove'
+	    },
+	    resizeit: {
+	        disable: true //禁止窗口大小调整
+	    },
+        id:			 "equipmentAdd",
         position:    'center',
         theme:       "#308374",
         dragit: {containment: [100, 0, 0,160]},

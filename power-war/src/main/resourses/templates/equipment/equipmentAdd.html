@@ -31,7 +31,8 @@
                                 <input type="text" class="form-control"  id="C_STATIONID" name="C_STATIONID" autocomplete="off" />
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="text-but" type="button" title="选取站点" onclick="selectStartIDOrEndID('C_STATIONID')">选</button>
+                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_STATIONID')">
+                                <img src="/images/img/2.png" alt=""></button>
                             </div>
                             <label for="C_MANUFACTURER" class="col-sm-2 control-label" style="margin-left: -10px;">生产厂家:</label>
                             <div class="col-sm-4" >
@@ -74,7 +75,7 @@
         <div class="form-group">
             <div class="text-center">
                 <button class="btn" type="button" style="background:#308374;color: white" onclick="submitEquipmentInfo()">保存</button>
-                <button class="btn " type="button" style="background:#308374;color: white" onclick="closeEquipment()">取消</button>
+                <button class="btn" type="button" style="background:#308374;color: white" onclick="closeEquipment()">取消</button>
             </div>
         </div>
     </form>

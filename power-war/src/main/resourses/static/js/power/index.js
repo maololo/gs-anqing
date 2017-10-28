@@ -3,7 +3,6 @@ var boxExtent = ""; // 矩形、多边形查询的范围
 var drawGeometry = ""; // 鼠标画几何图形对象
 var highlightObj = []; // 查询后的高亮对象
 var propertyListWindow = ""; // 查询结果弹出框对象
-var latlongObject = {}; // 根据经纬度创建的对象
 var excessiveObject = {}; // 过度对象
 var editObject = {}; // 编辑对象
 var attributeInfoObj = ""; // 属性信息弹窗对象
@@ -103,17 +102,13 @@ $(function() {
 		$("#tb tr button").eq(index).show();
 	}, function() {
 		$("#tb tr button").eq(index).hide();
-	})
+	});
 
 	$('.modal').on('show.bs.modal', function() {
 		$(".modal-backdrop").remove();
 
-	})
-//	$('.modal').on('shown.bs.modal', function() {
-//		index = $(".modal").index(this);
-//		$(this).modal('show');
-//		$(".modal").not($(".modal:eq(" + index + ")")).hide();
-//	})
+	});
+	
 	
 	 /*定位点击切换效果*/
     $("#accuratePositioning").click(function () {
@@ -250,8 +245,9 @@ $(function() {
 				var source = editObject.source;
 				source.removeFeature(editObject.feature);
 				editObject={};
+			}else{
+				editObject={};
 			}
-			latlongObject={};
 		}
 		
 	}); 
@@ -428,14 +424,15 @@ function initLayerTree() {
 										if (obj.children.length == 0 && obj.parent != "#") {
 											var features = obj.original.layer.getSource().getFeatures();
 											if(features.length == 0){
-												swal('此图层没有数据!', '', "warning");
+//												swal('此图层没有数据!', '', "warning");
+												openDialg( obj.text+"表信息","queryAll", features,layerName);
 											}else{
 												excessiveObject.source = obj.original.layer.getSource();
 												layerData = features;
 												var layerName = obj.original.name;
 												excessiveObject.layerName = layerName;
 												excessiveObject.type = getDrawType(layerName);
-												openDialg("/attributeList/attributeList.action", obj.text+"表信息","queryAll", features,layerName);
+												openDialg( obj.text+"表信息","queryAll", features,layerName);
 											}
 										} else {
 											swal('根节点不能定位!', '', "warning");
@@ -517,14 +514,32 @@ function getLayerTreeData() {
 					var bounds = [ 117.044453027202, 30.5066687301743,117.110272065313, 30.5599371735666 ];
 					var layers = [];
 					var treeId = data.length-1;
-					var gaodeMapLayer = new ol.layer.Tile(
-							{
-								source : new ol.source.XYZ(
-										{
-											url : 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
-										})
-							});
-					layers.push(gaodeMapLayer);
+					 var untiled = new ol.layer.Image({
+					        source: new ol.source.ImageWMS({
+					          ratio: 1,
+					          url: 'http://172.16.15.107:8081/geoserver/anqing/wms',
+					          params: {'FORMAT': 'image/png',
+					                   'VERSION': '1.1.1',  
+					                STYLES: '',
+					                LAYERS: 'anqing:google_Level_19',
+					          }
+					        })
+					      });
+					      var tiled = new ol.layer.Tile({
+					        visible: false,
+					        source: new ol.source.TileWMS({
+					          url: 'http://172.16.15.107:8081/geoserver/anqing/wms',
+					          params: {'FORMAT': 'image/png', 
+					                   'VERSION': '1.1.1',
+					                   tiled: true,
+					                STYLES: '',
+					                LAYERS: 'anqing:google_Level_19',
+					             tilesOrigin: 116.9607925415039 + "," + 30.49907684326172
+					          }
+					        })
+					      });
+					layers.push(untiled);
+					layers.push(tiled);
 					for ( var i in data) {
 						//只加载默认图层在地图上
 						if (data[i].C_ISDEFAULTLAYER == "1"
@@ -1023,6 +1038,7 @@ function clearOnMapEvent() {
 		var e = events[i];
 		if (e instanceof ol.interaction.Draw
 				|| e instanceof ol.interaction.Select
+				|| e instanceof ol.interaction.Split
 				|| e instanceof ol.interaction.Modify) {
 			map.removeInteraction(e);
 			--i;
@@ -1082,15 +1098,14 @@ function radioQuery() {
 	map.addInteraction(select);// map加载该控件，默认是激活可用的
 	select.on('select', function(e) {
 		if (e.selected.length > 0) {
-			openDialg("/attributeList/attributeList.action", "查询结果",
-					"radioQuery", e.selected);
+			openDialg("查询结果","radioQuery", e.selected);
 			map.removeInteraction(select);
 		}
 	});
 
 }
 
-function openDialg(url, title, field, dataFeatures,layerName) {
+function openDialg( title, field, dataFeatures,layerName,display) {
 	closePropertyListWindow();
 	propertyListWindow = $.jsPanel({
 		id : "openDialg",
@@ -1108,7 +1123,7 @@ function openDialg(url, title, field, dataFeatures,layerName) {
 		headerTitle : title,
 		border : '2px solid rgb(7,102,104)',
 		contentAjax : {
-			url : url,
+			url : "/attributeList/attributeList.action",
 			autoload : true,
 			done : function(data, textStatus, jqXHR, panel) {
 				// 图层tree根节点
@@ -1134,28 +1149,31 @@ function openDialg(url, title, field, dataFeatures,layerName) {
 						$("#powLayes1").append("<option value='" + node.original.id + "'>"+ node.original.text + "</option>");
 					}
 				}else if(field == 'queryAll'){
-					$('#queryAllOptions').show();
-					var layerTable = layerName;
-					$("#filterField2").empty();
-					$.ajax({
-						// 请求地址
-						url : "/" + layerTable + "/querySpatialTableField.action",
-						data : {},// 设置请求参数
-						type : "post",// 请求方法
-						async : false,
-						dataType : "json",// 设置服务器响应类型
-						// success：请求成功之后执行的回调函数 data：服务器响应的数据
-						success : function(data) {
-							$("#filterField2").append("<option value=''>请选择字段</option>");
-							for ( var i in data) {
-								if (data[i].FIELD != null && data[i].VALUE != "ID"
+					if(display == 'none'){
+					}else{
+						$('#queryAllOptions').show();
+						var layerTable = layerName;
+						$("#filterField2").empty();
+						$.ajax({
+							// 请求地址
+							url : "/" + layerTable + "/querySpatialTableField.action",
+							data : {},// 设置请求参数
+							type : "post",// 请求方法
+							async : false,
+							dataType : "json",// 设置服务器响应类型
+							// success：请求成功之后执行的回调函数 data：服务器响应的数据
+							success : function(data) {
+								$("#filterField2").append("<option value=''>请选择字段</option>");
+								for ( var i in data) {
+									if (data[i].FIELD != null && data[i].VALUE != "ID"
 										&& data[i].VALUE != "OBJECTID") {
-									$("#filterField2").append(
-											"<option value='" + data[i].VALUE + "'>"+ data[i].FIELD + "</option>");
+										$("#filterField2").append(
+												"<option value='" + data[i].VALUE + "'>"+ data[i].FIELD + "</option>");
+									}
 								}
 							}
-						}
-					});
+						});
+					}
 					
 					// 展示数据
 					displayData(dataFeatures, layerTable);
@@ -1216,7 +1234,7 @@ function boxQuery() {
 	drawGeometry.on('drawend', function(event) {
 		sketch = null;
 		clearDrawGeometry();
-		openDialg("/attributeList/attributeList.action", "查询结果", "boxQuery");
+		openDialg("查询结果", "boxQuery");
 		ol.Observable.unByKey(listener);
 	}, this);
 
@@ -1270,8 +1288,7 @@ function polygonQuery() {
 			function(event) {
 				sketch = null;
 				clearDrawGeometry();
-				openDialg("/attributeList/attributeList.action", "查询结果",
-						"polygonQuery");
+				openDialg( "查询结果","polygonQuery");
 				ol.Observable.unByKey(listener);
 			}, this);
 }
@@ -1424,7 +1441,6 @@ function queryFeature() {
 					var code = features[0].values_.ID.substring(0,4);
 					var layerType = queryLayerNameByPMSID(code);
 					displayData(features, layerType);
-					$('#wfsFeatureTable').bootstrapTable('getData');
 					$(".table-content").mLoading("hide");
 				}
 			});
@@ -2319,11 +2335,9 @@ function formatfeatureName(id){
 	// 获取查询图层类型
 	var code = id.substring(0,4);
 	var layer_type = queryLayerNameByPMSID(code);
-	//根据图层名获取对应layertree的Id
-	var layertreeID = queryIdByLayerName(layer_type);
-	//根据 layertree的Id获取节点对象
-	 var node=$('#powerLayerTree').jstree().get_node("#"+layertreeID);
-	 var features = node.original.layer.getSource().getFeatures();
+	// 获取当前图层
+	var layer = getLayerNodeByName(layer_type).layer;
+	 var features = layer.getSource().getFeatures();
 	 for(var i in features){
 		 if(features[i].values_.ID == id){
 			 name = features[i].values_.NAME;
@@ -2350,11 +2364,8 @@ window.operateEventsFeature = {
 				// 获取当前图层名
 				var code = row.values_.ID.substring(0,4);
 				var layer_type = queryLayerNameByPMSID(code);
-				//根据图层名获取对应layertree的Id
-				var id = queryIdByLayerName(layer_type);
-				//根据 layertree的Id获取节点对象
-				 var node=$('#powerLayerTree').jstree().get_node("#"+id);
-				 var layer = node.original.layer;
+				// 获取当前图层
+				var layer = getLayerNodeByName(layer_type).layer;
 
 				 editObject.editType = "delete";
 				 //删除数据库Feature
@@ -2374,11 +2385,8 @@ window.operateEventsFeature = {
 		// 获取查询图层类型
 		var code = row.values_.ID.substring(0,4);
 		var layer_type = queryLayerNameByPMSID(code);
-		//根据图层名获取对应layertree的Id
-		var id = queryIdByLayerName(layer_type);
-		//根据 layertree的Id获取节点对象
-		 var node=$('#powerLayerTree').jstree().get_node("#"+id);
-		 var layer = node.original.layer;
+		// 获取当前图层
+		var layer = getLayerNodeByName(layer_type).layer;
 		// 保存数据
 		
 		editObject.layer_name = layer_type;
@@ -2447,9 +2455,15 @@ window.operateEventsFeature = {
 				break;
 			}
 		}
-//		resPopover('/FCRELATIONSHIP/FCRELATIONSHIP.action',title);
+		var jsPanelID = window.jsPanel.activePanels.list;
+		for(var i in jsPanelID){
+		  if(jsPanelID[i] == 'fcrelationship' || jsPanelID[i] == 'fcrelationship1'){
+			jsPanel.activePanels.getPanel(jsPanelID[i]).close();
+			break;
+		  }
+	    }
 		$.jsPanel({
-			id : title+1,
+			id : 'fcrelationship1',
 			maximizedMargin : {
 				top : 100,
 				left : 170
@@ -2474,11 +2488,9 @@ window.operateEventsFeature = {
 					if(data==''){
 						var startId = row.values_.STARTID;
 						var endId = row.values_.ENDID;
-						
-						var layertreeID = queryIdByLayerName('SD_OPTICALCABLESECTION');
-						//根据 layertree的Id获取节点对象
-						 var node=$('#powerLayerTree').jstree().get_node("#"+layertreeID);
-						 var features = node.original.layer.getSource().getFeatures();
+						// 获取当前图层
+						var layer = getLayerNodeByName('SD_OPTICALCABLESECTION').layer;
+						 var features = layer.getSource().getFeatures();
 						 if(startId.substring(0,4)=='0402'){
 							 var id1="";
 							 for(var i in features){
@@ -2684,21 +2696,18 @@ function queryWFSURL() {
 
 // 弹出属性字段信息框
 function jsPanelAttributeInfo(Latlong) {
-	var name,url,title;
-	if(Latlong == undefined){
-		name =editObject.layer_name.toLowerCase();
-		url = "/" + name + "/" + name + ".action";
-		title = getLayerNodeByName(editObject.layer_name).text + "数据属性";
-	}else{
-		name =latlongObject.layerName.toLowerCase();
-		url = "/" + name + "/" + name + ".action";
-		title = getLayerNodeByName(latlongObject.layerName).text + "数据属性";
-	}
+	var	name =editObject.layer_name.toLowerCase();
+	var	url = "/" + name + "/" + name + ".action";
+	var	title = getLayerNodeByName(editObject.layer_name).text + "数据属性";
 	attributeInfoObj = $.jsPanel({
 				id : "attributeInfo",
-				headerControls : {
-					controls : "closeonly"
-				},
+				headerControls: {
+			    	maximize: 'remove',
+			        smallify: 'remove'
+			    },
+			    resizeit: {
+			        disable: true //禁止窗口大小调整
+			    },
 				position : {
 					right : 20,
 					top : 100
@@ -2716,6 +2725,10 @@ function jsPanelAttributeInfo(Latlong) {
 						}else{
 							$('#'+name+'_coordinate').hide();
 							if (editObject.editType == "add") {
+								if(editObject.layer_name == 'SD_STATION'){
+									$('#TYPE').selectpicker('val', editObject.stationType);
+//									$('#TYPE').prop('disabled', true);
+								}
 								var select = new ol.interaction.Select();
 								var modify = new ol.interaction.Modify({
 									features : select.getFeatures()
@@ -2798,7 +2811,7 @@ function getLayerNodeByName(layer_name) {
 
 // 取消保存
 function unSaveFeature() {
-	clearOnMapEvent();// 清除主动添加到地图上的事件
+//	clearOnMapEvent();// 清除主动添加到地图上的事件
 	if (editObject.editType == "add") {
 		var source = editObject.source;
 		source.removeFeature(editObject.feature);
@@ -2806,7 +2819,6 @@ function unSaveFeature() {
 	if (editObject != "") {
 		editObject = {};
 	}
-	latlongObject={};
 	editObject={};
 	closeAttributeInfoObj();
 }
@@ -2821,86 +2833,15 @@ function closeAttributeInfoObj() {
 function saveFeature() {
 	$("#attributeInfo").mLoading("show");
 	clearOnMapEvent();// 清除主动添加到地图上的事件
-	var edit = isEmptyObject(editObject);
-	var latlong = isEmptyObject(latlongObject);
-	if (!edit && latlong) {
-		var featureType = editObject.layer_name;
-		var editType = editObject.editType;
-		var fea = editObject.feature;
-
-		// 获取属性字段的json
-		var attributeJson = getFormJson(featureType.toLowerCase() + "_form");
-		if(featureType == "SD_OPTICALCABLESECTION"){
-			var startid = true,endid=true;
-			//根据选择的模糊数据转换成空间数据ID
-			for(var i=0;i<blurData.length;i++){
-				if(blurData[i].Name == attributeJson.STARTID){
-					attributeJson.STARTID = blurData[i].ID;
-					startid = false;
-				}else if(blurData[i].Name == attributeJson.ENDID){
-					attributeJson.ENDID = blurData[i].ID;
-					endid = false;
-				}
-			}
-			if(startid){attributeJson.STARTID=""}
-			if(endid){attributeJson.ENDID=""}
-			blurData=[];
-		}
-		// 设置feature对应的属性
-		for ( var field in attributeJson) {
-			// 如果输入内容为空，将其改为null
-			if (attributeJson[field] == "") {
-				fea.set(field, null);
-			} else {
-				fea.set(field, attributeJson[field]);
-			}
-		}
-
-		if (editType == "add") {
-			// 设置featureID
-			setFeatureID(fea, featureType);
-		} 
-		var feature = fea.clone();// 此处clone
-									// 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
-		var geo = feature.getGeometry();
-		// 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
-		geo.applyTransform(function(flatCoordinates, flatCoordinates2, stride) {
-			for (var j = 0; j < flatCoordinates.length; j += stride) {
-				var y = flatCoordinates[j];
-				var x = flatCoordinates[j + 1];
-				flatCoordinates[j] = x;
-				flatCoordinates[j + 1] = y;
-			}
-		});
-
-		if (editType == "update") {
-			feature.setId(editObject.feature.getId()); // 注意ID是必须，通过ID才能找到对应修改的feature
-
-			// 此处需要将原有的geometry空间字段删除，否则提交不成功，如果服务空间表空间就是geometry，则不需要处理
-			feature.unset(feature.getGeometryName());
-			// 设置空间字段名，以wfs服务为准
-			// feature.setGeometryName('SHAPE');
-			// feature.setGeometry(geo);
-		}
-		
-		feature.set('SHAPE', geo);
-		editWFSFeature([feature], editType, featureType);
-		if(editType == "update" ){
-			$('#wfsFeatureTable').bootstrapTable('updateRow', {index: editObject.index, row: feature.values_});
-			swal("修改成功", '', "success");
-		}else if(editType == "add"){
-			$('#wfsFeatureTable').bootstrapTable('prepend', [feature]);
-			swal("保存成功", '', "success");
-		}
-		editObject = {};
-		// 关闭属性弹窗
-		closeAttributeInfoObj();
-		$("#attributeInfo").mLoading("hide");
-
-	}else{
-		var layerName = latlongObject.layerName;
-		var type = latlongObject.type;
-		var source = latlongObject.source;
+	//局站名字不能为空
+	if(layerName=='SD_STATION' && $('#NAME').val().trim()==''){
+		$('#NAME').focus();
+		swal('局站名字不能为空！', '', "warning");
+	}
+	if (editObject.field=='Latlong') {
+		var layerName = editObject.layer_name;
+		var type = editObject.type;
+		var source = editObject.source;
 		var fea = '';
 		
 		if(type == 'Point'){
@@ -2914,6 +2855,7 @@ function saveFeature() {
 				$('#latitude').focus();
 				swal('纬度填写不符合规范！', '经度范围0~90', "warning");
 			}
+			
 		    fea =new ol.Feature( new ol.geom.Point([parseFloat(longitude),parseFloat(latitude)]));
 		}else{
 			var data = $('#'+layerName.toLowerCase()+'_table').bootstrapTable('getData');
@@ -2990,19 +2932,101 @@ function saveFeature() {
 
         $('#wfsFeatureTable').bootstrapTable('prepend', [feature]);
         swal("保存成功", '', "success");
-        // 关闭属性弹窗
-        closeAttributeInfoObj();
-        $("#attributeInfo").mLoading("hide");
+	}else{
+		var featureType = editObject.layer_name;
+		var editType = editObject.editType;
+		var fea = editObject.feature;
+
+		// 获取属性字段的json
+		var attributeJson = getFormJson(featureType.toLowerCase() + "_form");
+		if(featureType == "SD_OPTICALCABLESECTION"){
+			var startid = true,endid=true;
+			//根据选择的模糊数据转换成空间数据ID
+			for(var i=0;i<blurData.length;i++){
+				if(blurData[i].Name == attributeJson.STARTID){
+					attributeJson.STARTID = blurData[i].ID;
+					startid = false;
+				}else if(blurData[i].Name == attributeJson.ENDID){
+					attributeJson.ENDID = blurData[i].ID;
+					endid = false;
+				}
+			}
+			if(startid){attributeJson.STARTID=""}
+			if(endid){attributeJson.ENDID=""}
+			blurData=[];
+		}
+		// 设置feature对应的属性
+		for ( var field in attributeJson) {
+			// 如果输入内容为空，将其改为null
+			if (attributeJson[field] == "") {
+				fea.set(field, null);
+			} else {
+				fea.set(field, attributeJson[field]);
+			}
+		}
+
+		if (editType == "add") {
+			// 设置featureID
+			setFeatureID(fea, featureType);
+		} 
+		var feature = fea.clone();// 此处clone
+									// 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
+		var geo = feature.getGeometry();
+		// 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
+		geo.applyTransform(function(flatCoordinates, flatCoordinates2, stride) {
+			for (var j = 0; j < flatCoordinates.length; j += stride) {
+				var y = flatCoordinates[j];
+				var x = flatCoordinates[j + 1];
+				flatCoordinates[j] = x;
+				flatCoordinates[j + 1] = y;
+			}
+		});
+
+		if (editType == "update") {
+			feature.setId(editObject.feature.getId()); // 注意ID是必须，通过ID才能找到对应修改的feature
+
+			// 此处需要将原有的geometry空间字段删除，否则提交不成功，如果服务空间表空间就是geometry，则不需要处理
+			feature.unset(feature.getGeometryName());
+			// 设置空间字段名，以wfs服务为准
+			// feature.setGeometryName('SHAPE');
+			// feature.setGeometry(geo);
+		}
 		
-		latlongObject={};
+		feature.set('SHAPE', geo);
+		editWFSFeature([feature], editType, featureType);
+		if(editType == "update" ){
+			$('#wfsFeatureTable').bootstrapTable('updateRow', {index: editObject.index, row: feature.values_});
+			swal("修改成功", '', "success");
+		}else if(editType == "add"){
+			$('#wfsFeatureTable').bootstrapTable('prepend', [feature]);
+			swal("保存成功", '', "success");
+		}
+
 	}
+	editObject = {};
+	// 关闭属性弹窗
+	closeAttributeInfoObj();
+	$("#attributeInfo").mLoading("hide");
 
 }
 
 // 将序列化对象转成json
-function getFormJson(form) {
+function getFormJson(form,type) {
 	var o = {};
-	var a = $("#" + form).serializeArray();
+	var a;
+	if(type=='1'){
+		a = $("#" + form).serializeArray();
+		for(var i in a){
+			a[i].name = a[i].name.split('1')[0];
+		}
+	}else if(type=='2'){
+		a = $("#" + form).serializeArray();
+		for(var i in a){
+			a[i].name = a[i].name.split('2')[0];
+		}
+	}else{
+		a = $("#" + form).serializeArray();
+	}
 	$.each(a, function() {
 		if (o[this.name] !== undefined) {
 			if (!o[this.name].push) {
@@ -3382,6 +3406,8 @@ function getDrawType(layerName){
 }
 
 function selectStartIDOrEndID(inputID){
+	
+	var jsPanelID = window.jsPanel.activePanels.list;
 	var select = new ol.interaction.Select();
 	map.addInteraction(select);
 	select.on('select',function(e) {
@@ -3391,9 +3417,17 @@ function selectStartIDOrEndID(inputID){
 			if(code=='0401' || code=='0402'){
 				$('#'+inputID).val(data.NAME);
 				map.removeInteraction(select);
+				for(var i in jsPanelID){
+					//恢复弹出框  
+				   jsPanel.activePanels.getPanel(jsPanelID[i]).normalize();
+				}
 			}
 		}		 
 	});
+	for(var i in jsPanelID){
+		//最小化弹出框  
+	   jsPanel.activePanels.getPanel(jsPanelID[i]).minimize();
+	}
 }
 
 
@@ -3417,9 +3451,10 @@ function getBlurDate(tableNames){
 
 //根据经纬度添加要素
 function addFeatureBylatlong(){
-	latlongObject.source = excessiveObject.source;
-	latlongObject.layerName = excessiveObject.layerName;
-	latlongObject.type = excessiveObject.type;
+	editObject.source = excessiveObject.source;
+	editObject.layer_name = excessiveObject.layerName;
+	editObject.type = excessiveObject.type;
+	editObject.field = 'Latlong';
 	jsPanelAttributeInfo('Latlong');
 	excessiveObject={};
 }
@@ -3432,13 +3467,420 @@ function isEmptyObject(e) {
     return !0  
 }  
 
+//添加空间数据
+function addSpaceData(layerName,stationType){
+	    clearOnMapEvent(); // 清除主动添加到地图上的事件
+		closeAttributeInfoObj();
+		//清除之前添加而没有保存的数据
+		if (editObject.editType == "add") {
+			var source = editObject.source;
+			source.removeFeature(editObject.feature);
+			editObject={};
+		}
+		// 获取当前图层及类型
+		var layer = getLayerNodeByName(layerName).layer;
+			var type = getDrawType(layerName);
+			// 画矢量图形
+			var draw = new ol.interaction.Draw(
+					{
+						source : layer.getSource(),
+						geometryName : 'SHAPE',
+						type : (type)
+					});
+			map.addInteraction(draw);
+			draw.on('drawend',function(e) {
+				// 保存编辑数据
+				editObject.feature = e.feature;
+				editObject.source = layer.getSource();
+				editObject.editType = "add";
+				editObject.layer_name = layerName;
+				editObject.stationType = stationType;
+				// 弹出属性窗口
+				jsPanelAttributeInfo();
+				// 关闭draw事件
+				map.removeInteraction(draw);
+			}, this);				
+}
+//修改空间数据
+function updateSpaceData(){
+	clearOnMapEvent(); // 清除主动添加到地图上的事件
+	closeAttributeInfoObj();
+		var select = new ol.interaction.Select();
+		var modify = new ol.interaction.Modify({
+					features : select.getFeatures()
+				});
+		map.addInteraction(select);
+		map.addInteraction(modify);
+		var feaId="";
+		select.on('select',function(e) {
+			if (e.selected[0] != undefined) {
+				if(feaId!="" && feaId != e.selected[0].values_.ID){
+					closeAttributeInfoObj();
+				}
+			feaId = e.selected[0].values_.ID;
+			// 获取查询图层类型
+			var code = feaId.substring(0,4);
+			var layer_name = queryLayerNameByPMSID(code);
+			// 获取当前图层
+			var layer = getLayerNodeByName(layer_name).layer;
+				// 保存数据
+				editObject.feature = e.selected[0];
+				editObject.source = layer.getSource();
+				editObject.editType = "update";
+				editObject.layer_name = layer_name;
+				jsPanelAttributeInfo();
+			}else{
+				closeAttributeInfoObj();
+			}
+		});				
+}
+
+//删除空间数据
+function deleteSpaceData(){
+	closeFunction();
+	drawGeometry = new ol.interaction.Draw({
+		source : new ol.source.Vector(),
+		type : /** @type {ol.geom.GeometryType} */
+		('Circle'),
+		geometryFunction : ol.interaction.Draw.createBox(),
+		style : new ol.style.Style({
+			fill : new ol.style.Fill({
+				color : 'rgba(255, 255, 255, 0.2)'
+			}),
+			stroke : new ol.style.Stroke({
+				color : 'rgba(0, 0, 0, 0.5)',
+				lineDash : [ 10, 10 ],
+				width : 2
+			}),
+			image : new ol.style.Circle({
+				radius : 5,
+				stroke : new ol.style.Stroke({
+					color : 'rgba(0, 0, 0, 0.7)'
+				}),
+				fill : new ol.style.Fill({
+					color : 'rgba(255, 255, 255, 0.2)'
+				})
+			})
+		})
+	});
+	map.addInteraction(drawGeometry);
+	var listener = "";
+	var sketch = null;
+	drawGeometry.on('drawstart', function(evt) {
+		// set sketch
+		sketch = evt.feature;
+		var coord = evt.coordinate;
+		listener = sketch.getGeometry().on('change', function(evt) {
+			var geom = evt.target;
+			if (geom instanceof ol.geom.Geometry) {
+				var extent = geom.getExtent();
+				boxExtent = extent;
+			}
+		});
+	}, this);
+
+	drawGeometry.on('drawend', function(event) {
+		sketch = null;
+		clearDrawGeometry();
+		ol.Observable.unByKey(listener);
+		swal({
+			title : "确定删除此数据？",
+			text : "删除后不可恢复,请谨慎操作!",
+			type : "warning",
+			showCancelButton : true,
+			confirmButtonColor : "#DD6B55",
+			confirmButtonText : "确定",
+			cancelButtonText : "取消",
+			closeOnConfirm : false
+		},function(isConfirm) {
+			if (isConfirm) {
+				var layerTable = queryTableByData('/SYSTEMCODE/search.action',{});
+				var deleteFeatures=[];
+				for(var i in layerTable){
+					var layer_name = layerTable[i].TABLENAME;
+					if(layer_name != 'EQUIPMENT'){
+						var featureRequest = new ol.format.WFS().writeGetFeature({
+							srsName : 'EPSG:4326',
+							featurePrefix : 'anqing',
+							featureTypes : [ layer_name ],
+							outputFormat : 'application/json',
+							geometryName : "the_geom",
+							filter :ol.format.filter.bbox('SHAPE', boxExtent, 'EPSG:4326'),
+						});
+						
+						// 然后发布请求并将接收到数据在表格中显示
+						var featureUrl = "http://" + queryWFSURL() + "/geoserver/wfs";
+						fetch(featureUrl, {
+							method : 'POST',
+							body : new XMLSerializer().serializeToString(featureRequest)
+						}).then(function(response) {
+							return response.json();
+						}).then(function(json) {
+							var features = new ol.format.GeoJSON().readFeatures(json);
+							if (features.length == 0) {
+//								swal('没有查到符合条件的数据', '', "warning");
+							} else {
+								// 获取查询图层类型
+								var code = features[0].values_.ID.substring(0,4);
+								var layerType = queryLayerNameByPMSID(code);
+								// 获取当前图层
+								var layer = getLayerNodeByName(layerType).layer;
+								var map={};
+								map[layer]=features;
+								deleteFeatures.push(map);
+								editWFSFeature(features,'delete',layerType);
+//								for(var k in features){
+//									layer.getSource().removeFeature(features);
+//								}
+							}
+						});
+					}
+				}
+			} else {
+//				map.removeInteraction(select);
+			}
+
+		});
+		
+	}, this);
+}
+
+//分割线段
+function splitCable(){
+	closeFunction();
+	clearOnMapEvent(); // 清除主动添加到地图上的事件
+	var source = getLayerNodeByName('SD_OPTICALCABLESECTION').layer.getSource();
+	var split = new ol.interaction.Split ({
+	       sources: source
+		});
+    map.addInteraction(split);
+	
+	//监听分割事件
+	source.on("aftersplit", function(e){
+		editObject.editType = "split";
+		editObject.source = source;
+		editObject.feature = e.features;
+		editObject.original = e.original;
+         map.removeInteraction(split);
+     	 closeAttributeInfoObj();
+     	attributeInfoObj = $.jsPanel({
+			id : "attributeInfo",
+			headerControls : {
+				controls : "closeonly"
+			},
+			position : {
+				right : 20,
+				top : 100
+			},
+			dragit: {containment: [100, 0, 0,160]},
+			theme : "rebeccapurple",
+			contentSize : 'auto auto',
+			headerTitle : '分割光缆段信息',
+			contentAjax : {
+				url : '/splitcable/splitcable.action',
+				autoload : true,
+				done : function(data, textStatus, jqXHR, panel) {
+					//回写数据
+					var feature = e.features[0].values_;
+					for ( var id in feature) {
+						if (id != "SHAPE" && id != "ID" && id !="geometry" ) {
+							if(document.getElementById(id+'1').type== "select-one"){
+								$('#' + id+'1') .selectpicker('val', feature[id]);
+								$('#' + id+'2') .selectpicker('val', feature[id]);
+							}else if(id=='ENDID' || id == 'STARTID'){
+								var value = formatfeatureName(feature[id]);
+								$('#' + id+'1').val(value);
+								$('#' + id+'2').val(value);
+							}else if(id=='LENGTH'){
+							}else{
+								$('#' + id+'1').val(feature[id]);
+								$('#' + id+'2').val(feature[id]);
+							}
+						} 
+					}
+				}
+			},
+			callback : function(panel) {
+			}
+		});
+    });
+
+}
+
+//保存光缆分割数据
+function saveSplitcable() {
+	
+	var features = editObject.feature;
+	var coordinate = features[0].getGeometry().flatCoordinates;
+	var longitude = coordinate[coordinate.length-2];
+	var latitude = coordinate[coordinate.length-1];
+	var junctionbox =new ol.Feature( new ol.geom.Point([parseFloat(longitude),parseFloat(latitude)]));
+	var junctionboxID = '0402'+guid();
+	// 获取接头盒属性字段的json
+	var junctionboxJson = getFormJson("junctionbox_form");
+	var junctionboxSource = getLayerNodeByName('SD_JUNCTIONBOX').layer.getSource();
+	//保存接头盒信息
+	saveSpaceData(junctionbox,junctionboxJson,junctionboxID,'SD_JUNCTIONBOX',junctionboxSource);
+	// 获取第一段光缆段属性字段的json
+	var cable1Json = getFormJson("opticalcablesection_form1",'1');
+	// 获取第二段光缆段属性字段的json
+	var cable2Json = getFormJson("opticalcablesection_form2",'2');
+	
+	//从数据看删除原来的光缆段
+	editWFSFeature([editObject.original],'delete','SD_OPTICALCABLESECTION');
+	if(true){
+		var start_id = true,end_id=true;
+		//根据选择的模糊数据转换成空间数据ID
+		for(var i=0;i<blurData.length;i++){
+			if(blurData[i].Name == cable1Json.STARTID){
+				cable1Json.STARTID = blurData[i].ID;
+				start_id = false;
+			}
+			if(blurData[i].Name == cable2Json.ENDID){
+				cable2Json.ENDID = blurData[i].ID;
+				end_id = false;
+			}
+		}
+		if(start_id){cable1Json.STARTID=""}
+		cable1Json['ENDID'] = junctionboxID;
+		if(end_id){cable2Json.ENDID=""}
+		cable2Json['STARTID'] = junctionboxID;
+		blurData=[];
+	}
+	//保存光缆段1数据
+	var cable1ID = editObject.original.values_.ID;
+	saveSpaceData(features[0],cable1Json,cable1ID,'SD_OPTICALCABLESECTION',editObject.source);
+	//保存光缆段2数据
+	var cable2ID = '0406'+guid();
+	saveSpaceData(features[1],cable2Json,cable2ID,'SD_OPTICALCABLESECTION',editObject.source);
+	
+	//修改纤芯承载表关联ID
+	var data = queryTableByData("/T_FCRELATIONSHIP/queryMultiConditionData.action",
+			{'C_STARTOCSECTIONID':cable1ID,'C_ENDOCSECTIONID':cable1ID,});
+	if(data!=''){
+		for(var i in data){
+			if(data[i].C_STARTOCSECTIONID == data[i].C_ENDOCSECTIONID ){
+				var obj = {};
+	        	obj["search.C_ID*eq"] = data[i].C_ID;
+	    		obj['C_ENDOCSECTIONID'] = cable2ID;
+	    		$.post('/T_FCRELATIONSHIP/update.action', obj);
+	    		continue;
+			}else{
+				var startId = editObject.original.values_.STARTID;
+				var endId = editObject.original.values_.ENDID;
+				// 获取当前图层
+				 var layer = getLayerNodeByName('SD_OPTICALCABLESECTION').layer;
+				 var features = layer.getSource().getFeatures();
+				
+				//更新纤芯承载表关联ID
+				 modificationFcrrlationship([cable1ID],features,startId,cable1ID,data[i].C_ENDOCSECTIONID,cable2ID,data[i].C_ID);
+				 
+			}
+		}
+		
+	}
+	closeAttributeInfoObj();
+	editObject = {};
+	swal("保存成功",'',"success");
+	
+}
+/*//更新纤芯承载表关联ID
+ * filtrationID:过滤的光缆段ID
+ * features:所有光缆段集合
+ * startId：原光缆段的起点ID
+ * cable1ID：分割后的第一段光缆段的ID，也是原光缆段ID
+ * cable2ID：分割后的第二段光缆段的ID（新设置的）
+ * eligibleID：根据分割光缆段（原光缆段）ID从纤芯承载管理表查询出来符合条件的光缆段ID
+ * C_ID : 根据此ID修改纤芯承载管理表
+*/
+function modificationFcrrlationship(filtrationID,features,startId,cable1ID,eligibleID,cable2ID,C_ID){
+	if(startId.substring(0,4)=='0402'){ //只查询接头盒
+		 for(var i in features){
+			 for(var k in filtrationID){
+				 if(features[i].values_.ID != filtrationID[k]){
+					 if(features[i].values_.STARTID==startId || features[i].values_.ENDID==startId){
+						 if(features[i].values_.ID==eligibleID){
+							 var obj = {};
+							 obj["search.C_ID*eq"] = C_ID;
+							 obj['C_STARTOCSECTIONID'] = cable2ID;
+							 $.post('/T_FCRELATIONSHIP/update.action', obj);
+							 filtrationID =[];
+							 return;
+					     }else{
+					    	 filtrationID.push(features[i].values_.ID);
+					    	 modificationFcrrlationship(filtrationID,features[i].values_.STARTID,cable1ID,eligibleID,cable2ID);
+					     } 
+					 }
+				 }
+			 }
+			 
+		 }
+	 }
+}
+
+//保存空间数据信息
+function saveSpaceData(fea,attributeJson,ID,layerName,source){
+	// 设置feature对应的属性
+	for ( var field in attributeJson) {
+		// 如果输入内容为空，将其改为null
+		if (attributeJson[field] == "") {
+			fea.set(field, null);
+		} else {
+			fea.set(field, attributeJson[field]);
+		}
+	}
+	
+	// 设置featureID
+	fea.set("ID", ID);
+	source.addFeature(fea.clone());
+	
+	var feature = fea.clone();// 此处clone
+	// 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
+    var geo = feature.getGeometry();
+     // 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
+     geo.applyTransform(function(flatCoordinates, flatCoordinates2, stride) {
+        for (var j = 0; j < flatCoordinates.length; j += stride) {
+           var y = flatCoordinates[j];
+           var x = flatCoordinates[j + 1];
+           flatCoordinates[j] = x;
+           flatCoordinates[j + 1] = y;
+         }
+     });
+    feature.set('SHAPE', geo);
+    editWFSFeature([feature], 'add', layerName);
+}
+//取消分割
+function unSaveSplitcable() {
+	clearOnMapEvent();// 清除主动添加到地图上的事件
+	if (editObject.editType == "add") {
+		var source = editObject.source;
+		source.removeFeature(editObject.feature);
+	}else if(editObject.editType == "split"){
+		var source = editObject.source;
+		var features = editObject.feature;
+		source.removeFeature(features[0]);
+		source.removeFeature(features[1]);
+		source.addFeature(editObject.original);
+	}
+	if (editObject != "") {
+		editObject = {};
+	}
+	closeAttributeInfoObj();
+}
+//图形编辑工具栏鼠标悬停效果
+function imgmouseenter(id,name) {
+   $("#"+id+" img").attr("src","/images/img/"+name+".png");
+}
+//图形编辑工具栏鼠标离开效果
+function imgmouseleave(id,name) {
+    $("#"+id+" img").attr("src","/images/img/"+name+".png");
+}
 
 
 
 
-
-
-function test() {
+function test(id,name) {
+	$("#"+name+" img").attr("src","/images/img/"+name+"1.png");
 //	map.getView().setZoom(30);
 	/*map.getView().setCenter([ 114.31, 30.52 ]);
     map.render();*/

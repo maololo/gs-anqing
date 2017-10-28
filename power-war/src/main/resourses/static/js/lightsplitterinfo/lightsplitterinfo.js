@@ -134,9 +134,15 @@ function operateFormatter(val,row,index){
 
 function openLightsplitterinfoDailog(url,title){
 	lightsplitterinfo = $.jsPanel({
-        id:			 "lightsplitterinfo",
+        id:			 "lightsplitterinfoAdd",
         dragit: {containment: [100, 0, 0,160]},
-        headerControls: { controls: "closeonly" },
+        headerControls: {
+	    	maximize: 'remove',
+	        smallify: 'remove'
+	    },
+	    resizeit: {
+	        disable: true //禁止窗口大小调整
+	    },
         position:    'center',
         theme:       "#308374",
         contentSize: {width: 'auto', height: 'auto'},

@@ -25,6 +25,8 @@
 <script type="text/javascript" src="/lib/jsPanel/3.10.0/jquery.jspanel.min.js"></script>
 <script type="text/javascript" src="/lib/openlayer/3.20.1/ol-debug.js"></script>
 <script type="text/javascript" src="/lib/openlayer/ext/ol3-ext.min.js"></script>
+<script type="text/javascript" src="/lib/openlayer/3.20.1/ol.geom.utils.js"></script>
+<script type="text/javascript" src="/lib/openlayer/3.20.1/splitinteraction.js"></script>
 <script type="text/javascript" src="/lib/mloading/jquery.mloading.js"></script>
 <script  type="text/javascript" src="/iconfont/iconfont.js"></script>
 <script type="text/javascript" src="/lib/jstree/jstree.min.js"></script>
@@ -261,6 +263,30 @@
     <!--右侧中间内容开始-->
     <div id="right-sidebar">
         <div id="openlayersID" ></div>
+           <div class=" navbarToolbar" role="group">
+            <div class="btn-group navbarToolbar1" >
+                <button type="button" class="btn btn-back"  id="btnbar2" onclick="addSpaceData('SD_STATION','变电站')" title="添加变电站" onmouseover="imgmouseenter('btnbar2','2_03')" onmouseout="imgmouseleave('btnbar2','2')"><img src="/images/img/2.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar3" onclick="addSpaceData('SD_STATION','光交箱')" title="添加光交箱" onmouseover="imgmouseenter('btnbar3','1_07')" onmouseout="imgmouseleave('btnbar3','3')"><img src="/images/img/3.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar4" onclick="addSpaceData('SD_STATION','机房大楼')" title="添加机房大楼" onmouseover="imgmouseenter('btnbar4','1_09')" onmouseout="imgmouseleave('btnbar4','4')"><img src="/images/img/4.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar5" onclick="addSpaceData('SD_JUNCTIONBOX')" title="添加接头盒" onmouseover="imgmouseenter('btnbar5','1_11')" onmouseout="imgmouseleave('btnbar5','5')"> <img src="/images/img/5.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar6" onclick="addSpaceData('SD_PERSONWELL')" title="添加人井" onmouseover="imgmouseenter('btnbar6','1_13')" onmouseout="imgmouseleave('btnbar6','6')"><img src="/images/img/6.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar7" onclick="addSpaceData('SD_COMMUNICATIONPOLETOWER')" title="添加通信杆塔" onmouseover="imgmouseenter('btnbar7','1_15')" onmouseout="imgmouseleave('btnbar7','7')"><img src="/images/img/7.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar8" onclick="addSpaceData('SD_RESIDUALCABLE')" title="添加余缆" onmouseover="imgmouseenter('btnbar8','1_17')" onmouseout="imgmouseleave('btnbar8','8')"><img src="/images/img/8.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar9" onclick="updateSpaceData()" title="修改" onmouseover="imgmouseenter('btnbar9','1_19')" onmouseout="imgmouseleave('btnbar9','9')"><img src="/images/img/9.png" alt=""></button>
+            </div>
+            <div class="btn-group navbarToolbar2 navbarToolbar1" >
+                <button type="button" class="btn btn-back"  onclick="addSpaceData('SD_OPTICALCABLESECTION')" title="添加光缆段"><span class="iconfont icon-hr"></span></button>
+                <button type="button" class="btn btn-back" onclick="addSpaceData('SD_CABLEDUCT')" title="添加电缆管道"><span class="iconfont icon-guandao_pipeline"></span></button>
+                <button type="button" class="btn btn-back" onclick="addSpaceData('SD_CABLETRENCH')" title="添加电缆沟"><span class="iconfont icon-dianlangou"></span></button>
+                <button type="button" class="btn btn-back" onclick="addSpaceData('SD_CABLETUNNEL')" title="添加电缆隧道"><span class="iconfont icon-suidao"></span></button>
+                <button type="button" class="btn btn-back" id="btnbar10" onmouseover="imgmouseenter('btnbar10','1_21')" onmouseout="imgmouseleave('btnbar10','10')"><img src="/images/img/10.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar11" onmouseover="imgmouseenter('btnbar11','2_09')" onmouseout="imgmouseleave('btnbar11','11')"><img src="/images/img/11.png" alt=""></button>
+                <button type="button" class="btn btn-back" id="btnbar13"  onclick="splitCable()" title="分割电缆" onmouseover="imgmouseenter('btnbar13','1_11 (2)')" onmouseout="imgmouseleave('btnbar13','2_11')"><img src="/images/img/2_11.png" alt=""></button>
+                <button type="button" class="btn btn-back"  onclick="deleteSpaceData()" title="删除"><span class="iconfont icon-shanchu" style="font-size:23px!important;"></span></button>
+                <button type="button" class="btn btn-back" id="btnbar14" onmouseover="imgmouseenter('btnbar14','1_29')" onmouseout="imgmouseleave('btnbar14','14')"><img src="/images/img/14.png" alt=""></button>
+                <button type="button" class="btn btn-back"><span class="iconfont icon-zhongzuo" style="font-size: 16px!important;"></span></button>
+            </div>
+        </div>
         <div class="btn-group-vertical toolbar" role="group">
             <button type="button" class="btn btn-inverse" title="放大" onClick="zoomInMap()"><span class="iconfont icon-tianjia"></span></button>
             <button type="button" class="btn btn-inverse" title="缩小" onClick="zoomOutMap()"><span class="iconfont icon-suoxiaochuangkou"></span></button>

@@ -53,14 +53,13 @@ table td, table th {
 table thead{
     background: #f7f7f7;
 }
-#equipmentAdd .jsglyph-chevron-up{
-    display: none;
+.selectButton{
+	width: 33px;
+    padding: 0px;
+    height: 35px;
 }
-#equipmentAdd .jsglyph-minimize{
-    display: none;
-}
-#equipmentAdd .jsglyph-maximize{
-    display: none;
+.selectButton img{
+	margin-left: -4px;
 }
 #k .jsPanel-headerbar{
     display: none;

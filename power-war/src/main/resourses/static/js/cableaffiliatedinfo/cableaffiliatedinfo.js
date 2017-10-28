@@ -106,8 +106,14 @@ function operateFormatterCableaffiliatedInfo(val,row,index){
 
 function openCableaffiliatedInfoDailog(url,title){
 	cableaffiliatedInfo = $.jsPanel({
-		headerControls: { controls: "closeonly" },
-        id:			 "cableaffiliatedInfo",
+		headerControls: {
+	    	maximize: 'remove',
+	        smallify: 'remove'
+	    },
+	    resizeit: {
+	        disable: true //禁止窗口大小调整
+	    },
+        id:			 "cableaffiliatedInfoAdd",
         dragit: {containment: [100, 0, 0,160]},
         position:    'center',
         theme:       "#308374",

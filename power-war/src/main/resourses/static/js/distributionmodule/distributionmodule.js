@@ -184,8 +184,14 @@ function operateFormatterDistributionmodule(val,row,index){
 
 function openDistributionmoduleDailog(url,title){
 	distributionmodule = $.jsPanel({
-		headerControls: { controls: "closeonly" },
-        id:			 "distributionmodule",
+		headerControls: {
+	    	maximize: 'remove',
+	        smallify: 'remove'
+	    },
+	    resizeit: {
+	        disable: true //禁止窗口大小调整
+	    },
+        id:			 "distributionmoduleAdd",
         position:    'center',
         dragit: {containment: [100, 0, 0,160]},
         theme:       "#308374",

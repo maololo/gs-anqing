@@ -48,7 +48,8 @@
                                 <input type="text" class="form-control"  id="C_STARTOCSECTIONID" name="C_STARTOCSECTIONID" autocomplete="off" />
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="text-but" type="button" title="选取光缆段" onclick="selectOpticalcablesectionID('C_STARTOCSECTIONID')">选</button>
+                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_STARTOCSECTIONID')">
+                                <img src="/images/img/2.png" alt=""></button>
                             </div>
                             
                             <label for="C_ENDOCSECTIONID" class="col-sm-2 control-label" style="margin-left: -10px;" >结束段光缆段:</label>
@@ -56,7 +57,8 @@
                                 <input type="text" class="form-control"  id="C_ENDOCSECTIONID" name="C_ENDOCSECTIONID" autocomplete="off" />
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="text-but" type="button" title="选取光缆段" onclick="selectOpticalcablesectionID('C_ENDOCSECTIONID')">选</button>
+                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_ENDOCSECTIONID')">
+                                <img src="/images/img/2.png" alt=""></button>
                             </div>
                         </div>
                         <div class="form-group">
@@ -78,8 +80,8 @@
                         </div>
         <div class="form-group">
             <div class="text-center">
-                <button class="btn" type="button" style="background:#308374;color: white" onclick="submitFcrelationshipInfo()">保存</button>
-                <button class="btn " type="button" style="background:#308374;color: white" onclick="closeFcrelationship()">取消</button>
+                <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="submitFcrelationshipInfo()">保存</button>
+                <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="closeFcrelationship()">取消</button>
             </div>
         </div>
     </form>

@@ -140,7 +140,7 @@ function res(url,outlink,common,self,callback){
 		
 		var jsPanelID = window.jsPanel.activePanels.list;
 		for(var i in jsPanelID){
-			if(jsPanelID[i] == self.innerHTML+1){
+			if(jsPanelID[i] == jssrc+1){
 				jsPanel.activePanels.getPanel(jsPanelID[i]).close();
 				break;
 			}
@@ -156,7 +156,7 @@ function res(url,outlink,common,self,callback){
 	         dragit: {
 	             containment: [0, 0, 0,0]
 	         },
-		    id:self.innerHTML,
+		    id:jssrc,
 		    theme:   "#308374",
 		    position: {
 	             my:  'center-top',
@@ -183,13 +183,7 @@ function res(url,outlink,common,self,callback){
 }
 
 function resPopover(url,title,callback){
-	var jsPanelID = window.jsPanel.activePanels.list;
-	for(var i in jsPanelID){
-		if(jsPanelID[i] == title+1 || jsPanelID[i] == title){
-			jsPanel.activePanels.getPanel(jsPanelID[i]).close();
-			break;
-		}
-	}
+	
 	
 	var tableName = "";
 	var url = url.toLowerCase();
@@ -197,13 +191,20 @@ function resPopover(url,title,callback){
 	var lindex = url.lastIndexOf(".");
 	var jssrc = url.substr(findex+1,lindex-findex-1);
 	var js = "/js/"+jssrc+"/"+jssrc+".js";
+	var jsPanelID = window.jsPanel.activePanels.list;
+	for(var i in jsPanelID){
+		if(jsPanelID[i] == jssrc+1 || jsPanelID[i] == jssrc){
+			jsPanel.activePanels.getPanel(jsPanelID[i]).close();
+			break;
+		}
+	}
 	 $.jsPanel({
 		  maximizedMargin: {
 	             top:    100,
 	             left:   170
 	         },
 	    dragit: {containment: [100, 0, 0,160]},
-	    id:title+1,
+	    id:jssrc+1,
 	    theme:   "#308374",
 	    contentSize: {width: 'auto', height: 'auto'},
 	    headerTitle: title,

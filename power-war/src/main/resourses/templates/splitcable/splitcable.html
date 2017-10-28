@@ -1,0 +1,243 @@
+
+<script type="text/javascript">
+initSelectpicker('光缆类型',"TYPE1");
+initSelectpicker('电压等级','VOLTAGECLASS1');
+initSelectpicker('敷设方式','LAYWAY1');
+initSelectpicker('资产单位','ASSETUNIT1'); 
+initSelectpicker('维护单位','MAINTENANCEUNIT1');
+initSelectpicker('光缆类型',"TYPE2");
+initSelectpicker('电压等级','VOLTAGECLASS2');
+initSelectpicker('敷设方式','LAYWAY2');
+initSelectpicker('资产单位','ASSETUNIT2'); 
+initSelectpicker('维护单位','MAINTENANCEUNIT2');
+initSelectpicker('资产单位','ASSETUNIT'); 
+initSelectpicker('维护单位','MAINTENANCEUNIT');
+
+function initSelectpicker(val,id){
+	$.ajax({
+		url:"/T_ENUMERATE/search.action",
+    	data:{"search.C_TYPE*eq":val,"sort.C_SORTID":'ASC'},//设置请求参数 
+    	type:"post",//请求方法 
+        dataType: "Json",
+        async:false,
+        success: function (data) {
+            if (data!="" ||data!=null) {               
+                for(var i=0;i<data.length;i++) {
+                	$('#'+id+'.selectpicker').append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
+                }
+                $("#"+id).selectpicker('refresh');
+               
+            }
+        }
+    })
+}
+blurData = getBlurDate(['SD_STATION']);
+$('#STARTID1').typeahead({
+    source: blurData,
+    display: 'Name',
+    val: 'ID'
+});
+ 
+$('#ENDID1').typeahead({
+    source: blurData,
+    display: 'Name',
+    val: 'ID'
+});
+$('#STARTID2').typeahead({
+    source: blurData,
+    display: 'Name',
+    val: 'ID'
+});
+ 
+$('#ENDID2').typeahead({
+    source: blurData,
+    display: 'Name',
+    val: 'ID'
+});
+
+</script>
+<div class="modal-body" style="padding: 5px;width:500px;">
+   <div>
+   <ul id="myTab" class="nav nav-tabs">
+     <li class="active"><a href="#splitcable1" data-toggle="tab">光缆段</a></li>
+     <li><a href="#junctionbox" data-toggle="tab">接头盒</a></li>
+     <li><a href="#splitcable2" data-toggle="tab">光缆段</a></li>
+   </ul>
+  
+    <div id="myTabContent" class="tab-content">
+      <div class="tab-pane fade in active" id="splitcable1">
+      <form class="form-horizontal" style="padding: 10px" id="opticalcablesection_form1">
+                        <div class="form-group">
+                            <label for="NAME1" class="col-sm-2 control-label" >名称:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="NAME1" id="NAME1"/>
+                            </div>
+                            <label for="TYPE1" class="col-sm-2 control-label" style="margin-left: -10px;">光缆类型:</label>
+                            <div class="col-sm-4" >
+                                <select id="TYPE1" name="TYPE1" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+				            <label for="LAYWAY1" class="col-sm-2 control-label" >敷设方式:</label>
+                            <div class="col-sm-4" >
+                                <select id="LAYWAY1" name="LAYWAY1" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="CORENUM1" class="col-sm-2 control-label" style="margin-left: -10px;">芯数:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="CORENUM1" id="CORENUM1"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="VOLTAGECLASS1" class="col-sm-2 control-label" >线路电压等级:</label>
+                            <div class="col-sm-4" >
+                                <select id="VOLTAGECLASS1" name="VOLTAGECLASS1" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="LENGTH1" class="col-sm-2 control-label" style="margin-left: -10px;">长度:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="LENGTH1" id="LENGTH1"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="STARTID1" class="col-sm-2 control-label" >起点:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="STARTID1" name="STARTID1" autocomplete="off" />
+                                <input  id="ENDID1" name="ENDID1" type="hidden"/>
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="text-but" type="button" title="选取站点" onclick="selectStartIDOrEndID('STARTID')">选</button>
+                            </div>
+                             <label for="MAINTENANCEUNIT1" class="col-sm-2 control-label" style="margin-left: -10px;">维护单位:</label>
+                            <div class="col-sm-4" >
+                                <select id="MAINTENANCEUNIT1" name="MAINTENANCEUNIT1" class="selectpicker show-tick form-control" style="padding: 6px 0px;">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            
+                        </div>
+                         <div class="form-group">
+                            <label for="ASSETUNIT1" class="col-sm-2 control-label">资产单位:</label>
+                            <div class="col-sm-4 " >
+                                <select id="ASSETUNIT1"  name="ASSETUNIT1" class="selectpicker form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+       </form>
+   </div>
+   <div class="tab-pane fade" id="junctionbox">
+      <form class="form-horizontal" style="padding: 10px" id="junctionbox_form">
+                        <div class="form-group">
+                            <label for="NAME" class="col-sm-2 control-label" >名称:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="NAME" id="NAME"/>
+                            </div>
+                            <label for="POSITION" class="col-sm-2 control-label" style="margin-left: -10px;">位置:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="POSITION" id="POSITION"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="SPECIFICATIONS" class="col-sm-2 control-label">规格标识:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="SPECIFICATIONS" id="SPECIFICATIONS"/>
+                            </div>
+                            <label for="ASSETUNIT" class="col-sm-2 control-label" style="margin-left: -10px;">资产单位:</label>
+                            <div class="col-sm-4" >
+                                <select id="ASSETUNIT" name="ASSETUNIT" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="MAINTENANCEUNIT" class="col-sm-2 control-label" >维护单位:</label>
+                            <div class="col-sm-4" >
+                                <select id="MAINTENANCEUNIT" name="MAINTENANCEUNIT" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+       </form>
+   </div>
+   <div class="tab-pane fade" id="splitcable2">
+      <form class="form-horizontal" style="padding: 10px" id="opticalcablesection_form2">
+                        <div class="form-group">
+                            <label for="NAME2" class="col-sm-2 control-label" >名称:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="NAME2" id="NAME2"/>
+                            </div>
+                            <label for="TYPE2" class="col-sm-2 control-label" style="margin-left: -10px;">光缆类型:</label>
+                            <div class="col-sm-4" >
+                                <select id="TYPE2" name="TYPE2" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+				            <label for="LAYWAY2" class="col-sm-2 control-label" >敷设方式:</label>
+                            <div class="col-sm-4" >
+                                <select id="LAYWAY2" name="LAYWAY2" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="CORENUM2" class="col-sm-2 control-label" style="margin-left: -10px;">芯数:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="CORENUM2" id="CORENUM2"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="VOLTAGECLASS2" class="col-sm-2 control-label" >线路电压等级:</label>
+                            <div class="col-sm-4" >
+                                <select id="VOLTAGECLASS2" name="VOLTAGECLASS2" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="LENGTH2" class="col-sm-2 control-label" style="margin-left: -10px;">长度:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="LENGTH2" id="LENGTH2"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ENDID2" class="col-sm-2 control-label">终点:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="hidden" id="STARTID2" name="STARTID2"/>
+                                <input  id="ENDID2" name="ENDID2" type="text" class="form-control" autocomplete="off" />
+                            </div>
+                            
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="text-but" type="button" title="选取站点" onclick="selectStartIDOrEndID('ENDID')">选</button>
+                            </div>
+                            <label for="MAINTENANCEUNIT2" class="col-sm-2 control-label" style="margin-left: -10px;">维护单位:</label>
+                            <div class="col-sm-4" >
+                                <select id="MAINTENANCEUNIT2" name="MAINTENANCEUNIT2" class="selectpicker show-tick form-control" style="padding: 6px 0px;">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label for="ASSETUNIT2" class="col-sm-2 control-label">资产单位:</label>
+                            <div class="col-sm-4 " >
+                                <select id="ASSETUNIT2"  name="ASSETUNIT2" class="selectpicker form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            
+                        </div>
+       </form>
+   </div>
+  </div>    
+     </div>               
+    <div class="text-center">
+        <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="saveSplitcable()">保存</button>
+        <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="unSaveSplitcable()">取消</button>
+   </div>
+ </div>
+ 
