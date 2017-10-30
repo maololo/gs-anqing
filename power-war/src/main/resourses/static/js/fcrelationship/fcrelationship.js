@@ -146,7 +146,6 @@ function queryParams(params) {
 			sColumn:params.sort,
 			order:params.order,
 			page_size: params.limit
-			
 		}
 };
 

@@ -360,10 +360,11 @@ function init(){
 	        },
 	        {
 	        	field: 'C_EQUIPMENTCODE',
-	        	title: '设备编码',
+	        	title: '设备名称',
 	        	align: 'center',
 	        	valign: 'top',
-	        	sortable: true
+	        	sortable: true,
+	        	formatter:function(value,row,index){return formatfeatureName(value);}
 	        },
 	        {
 	        	field: 'C_REMARK',
@@ -373,13 +374,6 @@ function init(){
 	        	sortable: true
 	        }
         ]
-    });
-    
-    $(".rolebtn").hover(function () {
-    	index=$(".rolebtn").index(this);
-       	$(this).css({"background":"#308374","color":"white"});
-    },function () {
-    	$(this).css({"background":"none","color":"#666"});
     });
     
 }
@@ -419,12 +413,26 @@ function initSelectpicker(val,id){
 
 //设置传入参数
 function queryParams(params) {
-	return {
-		page_pn: params.pageNumber,
-		sColumn:params.sort,
-		order:params.order,
-		page_size: params.limit
+	var params={};
+	if(filterFieldID==""){
+		params = {
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit
+		}
+	}else{
+		params ={
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit,
+			"search.C_EQUIPMENTCODE*eq":filterFieldID
+		}
+		filterFieldID = "";
+		$('#distributioninfoBody').hide();
 	}
+	return params;
 };
 
 function operateFormatter(val,row,index){

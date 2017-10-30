@@ -6,7 +6,7 @@ var propertyListWindow = ""; // 查询结果弹出框对象
 var excessiveObject = {}; // 过度对象
 var editObject = {}; // 编辑对象
 var attributeInfoObj = ""; // 属性信息弹窗对象
-var layerData = ''; // 保存图层属性表数据
+var layerAttributeTableData = ''; // 保存图层属性表数据
 var geomObj = ""; // 测量时生成对象的图层
 var measureTooltipElement = ""; // 度量工具提示元素.
 var measureTooltip = ""; // 测量结果对象
@@ -269,152 +269,6 @@ function initLayerTree() {
 						"contextmenu" : {
 							"show_at_node" : false,
 							"items" : {
-								"添加" : {
-									"label" : "添加",
-									"icon" : "/images/1_07.png",
-									"action" : function(data) {
-										clearOnMapEvent(); // 清除主动添加到地图上的事件
-										closeAttributeInfoObj();
-										//清除之前添加而没有保存的数据
-										if (editObject.editType == "add") {
-											var source = editObject.source;
-											source.removeFeature(editObject.feature);
-											editObject={};
-										}
-										var inst = jQuery.jstree.reference(data.reference);
-										var obj = inst.get_node(data.reference);
-										if (obj.children.length == 0
-												&& obj.parent != "#") {
-											// 获取当前图层及类型
-											var layer= obj.original.layer;
-											var layerName = obj.original.name;
-											var type = getDrawType(layerName);
-											// 画矢量图形
-											var draw = new ol.interaction.Draw(
-													{
-														source : layer.getSource(),
-														geometryName : 'SHAPE',
-														type : (type)
-													});
-											map.addInteraction(draw);
-											draw.on('drawend',function(e) {
-																// 保存编辑数据
-																editObject.feature = e.feature;
-																editObject.source = layer.getSource();
-																editObject.editType = "add";
-																editObject.layer_name = layerName;
-																// 弹出属性窗口
-																jsPanelAttributeInfo();
-																// 关闭draw事件
-																map.removeInteraction(draw);
-															}, this);
-										} else {
-											swal('根节点不能添加!', '', "warning");
-										}
-									}
-								},
-								"修改" : {
-									"label" : "修改",
-									"action" : function(data) {
-										clearOnMapEvent(); // 清除主动添加到地图上的事件
-										closeAttributeInfoObj();
-										var inst = jQuery.jstree
-												.reference(data.reference), obj = inst
-												.get_node(data.reference);
-										// 获取当前图层和类型
-										var layer = obj.original.layer;
-										var layer_name = obj.original.name;
-										if (obj.children.length == 0
-												&& obj.parent != "#") {
-											var select = new ol.interaction.Select();
-											var modify = new ol.interaction.Modify(
-													{
-														features : select.getFeatures()
-													});
-											map.addInteraction(select);
-											select.on('select',function(e) {
-												// 获取查询图层类型
-												var code = e.selected[0].values_.ID.substring(0,4);
-												var layerType = queryLayerNameByPMSID(code);
-												if (e.selected[0] == undefined) {
-													modify.setActive(true);
-												} else if (layerType != layer_name) {
-													modify.setActive(false);
-												} else {
-													modify.setActive(true);
-													// 保存数据
-													editObject.feature = e.selected[0];
-													editObject.source = layer.getSource();
-													editObject.editType = "update";
-													editObject.layer_name = layer_name;
-//													closeAttributeInfoObj();
-													jsPanelAttributeInfo();
-												}
-											});				
-											map.addInteraction(modify);
-										} else {
-											swal('根节点不能修改!', '', "warning");
-										}
-									}
-								},
-								"删除" : {
-									"label" : "删除",
-									"action" : function(data) {
-										clearOnMapEvent(); // 清除主动添加到地图上的事件
-										var inst = jQuery.jstree
-												.reference(data.reference);
-										var obj = inst.get_node(data.reference);
-										if (obj.children.length == 0
-												&& obj.parent != "#") {
-											// 获取当前图层类型
-											var layer_type = obj.original.name;
-											var select = new ol.interaction.Select();
-											map.addInteraction(select);
-											select.on('select',function(e) {
-												// 获取当前图层名
-												var code = e.selected[0].values_.ID.substring(0,4);
-												var type = queryLayerNameByPMSID(code);
-												if (select.getFeatures().getArray().length == 0) {
-												} else if (type != layer_type) {
-													var name = getLayerNodeByName(type).text;
-													swal('不能删除!','此数据不属于'+ name+ '图层',"warning");
-												} else {
-													swal({
-														title : "确定删除此数据？",
-														text : "删除后不可恢复,请谨慎操作!",
-														type : "warning",
-														showCancelButton : true,
-														confirmButtonColor : "#DD6B55",
-														confirmButtonText : "确定",
-														cancelButtonText : "取消",
-														closeOnConfirm : false
-													},function(isConfirm) {
-														if (isConfirm) {
-															// 获取当前图层
-															var layer = obj.original.layer;
-															editWFSFeature(
-																	e.target.getFeatures().getArray(),
-																	'delete',
-																	layer_type);
-															layer.getSource().removeFeature(e.target.getFeatures()
-																					.getArray()[0]);
-															e.target.getFeatures().clear();
-															map.removeInteraction(select);
-															swal("删除成功",'',"success");
-														} else {
-															map.removeInteraction(select);
-														}
-
-													});		
-
-												}
-											});				
-
-										} else {
-											swal('根节点不能删除!', '', "warning");
-										}
-									}
-								},
 								"属性表" : {
 									"label" : "属性表",
 									"action" : function(data) {
@@ -423,17 +277,12 @@ function initLayerTree() {
 										var obj = inst.get_node(data.reference);
 										if (obj.children.length == 0 && obj.parent != "#") {
 											var features = obj.original.layer.getSource().getFeatures();
-											if(features.length == 0){
-//												swal('此图层没有数据!', '', "warning");
-												openDialg( obj.text+"表信息","queryAll", features,layerName);
-											}else{
 												excessiveObject.source = obj.original.layer.getSource();
-												layerData = features;
+												layerAttributeTableData = features;
 												var layerName = obj.original.name;
 												excessiveObject.layerName = layerName;
 												excessiveObject.type = getDrawType(layerName);
 												openDialg( obj.text+"表信息","queryAll", features,layerName);
-											}
 										} else {
 											swal('根节点不能定位!', '', "warning");
 										}
@@ -1152,11 +1001,10 @@ function openDialg( title, field, dataFeatures,layerName,display) {
 					if(display == 'none'){
 					}else{
 						$('#queryAllOptions').show();
-						var layerTable = layerName;
 						$("#filterField2").empty();
 						$.ajax({
 							// 请求地址
-							url : "/" + layerTable + "/querySpatialTableField.action",
+							url : "/" + layerName + "/querySpatialTableField.action",
 							data : {},// 设置请求参数
 							type : "post",// 请求方法
 							async : false,
@@ -1176,7 +1024,7 @@ function openDialg( title, field, dataFeatures,layerName,display) {
 					}
 					
 					// 展示数据
-					displayData(dataFeatures, layerTable);
+					displayData(dataFeatures, layerName);
 			     }
 					 
 				$('#search').modal('hide');// 隐藏查询模态框
@@ -1480,8 +1328,13 @@ function queryClientFeature() {
 	}
 	var filterValue = "*"+value+"*";
 	
+	//判断图层是否为空
+	if(layerAttributeTableData.length==0){
+		swal('此图层没有数据!', '', "warning");
+		return;
+	}
 		// 获取查询图层类型
-		var code = layerData.features[0].values_.ID.substring(0,4);
+		var code = layerAttributeTableData.features[0].values_.ID.substring(0,4);
 		var layerType = queryLayerNameByPMSID(code);
 		var columns = getColumnsBylayerType(layerType);
 		
@@ -2335,17 +2188,23 @@ function formatfeatureName(id){
 	// 获取查询图层类型
 	var code = id.substring(0,4);
 	var layer_type = queryLayerNameByPMSID(code);
-	// 获取当前图层
-	var layer = getLayerNodeByName(layer_type).layer;
-	 var features = layer.getSource().getFeatures();
-	 for(var i in features){
-		 if(features[i].values_.ID == id){
-			 name = features[i].values_.NAME;
-			 break;
-		 }
-	 }
+	if(layer_type=='EQUIPMENT'){
+		var data = queryTableByData('/T_EQUIPMENT/search.action',{"search.C_CODE*eq" : id});
+		name = data[0].C_NAME;
+	}else{
+		// 获取当前图层
+		var layer = getLayerNodeByName(layer_type).layer;
+		var features = layer.getSource().getFeatures();
+		for(var i in features){
+			if(features[i].values_.ID == id){
+				name = features[i].values_.NAME;
+				break;
+			}
+		}
+	}
 	 return name;
 }
+
 // bootstrap table操作按钮 （查询结果表）
 window.operateEventsFeature = {
 	'click .RoleOfdDeldteFeature' : function(e, value, row, index) {
@@ -2542,7 +2401,7 @@ window.operateEventsFeature = {
 	},'click .RoleOfEquipment' : function(e, value, row, index) {
 		//查询设备信息
 		filterFieldID = row.values_.ID;
-		var title='';
+		/*var title='';
 		var titles = queryTableByData('/T_B_MODULE/search.action',{});
 		for(var i in titles){
 			var url = titles[i].C_URL;
@@ -2554,8 +2413,8 @@ window.operateEventsFeature = {
 				title = titles[i].C_MODULENAME;
 				break;
 			}
-		}
-		resPopover('/EQUIPMENT/EQUIPMENT.action',title);
+		}*/
+		resPopover('/EQUIPMENT/EQUIPMENT.action','设备信息');
 	} 
 
 };

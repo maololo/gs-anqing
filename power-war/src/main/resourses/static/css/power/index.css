@@ -944,7 +944,7 @@ option:hover{
     color: white !important;
 }
 .rolebtn .image_icon{
-	background-image: url(/images/图片信息.png);
+	background-image: url(/images/imageinfo.png);
 	width: 18px;
 	height: 18px;
 }
@@ -956,25 +956,25 @@ option:hover{
 }
 
 .rolebtn .gj_icon{
-	background-image: url(/images/光交图.png);
+	background-image: url(/images/lightmap.png);
 	width: 18px;
 	height: 18px;
 }
 
 .rolebtn .pxinfo_icon{
-	background-image: url(/images/配线信息.png);
+	background-image: url(/images/pxinfo.png);
 	width: 18px;
 	height: 18px;
 }
 
 .rolebtn .pxmodule_icon{
-	background-image: url(/images/配线模块信息.png);
+	background-image: url(/images/pxmodule.png);
 	width: 18px;
 	height: 18px;
 }
 
 .rolebtn .fgq_icon{
-	background-image: url(/images/分光器信息.png);
+	background-image: url(/images/fgqinfo.png);
 	width: 18px;
 	height: 18px;
 }

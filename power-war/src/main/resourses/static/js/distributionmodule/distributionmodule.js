@@ -66,7 +66,7 @@ function init(){
             sortable: true
         },{
         	field: 'C_STATIONID',
-        	title: '局站',
+        	title: '设备名称',
         	align: 'center',
         	valign: 'top',
         	sortable: true,
@@ -166,13 +166,26 @@ function initDistributionmoduleDailog(){
 }
 //设置传入参数
 function queryParams(params) {
-	return {
-		page_pn: params.pageNumber,
-		sColumn:params.sort,
-		order:params.order,
-		page_size: params.limit
-		
+	var params={};
+	if(filterFieldID==""){
+		params = {
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit
+		}
+	}else{
+		params ={
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit,
+			"search.C_STATIONID*eq":filterFieldID
+		}
+		filterFieldID = "";
+		$('#distributionmoduleBody').hide();
 	}
+	return params;
 };
 
 function operateFormatterDistributionmodule(val,row,index){

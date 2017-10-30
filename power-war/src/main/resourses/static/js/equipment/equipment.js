@@ -51,11 +51,34 @@ function init(){
 					break;
 				}
 			}
-			openDialg("/attributeList/attributeList.action", node.text+"表信息","queryAll", [feature],layerName,'none');
+			openDialg(node.text+"表信息","queryAll", [feature],layerName,'none');
         },
         'click .RoleOfLight': function (e, value, row, index) {
         	rowData = row;
             resPopover('/lightbox/lightbox.action','光交图');
+        },
+        'click .RoleOfDistributionmodule': function (e, value, row, index) {
+        	//查询设备信息
+    		filterFieldID = row.C_CODE;
+    		/*var title='';
+    		var titles = queryTableByData('/T_B_MODULE/search.action',{});
+    		for(var i in titles){
+    			var url = titles[i].C_URL;
+    			if(url==null){
+    				continue;
+    			}
+    			var name = url.split('/')[1].toLowerCase();
+    			if(name == 'equipment'){
+    				title = titles[i].C_MODULENAME;
+    				break;
+    			}
+    		}*/
+    		resPopover('/DISTRIBUTIONMODULE/DISTRIBUTIONMODULE.action','配线模块信息');
+        },
+        'click .RoleOfDistributioninfo': function (e, value, row, index) {
+        	//查询设备信息
+        	filterFieldID = row.C_CODE;
+        	resPopover('/DISTRIBUTIONINFO/DISTRIBUTIONINFO.action','配线信息');
         }
     };
     $('#equipmentTable').bootstrapTable({
@@ -205,8 +228,8 @@ function operateFormatterEquipment(val,row,index){
 	var icon = ""
 	if(row.C_TYPE == "ODF"){
 		icon = '<button class="RoleOfLight btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="光交图"><span class="gj_icon" style="display:block;" ></span></button>'+
-			   '<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线信息"><span class="pxinfo_icon" style="display:block;" ></span></button>'+
-			'<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线模块"><span class="pxmodule_icon" style="display:block;" ></span></button>';
+			   '<button class="RoleOfDistributioninfo btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线信息"><span class="pxinfo_icon" style="display:block;" ></span></button>'+
+			'<button class="RoleOfDistributionmodule btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线模块"><span class="pxmodule_icon" style="display:block;" ></span></button>';
 	}else if(row.C_TYPE == "分光器"){
 		icon ='<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="分光器"><span class="fgq_icon" style="display:block;" ></span></button>';
 	}
