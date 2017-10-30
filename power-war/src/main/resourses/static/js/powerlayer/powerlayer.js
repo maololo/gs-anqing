@@ -4,12 +4,11 @@
  * 初始化事件
  */
 function init(){
-//$(function(){ 	
 	fnInitGrid();
 	
 	$("#C_LAYERTYPE").combobox({
 		onChange: function (n,o) {
-           if(n=="1"){
+           if(n=="1" || n=="3"){
         	   $('#app_layer').show();
         	   $('#app_group').hide();
            }else if(n=="2"){
