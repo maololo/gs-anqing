@@ -34,8 +34,12 @@ function init(){
             openEquipmentDailog('/equipment/equipmentAdd.action','设备信息');
         },
         'click .RoleOfImage': function (e, value, row, index) {
+        	/*
         	closeEquipment();
-            openEquipmentDailog('/equipment/imgMessage.action','图片信息');
+            openEquipmentDailog('/imgmsg/imgmsg.action','图片信息');
+            */
+            rowData = row;
+            resPopover('/imgmsg/imgmsg.action','图片信息');
         },
         'click .RoleOfToEquipment': function (e, value, row, index) {
         	closePropertyListWindow();

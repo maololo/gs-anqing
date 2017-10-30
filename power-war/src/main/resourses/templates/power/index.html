@@ -14,6 +14,7 @@
     <link type="text/css" rel="stylesheet" href="/lib/bootstrap/3.3.0/css/bootstrap-select.css"/>
     <link rel="stylesheet"  type="text/css" href="/lib/openlayer/3.20.1/ol.css"/>
     <link rel="stylesheet"  type="text/css" href="/lib/openlayer/ext/ol3-ext.min.css"/>
+    <link rel="stylesheet"  type="text/css" href="/lib/mloading/jquery.mloading.css"/>
     <link rel="stylesheet" type="text/css" href="/iconfont/iconfont.css" />
     <link type="text/css" rel="stylesheet" href="/lib/sweetalert/sweetalert.css" />
     <link rel="stylesheet" type="text/css" href="/lib/jstree/themes/default/style.min.css" />
@@ -36,6 +37,7 @@
 <script type="text/javascript" src="/lib/bootstrap/3.3.0/js/bootstrap-select.js"></script>
 <script type="text/javascript" src="/lib/bootstrap/js/bootstrap-table.js"></script>
 <script type="text/javascript" src="/lib/bootstrap/3.3.0/js/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="/lib/jquery/jquery-form.js"></script>
 <script type="text/javascript" src="/lib/contextmenu/contextMenu.js"></script>
 <script type="text/javascript" src="/lib/bootstrap/js/bootstrap-typeahead.js"></script>
 <script type="text/javascript" src="/js/power/default.js"></script>
@@ -126,38 +128,22 @@
         </div>
     </div>
 
-      <!--书签管理模态-->
-    <div class="modal" id="bookmark"  data-backdrop="static"  style="min-height: 280px;">
+    <!--书签管理模态-->
+    <div class="modal" id="mark-div" data-backdrop="static">
         <div class="modal-sm">
             <div class="modal-content" style="padding-top: 0px">
-                <div class="modal-header" style="background: #005a52;padding:0px;">
+                <div class="modal-header" style="background: #005a52;padding:1px;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
                     <h4 style="padding-left: 10px;color: white;font-size: 14px;">书签管理</h4>
                 </div>
                 <div class="modal-body">
-                    <!-- <div id="bookmarkTable"></div> -->
-                    <div id="tableContainer">
-                        <h5>名称</h5>
-                        <table style="border-collapse: collapse;  table-layout:fixed;word-wrap:break-word;" id="tb">
-                            <tr class="cloneTr">
-                                <td> </td>
-                            </tr>
-                            <tr>
-                                <td>湖北</td><td class="text-center"><button type="button" style="display: none">定位</button></td>
-                            </tr>
-                            <tr>
-                                <td>武汉</td><td class="text-center"><button type="button" style="display: none">定位</button></td>
-                            </tr>
-                            <tr>
-                                <td>长沙</td><td class="text-center"><button type="button" style="display: none">定位</button></td>
-                            </tr>
-                        </table>
-                    </div>
-                     <div id="clickTips" >
-                        <span id="addUp" class="glyphicon glyphicon-plus">添加</span>
-                        <span id="edit" class="glyphicon glyphicon-edit">修改</span>
-                        <span id="delete" class="glyphicon glyphicon-trash">删除</span>
-                    </div> 
+                	<div style="max-height: 200px; overflow-y: auto;">
+                    	<table class="bookmark-table"></table>
+                	</div>
+                    <div class="same div" style="margin-top: 15px;">
+					    <input id="bookmark" name="bookmark" type="text" class="same text" placeholder="请输入书签名称">
+					    <button class="same mark-btn" onclick="addMark();">添加</button>
+					</div>
                 </div>
             </div>
         </div>
@@ -294,7 +280,7 @@
             <button type="button" class="btn btn-inverse" title="框选缩小" onClick="right_click_box(-1)" ><span><img src="/images/box-narrow-down.png" alt=""></span></button>
             <button type="button" class="btn btn-inverse" title="全幅" onClick="fullView()" ><span class="iconfont icon-quantu"></span></button>
             <button type="button" class="btn btn-inverse" title="图层管理" onClick="clearOnMapEvent()" data-toggle="modal" data-target="#layerMangerBtn"><span class="iconfont icon-tuceng"></span></button>
-            <button type="button" class="btn btn-inverse" title="书签" onClick="clearOnMapEvent()" data-toggle="modal" data-target="#bookmark"><span class="iconfont icon-shuqian"></span></button>
+            <button type="button" class="btn btn-inverse" title="书签" onClick="loadBookMark()" data-toggle="modal" data-target="#mark-div"><span class="iconfont icon-shuqian"></span></button>
             <button type="button" class="btn btn-inverse" title="测量" onClick="clearOnMapEvent()" data-toggle="modal" data-target="#measureBtn"><span class="iconfont icon-celiang"></span></button>
             <button type="button" class="btn btn-inverse" title="查找" onClick="clearOnMapEvent()" data-toggle="modal" data-target="#search"><span class="iconfont icon-chazhao"></span></button>
             <button type="button" class="btn btn-inverse" title="定位" onClick="clearOnMapEvent()"  data-toggle="modal" data-target="#position"><span class="iconfont icon-dingwei"></span></button>

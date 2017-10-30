@@ -259,7 +259,7 @@ function init(){
 	});
     
     // 点击关闭按钮时触发
-    $("#lightbox .jsglyph-close").click(function(){
+    $("#lightbox1 .jsglyph-close").click(function(){
     	updateRemark();
     });
 }

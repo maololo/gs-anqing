@@ -13,6 +13,7 @@ var measureTooltip = ""; // 测量结果对象
 var blurData = ""; // 存储模糊字段信息
 var filterFieldID = ""; // 过滤字段ID
 var index=""; //导航
+var bookMarksObj = {}; //书签对象
 
 $(function() {
 	var mapWidth = document.documentElement.clientWidth;
@@ -3746,3 +3747,149 @@ function test(id,name) {
 
 //    var asdsd = queryTableByData("SD_OPTICALCABLESECTION",{});
 }
+
+/************** 书签 BEGIN *****************/
+function loadBookMark(){
+	var divshow = $(".bookmark-table");
+	divshow.text("");
+	$.ajax({
+		url:"/T_POWERBOOKMARK/search.action",
+    	data:{"sort.C_ID": 'DESC'},
+    	type:"post",
+        dataType:"Json",
+        async:false,
+        success: function(data){
+        	if (!$.isEmptyObject(data)) {
+        		for(var i = 0; i < data.length; i++){
+        			var mark = data[i];
+        			var tr = $("<tr>");
+        			var td1 = $("<td onClick = 'markFix(" + mark.C_LONGITUDE + "," + mark.C_LATITUDE + "," + mark.C_VIEWGRADE + ")'>");
+        			td1.append(mark.C_BOOKNAME);
+        			tr.append(td1);
+        			
+        			var td2 = $("<td>");
+        			// 删除
+        	        $("<button onClick = 'delMark(" + mark.C_ID + ")'>")
+        	            .attr('class', "mark-btn-b")
+        	            .css("margin-left","6px")
+        	            .append("删除")
+        	            .appendTo(td2);
+        	        // 编辑
+        	    	$("<button onClick = 'editMark(" + mark.C_ID + ")'>")
+        	            .attr('class', "mark-btn-b")
+        	            .append("编辑")
+        	            .appendTo(td2);
+        	    	tr.append(td2);
+                    divshow.append(tr);
+        		}
+        	}
+        }
+    })
+}
+
+function editMark(id){
+    swal({
+        title: "编辑书签",
+        text: "修改书签名称",
+        type: "input",
+        showCancelButton:true,
+        closeOnConfirm:false,
+        confirmButtonText:"确认",
+        cancelButtonText:"取消",
+        animation: "slide-from-top",
+        inputPlaceholder: "输入书签名称"
+    },
+    function (inputValue){
+        if(inputValue){
+        	var obj = {};
+        	obj["search.C_ID*eq"] = id;
+    		obj["C_BOOKNAME"] = inputValue;
+    		$.post('/T_POWERBOOKMARK/update.action', obj, function(){
+    			swal("书签修改成功",'',"success");
+    			loadBookMark();
+    		});
+        }else if(queryField("T_POWERBOOKMARK", inputValue)){
+        	swal("此书签名称已存在，请从新输入!",'',"warning");
+		    return; 
+        }else{
+        	swal("书签名称不能为空!",'',"warning");
+		    return;
+        }
+    });
+}
+
+function delMark(id){
+	swal({
+		  title: "确定删除?",
+		  type: "warning",
+		  showCancelButton: true,
+		  confirmButtonColor: "#DD6B55",
+		  confirmButtonText: "确定",
+		  cancelButtonText: "取消",
+		  closeOnConfirm: false
+	},
+	function(){
+    	$.post('/T_POWERBOOKMARK/delete.action', {"ID":id},
+      		function(result){
+  				if (result.success){ 
+  					swal("删除成功！",'',"success");
+  					loadBookMark();
+  	            }else{
+  	            	swal("删除失败！",'',"error");
+  	            }
+        	},'json'
+    	)
+	});
+}
+
+function addMark(){
+	var mark = $("#bookmark").val();
+	if (isEmpty(mark)) { 
+	    swal("书签名称不能为空!",'',"warning");
+	    return;
+	}
+	if(queryField("T_POWERBOOKMARK", mark)){
+		swal("此书签名已存在，请从新输入!",'',"warning");
+	    return; 
+	}
+	var view = map.getView(); 
+	$.post('/T_POWERBOOKMARK/save.action',{
+		'C_BOOKNAME': mark,
+		'C_LONGITUDE': view.getCenter()[0],
+		'C_LATITUDE': view.getCenter()[1],
+		'C_VIEWGRADE': view.getZoom(),
+		'C_ID':""
+    },
+	function(result){
+	    if(result.success){
+	    	swal("书签添加成功!", "新建书签为: " + mark, "success");
+	    	$("#bookmark").val("");
+	    	loadBookMark();
+	    }
+	},"json");	
+}
+
+function markFix(lon, lat, zoom){
+	var du = [lon, lat];
+	var view = map.getView();
+	view.setCenter(du);
+	view.setZoom(zoom);
+}
+
+function queryField(name){
+	$.ajax({
+		url:"/T_POWERBOOKMARK/search.action",
+    	data:{"search.C_BOOKNAME*eq": name},
+    	type:"post",
+        dataType:"Json",
+        async:false,
+        success: function(data){
+        	if (!$.isEmptyObject(data)) {
+        		return false;
+        	}else{
+        		return true;
+        	}
+        }
+    })
+}
+/************** 书签 END *****************/
