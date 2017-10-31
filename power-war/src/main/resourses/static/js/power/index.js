@@ -127,7 +127,9 @@ $(function() {
 		    $(".switchDu").css("display","block");
 		}
 	});
-	$.fn.serializeJson=function(){  
+	
+	/** 初始化页面表单元素为JSON格式 **/
+	$.fn.serializeJson = function(){  
         var serializeObj={};  
         var array=this.serializeArray();  
         var str=this.serialize();  
@@ -144,6 +146,7 @@ $(function() {
         });  
         return serializeObj;  
     };  
+    
 	/** 拖拽模态框 */
 	/** 拖拽模态框 */
 	var dragModal = {
@@ -163,6 +166,7 @@ $(function() {
 		moveTarget : null,
 		topleng : 0
 	}
+	
 	$(document).on("mousedown", ".modal-header", function(e) {
 		if ($(e.target).hasClass("close"))// 点关闭按钮不能移动对话框
 			return;
@@ -175,6 +179,7 @@ $(function() {
 		dragModal.basePoint = dragModal.moveTarget.offset();
 		dragModal.topLeng = e.pageY - e.clientY;
 	});
+	
 	$(document).on("mouseup", function(e) {
 		dragModal.mouseDragDown = false;
 		dragModal.moveTarget = undefined;
@@ -187,53 +192,49 @@ $(function() {
 			"top" : 0
 		};
 	});
-	$(document).on(
-					"mousemove",
-					function(e) {
-						if (!dragModal.mouseDragDown
-								|| dragModal.moveTarget == undefined)
-							return;
-						var mousX = e.clientX;
-						var mousY = e.pageY;
-						if (mousX < 0)
-							mousX = 0;
-						if (mousY < 0)
-							mousY = 25;
-						dragModal.mouseEndPoint = {
-							"left" : mousX,
-							"top" : mousY
-						};
-						var width = dragModal.moveTarget.width();
-						var height = dragModal.moveTarget.height();
-						var clientWidth = document.body.clientWidth
-						var clientHeight = document.body.clientHeight;
-						if (dragModal.mouseEndPoint.left < dragModal.mouseStartPoint.left
-								- dragModal.basePoint.left) {
-							dragModal.mouseEndPoint.left = 160;
-						} else if (dragModal.mouseEndPoint.left >= clientWidth
-								- width + dragModal.mouseStartPoint.left
-								- dragModal.basePoint.left) {
-							dragModal.mouseEndPoint.left = clientWidth - width;
-						} else {
-							dragModal.mouseEndPoint.left = dragModal.mouseEndPoint.left
-									- (dragModal.mouseStartPoint.left - dragModal.basePoint.left);// 移动修正，更平滑
-
-						}
-						if (dragModal.mouseEndPoint.top
-								- (dragModal.mouseStartPoint.top - dragModal.basePoint.top) < dragModal.topLeng) {
-							dragModal.mouseEndPoint.top = dragModal.topLeng + 110;
-						} else if (dragModal.mouseEndPoint.top
-								- dragModal.topLeng > clientHeight - height
-								+ dragModal.mouseStartPoint.top
-								- dragModal.basePoint.top) {
-							dragModal.mouseEndPoint.top = clientHeight - height
-									+ dragModal.topLeng;
-						} else {
-							dragModal.mouseEndPoint.top = dragModal.mouseEndPoint.top
-									- (dragModal.mouseStartPoint.top - dragModal.basePoint.top);
-						}
-						dragModal.moveTarget.offset(dragModal.mouseEndPoint);
-					});
+	
+	$(document).on("mousemove", function(e) {
+		if (!dragModal.mouseDragDown || dragModal.moveTarget == undefined) return;
+		var mousX = e.clientX;
+		var mousY = e.pageY;
+		if (mousX < 0)
+			mousX = 0;
+		if (mousY < 0)
+			mousY = 25;
+		dragModal.mouseEndPoint = {
+			"left" : mousX,
+			"top" : mousY
+		};
+		var width = dragModal.moveTarget.width();
+		var height = dragModal.moveTarget.height();
+		var clientWidth = document.body.clientWidth
+		var clientHeight = document.body.clientHeight;
+		if (dragModal.mouseEndPoint.left < dragModal.mouseStartPoint.left
+				- dragModal.basePoint.left) {
+			dragModal.mouseEndPoint.left = 160;
+		} else if (dragModal.mouseEndPoint.left >= clientWidth
+				- width + dragModal.mouseStartPoint.left
+				- dragModal.basePoint.left) {
+			dragModal.mouseEndPoint.left = clientWidth - width;
+		} else {
+			dragModal.mouseEndPoint.left = dragModal.mouseEndPoint.left
+					- (dragModal.mouseStartPoint.left - dragModal.basePoint.left);// 移动修正，更平滑
+		}
+		if (dragModal.mouseEndPoint.top
+				- (dragModal.mouseStartPoint.top - dragModal.basePoint.top) < dragModal.topLeng) {
+			dragModal.mouseEndPoint.top = dragModal.topLeng + 110;
+		} else if (dragModal.mouseEndPoint.top
+				- dragModal.topLeng > clientHeight - height
+				+ dragModal.mouseStartPoint.top
+				- dragModal.basePoint.top) {
+			dragModal.mouseEndPoint.top = clientHeight - height
+					+ dragModal.topLeng;
+		} else {
+			dragModal.mouseEndPoint.top = dragModal.mouseEndPoint.top
+					- (dragModal.mouseStartPoint.top - dragModal.basePoint.top);
+		}
+		dragModal.moveTarget.offset(dragModal.mouseEndPoint);
+	});
 	
 	
 	//关闭jspane窗口事件
@@ -250,13 +251,8 @@ $(function() {
 				editObject={};
 			}
 		}
-		
 	}); 
-
-	
 });
-
-
 
 // 初始化图层列表
 function initLayerTree() {
@@ -614,10 +610,12 @@ function getLayerTreeData() {
 							attribution : false,
 							zoom : false
 						}).extend([
-						           new ol.control.MousePosition(), //鼠标位置
-						            new ol.control.OverviewMap(),  //鸟瞰图控件
-						            new ol.control.ScaleLine(),  //比例尺
-						           ]),
+							new ol.control.MousePosition({
+					            coordinateFormat: ol.coordinate.createStringXY(6)
+					        }), //鼠标位置
+				            new ol.control.OverviewMap(),  //鸟瞰图控件
+				            new ol.control.ScaleLine(),   //比例尺
+			            ]),
 						target : 'openlayersID',
 						projection : 'EPSG:4326',
 						layers : layers,
@@ -955,7 +953,7 @@ function radioQuery() {
 
 }
 
-function openDialg( title, field, dataFeatures,layerName,display) {
+function openDialg(title, field, dataFeatures, layerName, display) {
 	closePropertyListWindow();
 	propertyListWindow = $.jsPanel({
 		id : "openDialg",
@@ -978,56 +976,87 @@ function openDialg( title, field, dataFeatures,layerName,display) {
 			done : function(data, textStatus, jqXHR, panel) {
 				// 图层tree根节点
 				var root = $('#powerLayerTree').jstree().get_node("#-1");
-				var childrens = $('#powerLayerTree').jstree("get_children_dom",
-						root);
-
+				var childrens = $('#powerLayerTree').jstree("get_children_dom", root);
 				$('#assemblageQueryOptions1').hide();
 				$('#queryAllOptions').hide();
+				
+				var html = $("#queryDiv");
+				html.empty();
 				if (field == 'radioQuery') {
 					// 获取查询图层类型
 					var code = dataFeatures[0].values_.ID.substring(0,4);
 					var layerType = queryLayerNameByPMSID(code);
-					// 展示数据
-					displayData(dataFeatures, layerType);
-
+					
+					var t = $("<table id='dataTableRadio' class='query-table'>");
+					t.appendTo(html);
+					loadTableData(dataFeatures, layerType, "Radio");
 				} else if (field == 'boxQuery' || field == 'polygonQuery') {
-					$('#assemblageQueryOptions1').show();
-					$("#powLayes1").empty();
-					$("#powLayes1").append("<option value=''>请选择图层</option>");
+					var queryUl = $("<ul class='nav nav-tabs'>");
+					queryUl.empty();
+					var queryDiv = $("<div class='tab-content'>");
+					queryDiv.empty();
 					for (var i = 0; i < childrens.length; i++) {
 						var node = $('#powerLayerTree').jstree().get_node(childrens[i].id);
-						$("#powLayes1").append("<option value='" + node.original.id + "'>"+ node.original.text + "</option>");
-					}
-				}else if(field == 'queryAll'){
-					if(display == 'none'){
-					}else{
-						$('#queryAllOptions').show();
-						$("#filterField2").empty();
-						$.ajax({
-							// 请求地址
-							url : "/" + layerName + "/querySpatialTableField.action",
-							data : {},// 设置请求参数
-							type : "post",// 请求方法
-							async : false,
-							dataType : "json",// 设置服务器响应类型
-							// success：请求成功之后执行的回调函数 data：服务器响应的数据
-							success : function(data) {
-								$("#filterField2").append("<option value=''>请选择字段</option>");
-								for ( var i in data) {
-									if (data[i].FIELD != null && data[i].VALUE != "ID"
-										&& data[i].VALUE != "OBJECTID") {
-										$("#filterField2").append(
-												"<option value='" + data[i].VALUE + "'>"+ data[i].FIELD + "</option>");
+						var nodeId = node.original.id;
+						var nodeText = node.original.text;
+						// tab头
+						var queryLi = $("<li>");
+						// tab内容
+						var queryCtDiv = $("<div>");
+						if(i == 0){
+							queryLi.attr("class", "active");
+							queryCtDiv.attr({"id": "tab" + nodeId, "class": "tab-pane active"});
+						}else{
+							queryCtDiv.attr({"id": "tab" + nodeId, "class": "tab-pane"});
+						}
+						// 页面tab头显示
+						var queryA = $("<a>").attr({"href": "#tab" + nodeId, "data-toggle": "tab"}).append(nodeText);
+						queryLi.append(queryA);
+						queryLi.appendTo(queryUl);
+						// 内容table筛选条
+						var tableHead = $("<div style='margin-top: 12px;'>").attr({"id": "head" + nodeId, "class": "check"});
+						tableHead.append("过滤字段：");
+						var sel = $("<select id='selFilter" + nodeId + "' class='sel-filter' onchange='chgFilter(this.options[this.options.selectedIndex].text, " + nodeId + ")'>");
+						sel.append("<option value=''>请选择字段</option>");
+						if (!$.isEmptyObject(node)) {
+							var vector_Source = node.original.layer.getSource();
+							var feature = vector_Source.getFeatures()[0];
+							// 获取查询图层类型
+							if(!$.isEmptyObject(feature) && !isEmpty(feature.values_.ID)){
+								var code = feature.values_.ID.substring(0,4);
+								var layerTable = queryLayerNameByPMSID(code);
+								$.ajax({
+									url : "/" + layerTable + "/querySpatialTableField.action",
+									data : {},
+									type : "post",
+									async : false,
+									dataType : "json",
+									success : function(data) {
+										for ( var i in data) {
+											if (data[i].FIELD != null && data[i].VALUE != "ID" && data[i].VALUE != "OBJECTID") {
+												sel.append("<option value='" + data[i].VALUE + "'>"+ data[i].FIELD + "</option>");
+											}
+										}
 									}
-								}
+								});
 							}
-						});
+						}
+						tableHead.append(sel);
+						// 查询按钮
+						var btn = $("<button type='button' class='query-btn' onclick='queryFeature(" + nodeId + ")'>");
+						btn.append("查询");
+						tableHead.append(btn);
+						tableHead.appendTo(queryCtDiv);
+						// 数据table
+						var table = $("<table id='dataTable" + nodeId + "' class='query-table'>");
+						table.appendTo(queryCtDiv);
+						// 选中tab内容显示
+						queryCtDiv.appendTo(queryDiv);
+						
+						html.append(queryUl);
+						html.append(queryDiv);
 					}
-					
-					// 展示数据
-					displayData(dataFeatures, layerName);
-			     }
-					 
+				} 
 				$('#search').modal('hide');// 隐藏查询模态框
 			}
 		},
@@ -1036,6 +1065,118 @@ function openDialg( title, field, dataFeatures,layerName,display) {
 		}
 	});
 }
+
+// 查找时 过滤字段改变事件
+function chgFilter(selVal, tabId) {
+	var oldSel = $("#selSelect" + tabId);
+	if(oldSel.length > 0){
+		oldSel.remove();
+	}
+	var oldInput = $("#selInput" + tabId);
+	if(oldInput.length > 0){
+		oldInput.remove();
+	}
+	if (!isEmpty(selVal) && selVal != "请选择字段") {
+		if (selVal.indexOf("(") > 0) {
+			selVal = selVal.substring(0, selVal.indexOf("("));
+		}
+		var data = queryEnumerateByField(selVal);
+		var tableHead = $("#head" + tabId);
+		if (!isEmpty(data)) {
+			var newSel = $("<select id='selSelect" + tabId + "' class='sel-val'>");
+			newSel.append("<option value=''>所有值</option>");
+			for (var i = 0; i < data.length; i++) {
+				newSel.append( "<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
+			}
+			tableHead.append(newSel);
+		} else {
+			var newInput = $("<input type='text' id='selInput" + tabId + "' class='sel-input'>");
+			tableHead.append(newInput);
+		}
+	}
+}
+
+// 框选和多边形弹窗中的查询按钮
+function queryFeature(tabId) {
+	var value;
+	var field = $('#selFilter'+ tabId);
+	var selSelect = $('#selSelect'+ tabId);
+	var selInput = $('#selInput'+ tabId);
+	if(field.length > 0){
+		value = selSelect.val();
+	}else{
+		value = selInput.val();
+	}
+	if(isEmpty(field.val())){
+		swal('请给过滤字段相应的值！', '', "warning");
+		return "";
+	}
+	
+	$(".table-content").mLoading("show");
+	
+	var filterValue = isEmpty(value) ? "*" : "*" + value + "*";
+	var filterField = field.val();
+	
+	var nodeLayer = $('#powerLayerTree').jstree().get_node("#" + tabId);
+	var layer_name = nodeLayer.original.name;
+	var featureRequest = new ol.format.WFS().writeGetFeature({
+		srsName : 'EPSG:4326',
+		featurePrefix : 'anqing',
+		featureTypes : [ layer_name ],
+		outputFormat : 'application/json',
+		geometryName : "the_geom",
+		filter : ol.format.filter.and(
+		ol.format.filter.bbox('SHAPE', boxExtent, 'EPSG:4326'),
+		ol.format.filter.like(filterField, filterValue))
+	});
+
+	// 然后发布请求并将接收到数据在表格中显示
+	var featureUrl = "http://" + queryWFSURL() + "/geoserver/wfs";
+	fetch(featureUrl, {
+		method : 'POST',
+		body : new XMLSerializer().serializeToString(featureRequest)
+	}).then(function(response) {
+		return response.json();
+	}).then(function(json) {
+		var features = new ol.format.GeoJSON().readFeatures(json);
+		if (features.length == 0) {
+			$(".table-content").mLoading("hide");
+			swal('没有查到符合条件的数据', '', "warning");
+			$('#dataTable' + tabId).bootstrapTable('destroy');
+		} else {
+			// 获取查询图层类型
+			var code = features[0].values_.ID.substring(0,4);
+			var layerType = queryLayerNameByPMSID(code);
+			loadTableData(features, layerType, tabId);
+			$(".table-content").mLoading("hide");
+		}
+	});
+}
+
+// 将数据在table中显示
+function loadTableData(features, layerType, tabId) {
+	$('#dataTable' + tabId).bootstrapTable('destroy');
+	var columns = getColumnsBylayerType(layerType);
+	$('#dataTable' + tabId).bootstrapTable({
+		data : features,
+		method : 'post',
+		striped : true,
+		dataType : "json",
+		pagination : true,
+		queryParamsType : "limit",
+		singleSelect : false,
+		undefinedText:"",
+		contentType : "application/x-www-form-urlencoded",
+		pageSize : 10,
+		pageNumber : 1,
+		showColumns : false, // 不显示下拉框（选择显示的列）
+		sidePagination : "client",
+		queryParams : queryParams,// 分页参数
+		uniqueId:'ID',
+		columns : columns
+	});
+}
+
 // 框选、多边形查询
 function boxQuery() {
 	closeFunction();
@@ -1225,6 +1366,7 @@ function queryEnumerateByField(field) {
 	return fieldData;
 }
 
+/*
 // 框选和多边形弹窗中的查询按钮
 function queryFeature() {
 	var id = $('#powLayes1').val();
@@ -1293,11 +1435,11 @@ function queryFeature() {
 					$(".table-content").mLoading("hide");
 				}
 			});
-
 		}
 	}
-
 }
+*/
+
 // 属性表中的查询按钮
 function queryClientFeature() {
 	// 获取过滤字段结果
@@ -2152,6 +2294,7 @@ function getColumnsBylayerType(layerType){
 	}
 	return  columns;
 }
+
 // 将数据在table中显示
 function displayData(features, layerType) {
 	// 销毁查询结果 bootstrapTable
@@ -2173,9 +2316,6 @@ function displayData(features, layerType) {
 		sidePagination : "client",
 		queryParams : queryParams,// 分页参数
 		uniqueId:'ID',
-//		search:true,
-		// clickToSelect: true,
-		// height: 480,
 		columns : columns
 	});
 }
@@ -3063,7 +3203,7 @@ function duConvertDFM(val) {
 	}
 	temp = "0." + s2[1];
 	temp = temp * 60;
-	var m = temp.toFixed(2);
+	var m = parseInt(temp);
 	return d + "°" + f + "′" + m + "″";  
 }
 
@@ -3076,7 +3216,7 @@ function dFMConvertDu(value) {
     var m = value.split("°")[1].split("′")[1].split('″')[0];
 	var f = parseFloat(f) + parseFloat(m/60);
 	var du = parseFloat(f/60) + parseFloat(d);		
-	return du;
+	return du.toFixed(6);
 }
 
 /**
