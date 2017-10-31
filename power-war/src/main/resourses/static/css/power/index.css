@@ -914,7 +914,7 @@ option:hover{
 /* ol鼠标显示坐标位置样式 */
 .ol-mouse-position {
     top: 97%;
-    right: 40%;
+    right: 45%;
     position: absolute;
 }
 
@@ -1041,6 +1041,45 @@ option:hover{
 	height: 160px;
 	width: 100px;
 }
+
+/* 首页右边框选查找样式 BEGIN */
+.sel-filter{
+	outline: none;
+}
+
+.sel-val{
+	margin-left: 6px;
+	outline: none;
+}
+
+.sel-input{
+	margin-left: 6px;
+	outline: none;
+	height: 32px;
+	padding: 0 6px;
+}
+
+.query-btn{
+    float: right;
+    margin-right: 20px;
+    background: #1b726a;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    min-width: 60px;
+    height: 30px;
+    line-height: initial;
+    margin-top: 6px;
+}
+
+.tab-content .fixed-table-body{
+	height: 440px;
+}
+
+table.query-table >tbody>tr>td{
+    line-height: inherit;
+}
+/* 首页右边框选查找样式 END */
 
 
 

@@ -1,40 +1,13 @@
-
-
-
-<div class="modal-content table-content" style="background: transparent; border: 1px solid #444;min-width: 1250px;min-height: 590px;">
-            <div class="modal-body check-text" >
-            
-            <span id="assemblageQueryOptions1" style="display: none">
-               <div class="check">
-                                                       查询图层：<select  id="powLayes1" onchange="changeLayer(this.options[this.options.selectedIndex].value)"  style="width:150px;margin-right:60px;"></select>
-                                                                 过滤字段：<select  id="filterField1" name="filterField1" onchange="changeFilterField(this.options[this.options.selectedIndex].text,'1')"style="width:100px;">
-                           </select>
-                           <span id="filterFieldSelect1" style="display: none"><select  id="filterFieldSelectValue1"  style="width:100px;">
-                           </select></span>
-                           <span id="filterFieldInput1" style="display: none"><input type="text" id="filterFieldInputValue1" style="height: 30px;"/></span>
-                           <!-- <span id="filterFieldDate" style="display: none"><div class='input-group date' id='checkfilterFieldDate'>
-					           <input type='text' class="form-control" id="filterFieldDateValue"/> <span
-						       class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span> </span>
-				            </div></span> -->
-                       <button type="button"  class="btn btn-primary rolebtn" onclick="queryFeature()" style="float: right;margin-right: 20px;margin-top: 6px;" >查询</button>
-               </div>
-            </span>
-            
-            <span id="queryAllOptions" style="display: none">
-                <div class="check">
-                  <button type="button"  class="btn btn-primary rolebtn" onclick="addFeatureBylatlong()" style="margin:0px 600px 0px 20px;" >添加</button>
-                                                                 过滤字段：<select  id="filterField2" name="filterField2" onchange="changeFilterField(this.options[this.options.selectedIndex].text,'2')"style="width:100px;">
-                           </select>
-                           <span id="filterFieldSelect2" style="display: none"><select  id="filterFieldSelectValue2"  style="width:100px;">
-                           </select></span>
-                           <span id="filterFieldInput2" style="display: none"><input type="text" id="filterFieldInputValue2" style="height: 30px;"/></span>
-                       <button type="button"  class="btn btn-primary rolebtn" onclick="queryClientFeature()" style="float: right;margin-right: 20px;margin-top: 6px;" >查询</button>
-               </div>
-                
-            </span>
-            
-              
-      <table id="wfsFeatureTable" style="overflow:auto;"></table> 
-
+<div class="modal-content table-content"
+     style="background: transparent; border: 1px solid #444; min-width: 1250px; min-height: 590px;">
+    <div class="modal-body check-text">
+	   	<div id="queryDiv" class="tabbable">
+	  	</div>  
     </div>
 </div>
+
+
+
+
+
+
