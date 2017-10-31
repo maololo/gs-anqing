@@ -63,7 +63,7 @@ function init(){
                 events: operateEvents,//给按钮注册事件
                 formatter: operateFormatter,//表格中增加按钮
             },
-	    	{
+	    	/*{
 	            field: 'C_CODE',
 	            title: '配线信息编号',
 	            align: 'center',
@@ -76,7 +76,7 @@ function init(){
 	            align: 'center',
 	            valign: 'top',
 	            sortable: true
-	        },
+	        },*/
 	        {
 	        	field: 'C_DISKID',
 	        	title: '盘号',

@@ -2576,7 +2576,7 @@ function operateFormatterFeature(val, row, index) {
 	var detail = "";
 	var tableName = queryLayerNameByPMSID(row.values_.ID.substring(0,4));
 	if(tableName=='SD_OPTICALCABLESECTION'){
-		detail = '<button class="RoleOfFiberCore btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="纤芯信息"><span  class=" glyphicon glyphicon-edit " ><span></button>';
+		detail = '<button class="RoleOfFiberCore btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="纤芯信息"><span  class="qxinfo_icon" style="display:block;" ><span></button>';
 	}else if(tableName =='SD_STATION'){
 		detail = '<button class="RoleOfEquipment btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="设备信息"><span  class="detail_icon" style="display:block;"><span></button>'
 	}else if(tableName =='SD_COMMUNICATIONPOLETOWER'){
@@ -2698,7 +2698,11 @@ function queryWFSURL() {
 function jsPanelAttributeInfo(Latlong) {
 	var	name =editObject.layer_name.toLowerCase();
 	var	url = "/" + name + "/" + name + ".action";
-	var	title = getLayerNodeByName(editObject.layer_name).text + "数据属性";
+	var	title = "新增"+getLayerNodeByName(editObject.layer_name).text;// + "数据属性";
+	if(editObject.editType == "update"){
+		title = "修改"+getLayerNodeByName(editObject.layer_name).text;// + "数据属性";
+	}
+	
 	attributeInfoObj = $.jsPanel({
 				id : "attributeInfo",
 				headerControls: {
@@ -2743,6 +2747,7 @@ function jsPanelAttributeInfo(Latlong) {
 								});
 								map.addInteraction(modify);
 							} else if (editObject.editType == "update") {
+								$('#'+name+'_coordinate').show();
 								//回写数据
 								var feature = editObject.feature.values_;
 								for ( var id in feature) {
@@ -2755,7 +2760,23 @@ function jsPanelAttributeInfo(Latlong) {
 										}else {
 											$('#' + id).val(feature[id]);
 										}
-									} 
+									}
+								}
+								//feature.geometry.setCoordinates([1,2,2,3]);
+								if(getDrawType(editObject.layer_name)=="LineString"){
+									var  lat_lon= feature.geometry.flatCoordinates;//经度和纬度
+									var $tab = $('#sd_opticalcablesection_table');
+									$('#sd_opticalcablesection_table').bootstrapTable("removeAll");
+									for(var i=0;i<lat_lon.length;i++){
+										var sd_optionId=i;
+										$tab.bootstrapTable('append', [{ID:sd_optionId,LONG:"<input type='text' class='latlongInput long"+sd_optionId+"' value="+lat_lon[i]+" />",LAT:"<input type='text' class='latlongInput lat"+sd_optionId+"' value="+lat_lon[i+1]+" />"}]);
+										i++;
+									}
+									
+								}else{
+									var  lat_lon= feature.geometry.flatCoordinates;//经度和纬度
+									$("#longitude").val(lat_lon[0]);
+									$("#latitude").val(lat_lon[1]);
 								}
 							}
 						}
@@ -2883,6 +2904,7 @@ function saveFeature() {
 			}
 			fea =new ol.Feature( new ol.geom.LineString(latlongs));
 		}
+		return;
 		// 获取属性字段的json
 		var attributeJson = getFormJson(layerName.toLowerCase() + "_form");
 		if(layerName == "SD_OPTICALCABLESECTION"){
@@ -2939,7 +2961,7 @@ function saveFeature() {
 
 		// 获取属性字段的json
 		var attributeJson = getFormJson(featureType.toLowerCase() + "_form");
-		if(featureType == "SD_OPTICALCABLESECTION"){
+		if(featureType == "SD_OPTICALCABLESECTION"){	
 			var startid = true,endid=true;
 			//根据选择的模糊数据转换成空间数据ID
 			for(var i=0;i<blurData.length;i++){
@@ -2968,10 +2990,42 @@ function saveFeature() {
 		if (editType == "add") {
 			// 设置featureID
 			setFeatureID(fea, featureType);
-		} 
+		}
+		if(getDrawType(featureType)=="LineString"){
+			var data = $('#'+featureType.toLowerCase()+'_table').bootstrapTable('getData');
+			// 先保存数据
+			var latlongs=[];
+			if(data.length<2){
+				swal('经纬度数据至少要有两组！', '', "warning");
+				return;
+			}
+			var length = 0;
+			for(var i in data){
+			    var map = {};
+			    var longKey = 'long'+data[i].ID;
+				var latKey = 'lat'+data[i].ID;
+				var longitude = $('.'+longKey).val();
+//				if(!validLonDu(longitude)){
+//					$('.'+latKey).focus();
+//					swal('经度填写不符合规范！', '经度范围0~180', "warning");
+//				}
+				var latitude = $('.'+latKey).val();
+//				if(!validLatDu(latitude)){
+//					$('.'+latKey).focus();
+//					swal('纬度填写不符合规范！', '经度范围0~90', "warning");
+//				}
+//				latlongs.push([parseFloat(longitude),parseFloat(latitude)]);
+				latlongs.push([parseFloat(longitude),parseFloat(latitude)]);
+				length = length+2;
+			}
+			fea.getGeometry().setCoordinates(latlongs);
+		}else{
+			var lat = $("#latitude").val();
+			var lon = $("#longitude").val();
+			fea.getGeometry().setCoordinates([lon,lat]);
+		}
 		var feature = fea.clone();// 此处clone
-									// 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
-		var geo = feature.getGeometry();
+		var geo = feature.getGeometry();// 为为了实现绘制结束后，添加的对象还在，否提交完成后数据就不显示了，必须刷新
 		// 调换经纬度坐标，以符合wfs协议中经纬度的位置，epsg:4326 下，取值是neu,会把xy互换，此处需要处理，根据实际坐标系处理
 		geo.applyTransform(function(flatCoordinates, flatCoordinates2, stride) {
 			for (var j = 0; j < flatCoordinates.length; j += stride) {
@@ -2984,7 +3038,6 @@ function saveFeature() {
 
 		if (editType == "update") {
 			feature.setId(editObject.feature.getId()); // 注意ID是必须，通过ID才能找到对应修改的feature
-
 			// 此处需要将原有的geometry空间字段删除，否则提交不成功，如果服务空间表空间就是geometry，则不需要处理
 			feature.unset(feature.getGeometryName());
 			// 设置空间字段名，以wfs服务为准
@@ -3430,6 +3483,51 @@ function selectStartIDOrEndID(inputID){
 	}
 }
 
+/**
+ * 选择局站后显示设备信息
+ * @param inputID
+ */
+function selectStationToEquip(inputID){
+	
+	var jsPanelID = window.jsPanel.activePanels.list;
+	var select = new ol.interaction.Select();
+	map.addInteraction(select);
+	select.on('select',function(e) {
+		if (e.selected[0] != undefined ) {
+			var data = e.selected[0].values_;
+			var code = data.ID.substring(0,4);
+			if(code=='0401' || code=='0402'){
+				$.ajax({
+		            url:"/T_EQUIPMENT/search.action",
+		              data:{"search.C_STATIONID*eq":data.ID},//设置请求参数 
+		              type:"post",//请求方法 
+		                dataType: "Json",
+		                async:true,
+		                success: function (data) {
+		                    if (data!="" ||data!=null) {
+		                    	$('#'+inputID).empty();
+		                        for(var i=0;i<data.length;i++) {
+		                          $('#'+inputID+'.selectpicker').append("<option value=" + data[i].C_CODE + ">" + data[i].C_NAME + "</option>");
+		                        }
+		                        $("#"+inputID).selectpicker('refresh');
+		                       
+		                    }
+		                }
+		            })
+				map.removeInteraction(select);
+				for(var i in jsPanelID){
+					//恢复弹出框  
+				   jsPanel.activePanels.getPanel(jsPanelID[i]).normalize();
+				}
+			}
+		}		 
+	});
+	for(var i in jsPanelID){
+		//最小化弹出框  
+	   jsPanel.activePanels.getPanel(jsPanelID[i]).minimize();
+	}
+}
+
 
 //根据表名获取获取模糊数据  数组
 function getBlurDate(tableNames){
@@ -3532,7 +3630,13 @@ function updateSpaceData(){
 			}else{
 				closeAttributeInfoObj();
 			}
-		});				
+		});
+		modify.on('modifyend',function(e) {
+			var value =e.features.array_[0].values_;
+			var lat_lon = value.geometry.flatCoordinates;
+			$("#longitude").val(lat_lon[0]);
+			$("#latitude").val(lat_lon[1]);
+		});
 }
 
 //删除空间数据

@@ -1,12 +1,14 @@
  
  <script>
- blurData = getBlurDate(['SD_STATION']);
+/*  blurData = getBlurDate(['SD_STATION']);
  $('#C_STATIONID').typeahead({
 	    source: blurData,
 	    display: 'Name',
 	    val: 'ID'
-	});
-   
+	}); */
+ $("#C_STATIONID").selectpicker({
+		'noneSelectedText':'请选择'
+ });
  </script>
 <div style="width: 530px;">
     <form class="form-horizontal" style="margin-top: 20px;" id="distributionmodule_form">
@@ -18,12 +20,15 @@
                                 <input type="hidden" name="C_ID" id="C_ID"/>
                                 <input type="hidden" name="C_CODE" id="C_CODE"/>
                             </div>
-                            <label for="C_STATIONID" class="col-sm-2 control-label" style="margin-left: -10px;">局站:</label>
+                            <label for="C_STATIONID" class="col-sm-2 control-label" style="margin-left: -10px;">设备名称:</label>
                             <div class="col-sm-3" style="padding-right:0px">
-                                <input type="text" class="form-control"  id="C_STATIONID" name="C_STATIONID" autocomplete="off" />
+                                <!-- <input type="text" class="form-control"  id="C_STATIONID" name="C_STATIONID" autocomplete="off" /> -->
+                                <select id="C_STATIONID" name="C_STATIONID" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_STATIONID')">
+                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStationToEquip('C_STATIONID')">
                                  <img src="/images/img/2.png" alt=""></button>
                             </div>
                             

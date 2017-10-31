@@ -75,7 +75,8 @@ function init(){
         	title: '连接的设备编号',
         	align: 'center',
         	valign: 'top',
-        	sortable: true
+        	sortable: true,
+        	formatter:function(value,row,index){return formatfeatureName(value);}
         }, {
             field: '操作',
             title: '操作',
@@ -89,7 +90,7 @@ function init(){
         }]
 
     });
-
+    
 }
 
 function initLightsplitterinfoDailog(){
@@ -117,13 +118,26 @@ function initSelectpicker(val,id){
 }
 //设置传入参数
 function queryParams(params) {
-	return {
-		page_pn: params.pageNumber,
-		sColumn:params.sort,
-		order:params.order,
-		page_size: params.limit
-		
+	var params={};
+	if(filterFieldID==""){
+		params = {
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit
+		}
+	}else{
+		params ={
+			page_pn: params.pageNumber,
+			sColumn:params.sort,
+			order:params.order,
+			page_size: params.limit,
+			"search.C_TOEQUIPMENTID*eq":filterFieldID
+		}
+		filterFieldID = "";
+		$('#lightsplitterinfoBody').hide();
 	}
+	return params;
 };
 
 function operateFormatter(val,row,index){
@@ -190,6 +204,11 @@ function initUpdateLightsplitterinfo(obj){
  		 }else{
  			 $('#'+id).val(obj[id]);
  		 }
+		if(id == "C_TOEQUIPMENTID"){
+			var typeName = formatfeatureName(obj[id]);
+			$('#'+id+'.selectpicker').append("<option value=" + obj[id] + ">" + typeName + "</option>");
+			$("#"+id).selectpicker('val', obj[id]);
+		}
 	}
 	rowData = "";
 }
