@@ -1,0 +1,284 @@
+<style type="text/css">
+ .latlongInput{
+    width:120px;
+ }
+</style>
+
+<script type="text/javascript">
+initSelectpicker('光缆类型',"TYPE");
+initSelectpicker('电压等级','VOLTAGECLASS');
+initSelectpicker('敷设方式','LAYWAY');
+initSelectpicker('资产单位','ASSETUNIT'); 
+initSelectpicker('维护单位','MAINTENANCEUNIT');
+
+function initSelectpicker(val,id){
+	$.ajax({
+		url:"/T_ENUMERATE/search.action",
+    	data:{"search.C_TYPE*eq":val,"sort.C_SORTID":'ASC'},//设置请求参数 
+    	type:"post",//请求方法 
+        dataType: "Json",
+        async:false,
+        success: function (data) {
+            if (data!="" ||data!=null) {               
+                for(var i=0;i<data.length;i++) {
+                	$('#'+id+'.selectpicker').append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
+                }
+                $("#"+id).selectpicker('refresh');
+               
+            }
+        }
+    })
+}
+blurData = getBlurDate(['SD_STATION']);
+$('#STARTID').typeahead({
+    source: blurData,
+    display: 'Name',
+    val: 'ID'
+});
+ 
+$('#ENDID').typeahead({
+    source: blurData,
+    display: 'Name',
+    val: 'ID'
+    
+});
+var sd_optionId = 0;
+ var date_table = [{ID:++sd_optionId,LONG:"<input type='text' class='latlongInput long"+sd_optionId+"' />",LAT:"<input type='text' class='latlongInput lat"+sd_optionId+"' />"},
+                   {ID:++sd_optionId,LONG:"<input type='text' class='latlongInput long"+sd_optionId+"' />",LAT:"<input type='text' class='latlongInput lat"+sd_optionId+"' />"}];
+$('#sd_opticalcablesection_table').bootstrapTable({
+ 	data: date_table,
+    method:'post',
+    dataType: "json",
+    clickToSelect: false,
+    singleSelect:false,  //禁止多选
+    striped: true, // 隔行变色
+    uniqueId:'COODE',
+    undefinedText:"",
+    columns: [{
+    	field: 'checkbox',
+    	class: 'width-2',
+        checkbox : true
+    },{
+    	 field: 'ID',
+         title: '设备编号',
+         align: 'center',
+         valign: 'top',
+         sortable: true,
+         visible: false
+    },{
+    	
+    	field: 'COODE',
+        title: '序号',
+         formatter: indexFormatter
+    },{
+    	field: 'LONG',
+        title: '经度',
+    },{
+    	field: 'LAT',
+        title: '纬度',
+    }]
+});
+
+//添加一行
+function addTable(){
+	var data = $('#sd_opticalcablesection_table').bootstrapTable('getData');
+	// 先保存数据
+	var latlongs=[];
+	for(var i in data){
+	    var map = {};
+		var longKey = 'long'+data[i].ID;
+		var latKey = 'lat'+data[i].ID;
+		map[longKey] = $('.'+longKey).val();
+		map[latKey] = $('.'+latKey).val();
+		latlongs.push(map);
+	}
+    // 添加
+	var $tab = $('#sd_opticalcablesection_table');
+	$tab.bootstrapTable('append', [{ID:++sd_optionId,LONG:"<input type='text' class='latlongInput long"+sd_optionId+"' />",LAT:"<input type='text' class='latlongInput lat"+sd_optionId+"' />"}]);
+	$tab.bootstrapTable('scrollTo', 'bottom');
+	// 回写保存的数据
+	for(var k in latlongs){
+		for(var l in latlongs[k]){
+			$('.'+l).val(latlongs[k][l]);
+		}
+	}
+	
+	/* $('#longInput').focus(); */
+}
+
+//删除一行
+function deleteTable(){
+	var ids = $.map($('#sd_opticalcablesection_table').bootstrapTable('getSelections'), function (row) {
+        return row.ID;
+    });
+	if(ids.length==0){
+		swal('请先勾选需要删除的数据!', '', "warning");
+	}else {
+		swal({
+	  		  title: "确定删除?",
+	  		  type: "warning",
+	  		  showCancelButton: true,
+	  		  confirmButtonColor: "#DD6B55",
+	  		  confirmButtonText: "确定",
+	  		  cancelButtonText: "取消",
+	  		  closeOnConfirm: false
+		},
+		function(){
+			var data = $('#sd_opticalcablesection_table').bootstrapTable('getData');
+			// 先保存数据
+			var latlongs=[];
+			for(var i in data){
+				for(var j in ids){
+					if(data[i].ID != ids[j]){
+						var map = {};
+						var longKey = 'long'+data[i].ID;
+						var latKey = 'lat'+data[i].ID;
+						map[longKey] = $('.'+longKey).val();
+						map[latKey] = $('.'+latKey).val();
+						latlongs.push(map);
+					}
+				}
+			}
+	        // 后删除
+			$('#sd_opticalcablesection_table').bootstrapTable('remove', {
+	            field: 'ID',
+	            values: ids
+	        });
+			// 回写保存的数据
+			for(var k in latlongs){
+				for(var l in latlongs[k]){
+					$('.'+l).val(latlongs[k][l]);
+				}
+			}
+//			swal("删除成功！",'',"success");
+			swal.close();
+		});
+	}
+}
+function indexFormatter(val, row, index){
+    return  '<span class="coode">' + ++index + '</span><input type="hidden" name="xh" value="'+index+'"/>';
+}
+function upLatlongRow(){
+	$('#sd_opticalcablesection_table').find("tr[class='selected']").each(function(){ 
+    	var $tr = $(this);
+    	var i = $tr.index();
+        if (i != 0) {
+            $tr.fadeOut().fadeIn();
+            $tr.prev().find("input[name='xh']").html(i + 1);
+            $tr.prev().find("span[class='coode']").html(i + 1);
+            $tr.prev().before($tr);
+            $tr.find("input[name='xh']").html(i);
+            $tr.find("span[class='coode']").html(i);
+        }
+	}) 
+}
+
+function downLatlongRow(){
+	$('#sd_opticalcablesection_table').find("tr[class='selected']").each(function(){ 
+    	var $tr = $(this);
+    	var i = $tr.index();
+    	var lightData = $('#sd_opticalcablesection_table').bootstrapTable('getData');
+    	if (i != lightData.length - 1) {
+            $tr.fadeOut().fadeIn();
+            $tr.next().find("input[name='xh']").html(i + 1);
+            $tr.next().find("span[class='coode']").html(i + 1);
+            $tr.next().after($tr);
+            $tr.find("input[name='xh']").html(i + 2);
+            $tr.find("span[class='coode']").html(i + 2);
+        }
+	}) 
+}
+
+</script>
+<div class="modal-body" style="padding: 5px;width:500px;">
+
+        <form class="form-horizontal" style="padding: 0px 10px;display: none;" id="sd_opticalcablesection_coordinate">
+           <div class="form-group" style="padding-left: 15px;">
+              <button  class="btn equipment-btn search" type="button" onclick="addTable()">增加</button>
+              <button  class="btn equipment-btn search" type="button" onclick="deleteTable()">删除</button>
+              <button  class="btn equipment-btn search" type="button" onclick="upLatlongRow()">上移</button>
+              <button  class="btn equipment-btn search" type="button" onclick="downLatlongRow()">下移</button>
+          </div>
+          <div style="max-height:140px;overflow-x:hidden;overflow-y: auto;">
+              <table id="sd_opticalcablesection_table" style="border: 1px solid #ccc;"></table>
+          </div>
+       </form>
+                    <form class="form-horizontal" style="padding: 10px" id="sd_opticalcablesection_form">
+                        <div class="form-group">
+                            <label for="NAME" class="col-sm-2 control-label" >名称:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="NAME" id="NAME"/>
+                            </div>
+                            <label for="TYPE" class="col-sm-2 control-label" style="margin-left: -10px;">光缆类型:</label>
+                            <div class="col-sm-4" >
+                                <select id="TYPE" name="TYPE" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+				            <label for="LAYWAY" class="col-sm-2 control-label" >敷设方式:</label>
+                            <div class="col-sm-4" >
+                                <select id="LAYWAY" name="LAYWAY" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="CORENUM" class="col-sm-2 control-label" style="margin-left: -10px;">芯数:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="CORENUM" id="CORENUM"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="VOLTAGECLASS" class="col-sm-2 control-label" >线路电压等级:</label>
+                            <div class="col-sm-4" >
+                                <select id="VOLTAGECLASS" name="VOLTAGECLASS" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="LENGTH" class="col-sm-2 control-label" style="margin-left: -10px;">长度:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control"  name="LENGTH" id="LENGTH"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="STARTID" class="col-sm-2 control-label" >起点:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="STARTID" name="STARTID" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('STARTID')">
+                                <img src="/images/img/2.png" alt=""></button>
+                            </div>
+                            
+                            <label for="ENDID" class="col-sm-2 control-label" style="margin-left: -10px;">终点:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="ENDID" name="ENDID" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('ENDID')">
+                                <img src="/images/img/2.png" alt=""></button>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label for="ASSETUNIT" class="col-sm-2 control-label">资产单位:</label>
+                            <div class="col-sm-4 " >
+                                <select id="ASSETUNIT"  name="ASSETUNIT" class="selectpicker form-control">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            <label for="MAINTENANCEUNIT" class="col-sm-2 control-label" style="margin-left: -10px;">维护单位:</label>
+                            <div class="col-sm-4" >
+                                <select id="MAINTENANCEUNIT" name="MAINTENANCEUNIT" class="selectpicker show-tick form-control" style="padding: 6px 0px;">
+                                 <option value ="">请选择</option>
+                                </select>
+                            </div>
+                            
+                        </div>
+                        <div class="text-center">
+                            <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="saveFeature()">保存</button>
+                            <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="unSaveFeature()">取消</button>
+                        </div>
+       </form>
+ </div>
+ 

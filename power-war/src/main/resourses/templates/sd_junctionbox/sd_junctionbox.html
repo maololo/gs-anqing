@@ -1,76 +1,23 @@
-<script type="text/javascript">
-initSelectpicker('资产单位','ASSETUNIT'); 
-initSelectpicker('维护单位','MAINTENANCEUNIT'); 
-
-function initSelectpicker(val,id){
-	$.ajax({
-		url:"/T_ENUMERATE/search.action",
-    	data:{"search.C_TYPE*eq":val,"sort.C_SORTID":'ASC'},//设置请求参数 
-    	type:"post",//请求方法 
-        dataType: "Json",
-        async:false,
-        success: function (data) {
-            if (data!="" ||data!=null) {               
-                for(var i=0;i<data.length;i++) {
-                	$('#'+id+'.selectpicker').append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
-                }
-                $("#"+id).selectpicker('refresh');
-               
-            }
-        }
-    })
-}
-</script>
-<div class="modal-body" style="padding: 5px;width:500px;">
-      <form class="form-horizontal" style="padding: 10px 10px 0px 10px;display: none;" id="sd_junctionbox_coordinate">
-           <div class="form-group">
-              <label for="longitude" class="col-sm-2 control-label">经度:</label>
-                 <div class="col-sm-4">
-                     <input type="text" class="form-control"  name="longitude" id="longitude"/>
-                 </div>
-               <label for="latitude" class="col-sm-2 control-label" style="margin-left: -10px;">纬度:</label>
-                   <div class="col-sm-4">
-                       <input type="text" class="form-control"  name="latitude" id="latitude"/>
-                   </div>              
-          </div>
-       </form>
 
 
-                    <form class="form-horizontal" style="padding: 10px" id="sd_junctionbox_form">
-                        <div class="form-group">
-                            <label for="NAME" class="col-sm-2 control-label" >名称:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="NAME" id="NAME"/>
-                            </div>
-                            <label for="POSITION" class="col-sm-2 control-label" style="margin-left: -10px;">位置:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="POSITION" id="POSITION"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="SPECIFICATIONS" class="col-sm-2 control-label">规格标识:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="SPECIFICATIONS" id="SPECIFICATIONS"/>
-                            </div>
-                            <label for="ASSETUNIT" class="col-sm-2 control-label" style="margin-left: -10px;">资产单位:</label>
-                            <div class="col-sm-4" >
-                                <select id="ASSETUNIT" name="ASSETUNIT" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="MAINTENANCEUNIT" class="col-sm-2 control-label" >维护单位:</label>
-                            <div class="col-sm-4" >
-                                <select id="MAINTENANCEUNIT" name="MAINTENANCEUNIT" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="saveFeature()">保存</button>
-                            <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="unSaveFeature()">取消</button>
-                        </div>
-       </form>
- </div>
- 
+
+<div class="modal-content table-content" style="background: transparent; border: 1px solid #444;min-width: 1250px;min-height: 590px;">
+            <div class="modal-body check-text" >
+            <span id="junctionboxOptions">
+                <div class="check">
+                  <button type="button"  class="btn btn-primary rolebtn" onclick="addJunctionboxFeature()" style="margin:0px 600px 0px 20px;" >添加</button>
+                                                                 过滤字段：<select  id="junctionbox_filterField" name="filterField" onchange="JunctionboxFilterField(this.options[this.options.selectedIndex].text)"style="width:100px;">
+                           </select>
+                           <span id="junctionbox_filterFieldSelect" style="display: none"><select  id="junctionbox_filterFieldSelectValue"  style="width:100px;">
+                           </select></span>
+                           <span id="junctionbox_filterFieldInput" style="display: none"><input type="text" id="junctionbox_filterFieldInputValue" style="height: 30px;"/></span>
+                       <button type="button"  class="btn btn-primary rolebtn" onclick="queryJunctionboxFeature()" style="float: right;margin-right: 20px;margin-top: 6px;" >查询</button>
+               </div>
+                
+            </span>
+            
+              
+      <table id="sd_junctionboxTable" style="overflow:auto;"></table> 
+
+    </div>
+</div>

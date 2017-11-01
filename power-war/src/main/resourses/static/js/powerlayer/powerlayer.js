@@ -54,7 +54,8 @@ function fnInitGrid() {
 		fitColumns : true,
 		striped:true,
 		nowrap : false,
-		pagination : true
+		pagination : true,
+		pageSize:20
 	});
 	
     $('#start_time,#end_time').datebox({
@@ -82,7 +83,7 @@ function fnInitGrid() {
     
     var p = $('#app_table').datagrid('getPager');    
     $(p).pagination({    
-        pageSize: 10,//每页显示的记录条数，默认为10  
+//        pageSize: 20,//每页显示的记录条数，默认为10  
         //pageList:[5,10,15,20],//每页显示几条记录  
         beforePageText: '第',//页数文本框前显示的汉字   
         afterPageText: '页    共 {pages} 页',   
