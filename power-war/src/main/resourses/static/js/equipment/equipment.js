@@ -59,7 +59,7 @@ function init(){
         },
         'click .RoleOfLight': function (e, value, row, index) {
         	rowData = row;
-            resPopover('/lightbox/lightbox.action','光交图');
+            resPopover('/lightbox/lightbox.action','光交图-'+row.C_NAME);
         },
         'click .RoleOfDistributionmodule': function (e, value, row, index) {
         	//查询设备信息
@@ -83,6 +83,11 @@ function init(){
         	//查询设备信息
         	filterFieldID = row.C_CODE;
         	resPopover('/DISTRIBUTIONINFO/DISTRIBUTIONINFO.action','配线信息');
+        },
+        'click .RoleOfFgq':function(e, value, row, index) {
+        	//查询设备信息
+        	filterFieldID = row.C_CODE;
+        	resPopover('/LIGHTSPLITTERINFO/LIGHTSPLITTERINFO.action','分光器信息');
         }
     };
     $('#equipmentTable').bootstrapTable({
@@ -235,7 +240,7 @@ function operateFormatterEquipment(val,row,index){
 			   '<button class="RoleOfDistributioninfo btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线信息"><span class="pxinfo_icon" style="display:block;" ></span></button>'+
 			'<button class="RoleOfDistributionmodule btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="配线模块"><span class="pxmodule_icon" style="display:block;" ></span></button>';
 	}else if(row.C_TYPE == "分光器"){
-		icon ='<button class="RoleOfPosition btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="分光器"><span class="fgq_icon" style="display:block;" ></span></button>';
+		icon ='<button class="RoleOfFgq btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="分光器"><span class="fgq_icon" style="display:block;" ></span></button>';
 	}
     return  [icon+'<button class="RoleOfImage  btn btn-sm rolebtn" style="background: none;outline:none;color: #0ad6bd" title="图片查看"><span  class=" glyphicon glyphicon-picture  " ><span></button>',
     	'<button class="RoleOfEdit btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',

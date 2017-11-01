@@ -218,7 +218,7 @@ function openDistributionmoduleDailog(url,title){
             	initDistributionmoduleDailog();
             	if(rowData!=""){
             		rowData.C_RUNDATE = DateTimeFormatter(rowData.C_RUNDATE);
-            		rowData.C_STATIONID = formatfeatureName(rowData.C_STATIONID);
+            		//rowData.C_STATIONID = formatfeatureName(rowData.C_STATIONID);
             		initUpdateDistributionmodule(rowData);
             	}
               }
@@ -252,6 +252,11 @@ function initUpdateDistributionmodule(obj){
  		 }else{
  			 $('#'+id).val(obj[id]);
  		 }
+		if(id == "C_STATIONID"){
+			var typeName = formatfeatureName(obj[id]);
+			$('#'+id+'.selectpicker').append("<option value=" + obj[id] + ">" + typeName + "</option>");
+			$("#"+id).selectpicker('val', obj[id]);
+		}
 	}
 	rowData = "";
 }
@@ -264,17 +269,18 @@ function submitDistributionmoduleInfo(){
 	if(distributionmoduleInfo.C_ID==''){
 		distributionmoduleInfo.C_CODE = guid();
 	}
-	var distributionmoduleid = true;
-	//根据选择的模糊数据转换成空间数据ID
-	for(var i=0;i<blurData.length;i++){
-		if(blurData[i].Name == distributionmoduleInfo.C_STATIONID){
-			distributionmoduleInfo.C_STATIONID = blurData[i].ID;
-			distributionmoduleid = false;
-			break;
-		}
-	}
-	if(distributionmoduleid){distributionmoduleInfo.C_STATIONID=""}
-	blurData=[];
+//	var distributionmoduleid = true;
+//	//根据选择的模糊数据转换成空间数据ID
+//	for(var i=0;i<blurData.length;i++){
+//		if(blurData[i].Name == distributionmoduleInfo.C_STATIONID){
+//			distributionmoduleInfo.C_STATIONID = blurData[i].ID;
+//			distributionmoduleid = false;
+//			break;
+//		}
+//	}
+//	if(distributionmoduleid){distributionmoduleInfo.C_STATIONID=""}
+//	blurData=[];
+	
 	$.post('/T_DISTRIBUTIONMODULE/save.action',
 			distributionmoduleInfo,
 			function(result){

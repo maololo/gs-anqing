@@ -979,6 +979,12 @@ option:hover{
 	height: 18px;
 }
 
+.rolebtn .qxinfo_icon{
+	background-image: url(/images/qxinfo.png);
+	width: 20px;
+	height: 19px;
+}
+
 
 
 

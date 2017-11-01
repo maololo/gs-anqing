@@ -1,4 +1,8 @@
- 
+<script type="text/javascript">
+$("#C_TOEQUIPMENTID").selectpicker({
+	'noneSelectedText':'请选择'
+});
+</script>
 
 <div style="width: 530px;">
     <form class="form-horizontal" style="margin-top: 20px;" id="lightsplitterinfo_form">
@@ -23,10 +27,15 @@
                                 </select>
                             </div>
                             <label for="C_TOEQUIPMENTID" class="col-sm-2 control-label" style="margin-left: -10px;">连接的设备编号:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_TOEQUIPMENTID" id="C_TOEQUIPMENTID"/>
+                            <div class="col-sm-3">
+                                <select id="C_TOEQUIPMENTID" name="C_TOEQUIPMENTID" class="selectpicker show-tick form-control">
+                                 <option value ="">请选择</option>
+                                </select>
                             </div>
-                            
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStationToEquip('C_TOEQUIPMENTID')">
+                                 <img src="/images/img/2.png" alt=""></button>
+                            </div>
 				            
                         </div>
         <div class="form-group">

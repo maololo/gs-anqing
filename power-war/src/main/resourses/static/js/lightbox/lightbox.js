@@ -22,7 +22,7 @@ function init(){
     $('.opticGraph #span1').click(function(){
     	clickStatus = "在用";
     	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"border":"none","background-color":"red"});
+    		$(this).children("span").css({"border":"none","background":"none","background-color":"red"});
     	});
     });
     
@@ -30,7 +30,7 @@ function init(){
     $('.opticGraph #span2').click(function(){
     	clickStatus = "备用";
     	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"border":"none","background-color":"#059929"});
+    		$(this).children("span").css({"border":"none","background":"none","background-color":"#059929"});
         });
     });
     
@@ -38,7 +38,7 @@ function init(){
     $('.opticGraph #span3').click(function(){
     	clickStatus = "故障芯";
     	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"border":"none","background-color":"none"});
+    		$(this).children("span").css({"background": "url(../../images/malfunction.png)","border":"0"});
     		$(this).children("span").addClass("selected");
         });
     });
@@ -55,7 +55,7 @@ function init(){
     $('.opticGraph #span5').click(function(){
     	clickStatus = "封存";
     	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"border":"none","background-color":"none"});
+    		$(this).children("span").css({"background": "url(/images/safekeeping.png)","border":"0"});
     		$(this).children("span").addClass("selecteds");
         });
     });
@@ -255,6 +255,7 @@ function init(){
         	obj["search.C_ID*eq"] = row.C_ID;
     		obj[field] = clickStatus;
     		$.post('/T_DISTRIBUTIONINFO/update.action', obj);
+    		init();
     	}
 	});
     
@@ -310,7 +311,12 @@ function lightFormatter(val, row, index){
 	var f = this.field;
 	if(!isEmpty(f)){
 		// 当前端子号
+		var reg = /^\+?[0-9][0-9]*$/;
 		var num = f.substring(4, 5);
+		var secNum = f.substring(5, 6);
+		if(reg.test(secNum)){//验证是否为数字
+			num = num+secNum;
+		}
 		if(!isEmpty(num)){
 			// 当前熔纤端芯数
 			var r = eval("row.C_FF" + num);
@@ -363,7 +369,7 @@ function lightFormatter(val, row, index){
 	
 	var m;
    	if(val == "在用"){
-   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:red;padding:3px 0;color:white">' + point_disk + "-" + parseInt(point_port) + '<span>';
+   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:26px;height:26px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:red;padding:3px 0;color:white">' + point_disk + "-" + parseInt(point_port) + '<span>';
    	}else if(val == "备用"){
    		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:#059929;"><span>';
    	}else if(val == "故障芯"){
