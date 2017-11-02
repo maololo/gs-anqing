@@ -1089,6 +1089,7 @@ table.query-table >tbody>tr>td{
     line-height: inherit;
 }
 /* 首页右边框选查找样式 END */
+
 /* 添加数据页面 鼠标选取局站按钮样式 */
 .selectButton{
 	width: 33px;
@@ -1098,6 +1099,7 @@ table.query-table >tbody>tr>td{
 .selectButton img{
 	margin-left: -4px;
 }
+
 /* 地图选点按钮样式 */
 .selectButton{
 	width: 33px;
