@@ -143,6 +143,9 @@ function res(url,outlink,common,self,callback){
 			if(jsPanelID[i] == jssrc+1){
 				jsPanel.activePanels.getPanel(jsPanelID[i]).close();
 				break;
+			}else if(jsPanelID[i] == jssrc){ //如果此弹出框存在就将面板标准化到之前的位置
+				jsPanel.activePanels.getPanel(jsPanelID[i]).normalize();
+				return;
 			}
 		}
 		
@@ -183,8 +186,6 @@ function res(url,outlink,common,self,callback){
 }
 
 function resPopover(url,title,callback){
-	
-	
 	var tableName = "";
 	var url = url.toLowerCase();
 	var findex = url.lastIndexOf("/");

@@ -9,7 +9,7 @@ var attributeInfoObj = ""; // 属性信息弹窗对象
 var layerAttributeTableData = ''; // 保存图层属性表数据
 var geomObj = ""; // 测量时生成对象的图层
 var measureTooltipElement = ""; // 度量工具提示元素.
-var measureTooltip = ""; // 测量结果对象
+var measureTooltip = []; // 测量提示对象
 var blurData = ""; // 存储模糊字段信息
 var filterFieldID = ""; // 过滤字段ID
 var index=""; //导航
@@ -109,7 +109,17 @@ $(function() {
 		$(".modal-backdrop").remove();
 
 	});
-	
+	 $('.modal').on('shown.bs.modal', function () {
+		index=$(".modal").index(this);
+		$(this).css('z-index',"1052");
+		$(".modal").not($(".modal:eq("+index+")")).css('z-index',"1050");
+	});
+	 $('.modal').on('click', function () {
+         index=$(".modal").index(this);
+         $(this).css('z-index',"1052");
+         $(".modal").not($(".modal:eq("+index+")")).css('z-index',"1050");
+     });	      
+
 	
 	 /*定位点击切换效果*/
     $("#accuratePositioning").click(function () {
@@ -274,12 +284,12 @@ function initLayerTree() {
 										var obj = inst.get_node(data.reference);
 										if (obj.children.length == 0 && obj.parent != "#") {
 											var features = obj.original.layer.getSource().getFeatures();
-												excessiveObject.source = obj.original.layer.getSource();
+												excessiveObject.layer = obj.original.layer;
 												layerAttributeTableData = features;
 												var layerName = obj.original.name;
 												excessiveObject.layerName = layerName;
-												excessiveObject.type = getDrawType(layerName);
-												openDialg( obj.text+"表信息","queryAll", features,layerName);
+												excessiveObject.DrawType = getDrawType(layerName);
+												resPopover("/"+layerName+"/"+layerName+".action",obj.text+"表信息");
 										} else {
 											swal('根节点不能定位!', '', "warning");
 										}
@@ -359,242 +369,245 @@ function getLayerTreeData() {
 				success : function(data) {
 					var bounds = [ 117.044453027202, 30.5066687301743,117.110272065313, 30.5599371735666 ];
 					var layers = [];
-					var treeId = data.length-1;
-					 var untiled = new ol.layer.Image({
-					        source: new ol.source.ImageWMS({
-					          ratio: 1,
-					          url: 'http://172.16.15.107:8081/geoserver/anqing/wms',
-					          params: {'FORMAT': 'image/png',
-					                   'VERSION': '1.1.1',  
-					                STYLES: '',
-					                LAYERS: 'anqing:google_Level_19',
-					          }
-					        })
-					      });
-					      var tiled = new ol.layer.Tile({
-					        visible: false,
-					        source: new ol.source.TileWMS({
-					          url: 'http://172.16.15.107:8081/geoserver/anqing/wms',
-					          params: {'FORMAT': 'image/png', 
-					                   'VERSION': '1.1.1',
-					                   tiled: true,
-					                STYLES: '',
-					                LAYERS: 'anqing:google_Level_19',
-					             tilesOrigin: 116.9607925415039 + "," + 30.49907684326172
-					          }
-					        })
-					      });
-					layers.push(untiled);
-					layers.push(tiled);
+					var treeId = data.length-3;
 					for ( var i in data) {
-						//只加载默认图层在地图上
-						if (data[i].C_ISDEFAULTLAYER == "1"
-								&& data[i].C_ISSHOW == "1") {
-							//					bounds = data[i].C_BBOX;
-							var wfsParams = {
-								service : 'WFS',
-								version : '1.1.0',
-								request : 'GetFeature',
-								typeName : data[i].C_LAYER, //图层名称，可以是单个或多个
-								outputFormat : 'application/json'//'text/javascript',  //重点，不要改变
-							};
-							var vector_Source = new ol.source.Vector(
-									{
-										wrapX : false,
-										format : new ol.format.GeoJSON(),
-										url : data[i].C_LAYERURL + '?'
-												+ $.param(wfsParams),
-										strategy : ol.loadingstrategy.bbox,
-										projection : 'EPSG:4326'
+						if(data[i].C_LAYERTYPE == '3'){
+							if(data[i].C_SERVICETYPE == 'Image'){
+								var untiled = new ol.layer.Image({
+							        source: new ol.source.ImageWMS({
+							          ratio: 1,
+							          url: data[i].C_LAYERURL,
+							          params: {'FORMAT': 'image/png',
+							                   'VERSION': '1.1.1',  
+							                STYLES: '',
+							                LAYERS: data[i].C_LAYER,
+							          }
+							        })
+							      });
+								layers.push(untiled);
+							}else if(data[i].C_SERVICETYPE == 'Tile'){
+								var latlong = data[i].C_BBOX.split(',');
+								var tiled = new ol.layer.Tile({
+							        visible: false,
+							        source: new ol.source.TileWMS({
+							          url: data[i].C_LAYERURL,
+							          params: {'FORMAT': 'image/png', 
+							                   'VERSION': '1.1.1',
+							                   tiled: true,
+							                STYLES: '',
+							                LAYERS: data[i].C_LAYER,
+							             tilesOrigin: latlong[0] + "," + latlong[1]
+							          }
+							        })
+							      });
+							     layers.push(tiled);
+							}else{}
+						}else { //只加载默认图层在地图上
+							
+								var wfsParams = {
+										service : 'WFS',
+										version : '1.1.0',
+										request : 'GetFeature',
+										typeName : data[i].C_LAYER, //图层名称，可以是单个或多个
+										outputFormat : 'application/json'//'text/javascript',  //重点，不要改变
+								};
+								var vector_Source = new ol.source.Vector(
+										{
+											wrapX : false,
+											format : new ol.format.GeoJSON(),
+											url : data[i].C_LAYERURL + '?'
+											+ $.param(wfsParams),
+											strategy : ol.loadingstrategy.bbox,
+											projection : 'EPSG:4326'
+										});
+								var scale = 1.8;
+								var imgHeight = 18;
+								var layerStyle = null;
+								if (data[i].C_LAYERNAME == "接头盒")
+									layerStyle = new ol.style.Style({
+										image : new ol.style.Icon({
+											src : '../../images/接头盒.svg',
+											scale : scale
+										})
 									});
-							var scale = 1.8;
-							var imgHeight = 18;
-							var layerStyle = null;
-							if (data[i].C_LAYERNAME == "接头盒")
-								layerStyle = new ol.style.Style({
-									image : new ol.style.Icon({
-										src : '../../images/接头盒.svg',
-										scale : scale
-									})
-								});
-							else if (data[i].C_LAYERNAME == "通信杆塔")
-								layerStyle = new ol.style.Style({
-									image : new ol.style.Icon({
-										src : '../../images/通信杆塔.svg',
-										scale : scale
-									})
-								});
-							else if (data[i].C_LAYERNAME == "人井")
-								layerStyle = new ol.style.Style({
-									image : new ol.style.Icon({
-										src : '../../images/人井.svg',
-										scale : scale
-									})
-								});
-							else if (data[i].C_LAYERNAME == "余缆")
-								layerStyle = new ol.style.Style({
-									image : new ol.style.Icon({
-										src : '../../images/余缆.svg',
-										scale : scale
-									})
-								});
-							var layer;
-							if (layerStyle == null) {
-								if (data[i].C_LAYERNAME == "局站")
-									layer = new ol.layer.Vector(
-											{
-												source : vector_Source,
-												style : function(feature) {
-													if (feature.get('TYPE') == '机房大楼')
+								else if (data[i].C_LAYERNAME == "通信杆塔")
+									layerStyle = new ol.style.Style({
+										image : new ol.style.Icon({
+											src : '../../images/通信杆塔.svg',
+											scale : scale
+										})
+									});
+								else if (data[i].C_LAYERNAME == "人井")
+									layerStyle = new ol.style.Style({
+										image : new ol.style.Icon({
+											src : '../../images/人井.svg',
+											scale : scale
+										})
+									});
+								else if (data[i].C_LAYERNAME == "余缆")
+									layerStyle = new ol.style.Style({
+										image : new ol.style.Icon({
+											src : '../../images/余缆.svg',
+											scale : scale
+										})
+									});
+								var layer;
+								if (layerStyle == null) {
+									if (data[i].C_LAYERNAME == "局站")
+										layer = new ol.layer.Vector(
+												{
+													source : vector_Source,
+													style : function(feature) {
+														if (feature.get('TYPE') == '机房大楼')
+															return new ol.style.Style(
+																	{
+																		image : new ol.style.Icon(
+																				{
+																					src : '../../images/机房.svg',
+																					scale : scale
+																				}),
+																				text : new ol.style.Text(
+																						{
+																							text : feature
+																							.get('NAME'),
+																							offsetY : Math
+																							.sqrt(imgHeight
+																									* scale) / 2 + 20,
+																									font : '20px Calibri,sans-serif', // 字体与大小
+																									fill : new ol.style.Fill(
+																											{ // 文字填充色
+																												color : '#0000ff'
+																											})
+																						})
+																	});
+														else if (feature
+																.get('TYPE') == '光交箱')
+															return new ol.style.Style(
+																	{
+																		image : new ol.style.Icon(
+																				{
+																					src : '../../images/光交箱.svg',
+																					scale : scale
+																				}),
+																				text : new ol.style.Text(
+																						{
+																							text : feature
+																							.get('NAME'),
+																							offsetY : Math
+																							.sqrt(imgHeight
+																									* scale) / 2 + 20,
+																									font : '20px Calibri,sans-serif', // 字体与大小
+																									fill : new ol.style.Fill(
+																											{ // 文字填充色
+																												color : '#0000ff'
+																											})
+																						})
+																	});
+														else
+															return new ol.style.Style(
+																	{
+																		image : new ol.style.Icon(
+																				{
+																					src : '../../images/变电站.svg',
+																					scale : scale
+																				}),
+																				text : new ol.style.Text(
+																						{
+																							text : feature
+																							.get('NAME'),
+																							offsetY : Math
+																							.sqrt(imgHeight
+																									* scale) / 2 + 20,
+																									font : '20px Calibri,sans-serif', // 字体与大小
+																									fill : new ol.style.Fill(
+																											{ // 文字填充色
+																												color : '#0000ff'
+																											})
+																						})
+																	});
+													}
+												});
+									else if (data[i].C_LAYERNAME == "光缆段") {
+										layer = new ol.layer.Vector(
+												{
+													source : vector_Source,
+													style : function(feature) {
 														return new ol.style.Style(
 																{
-																	image : new ol.style.Icon(
+																	fill : new ol.style.Fill(
 																			{
-																				src : '../../images/机房.svg',
-																				scale : scale
+																				color : 'rgba(0, 0, 0, 1)'
 																			}),
-																	text : new ol.style.Text(
-																			{
-																				text : feature
-																						.get('NAME'),
-																				offsetY : Math
-																						.sqrt(imgHeight
-																								* scale) / 2 + 20,
-																				font : '20px Calibri,sans-serif', // 字体与大小
-																				fill : new ol.style.Fill(
-																						{ // 文字填充色
-																							color : '#0000ff'
-																						})
-																			})
+																			stroke : new ol.style.Stroke(
+																					{
+																						color : 'rgba(0, 0, 0, 1)',
+																						width : feature
+																						.get('CORENUM') == null ? 1
+																								: feature
+																								.get('CORENUM') / 12
+																					})
 																});
-													else if (feature
-															.get('TYPE') == '光交箱')
-														return new ol.style.Style(
-																{
-																	image : new ol.style.Icon(
-																			{
-																				src : '../../images/光交箱.svg',
-																				scale : scale
-																			}),
-																	text : new ol.style.Text(
-																			{
-																				text : feature
-																						.get('NAME'),
-																				offsetY : Math
-																						.sqrt(imgHeight
-																								* scale) / 2 + 20,
-																				font : '20px Calibri,sans-serif', // 字体与大小
-																				fill : new ol.style.Fill(
-																						{ // 文字填充色
-																							color : '#0000ff'
-																						})
-																			})
-																});
-													else
-														return new ol.style.Style(
-																{
-																	image : new ol.style.Icon(
-																			{
-																				src : '../../images/变电站.svg',
-																				scale : scale
-																			}),
-																	text : new ol.style.Text(
-																			{
-																				text : feature
-																						.get('NAME'),
-																				offsetY : Math
-																						.sqrt(imgHeight
-																								* scale) / 2 + 20,
-																				font : '20px Calibri,sans-serif', // 字体与大小
-																				fill : new ol.style.Fill(
-																						{ // 文字填充色
-																							color : '#0000ff'
-																						})
-																			})
-																});
-												}
-											});
-								else if (data[i].C_LAYERNAME == "光缆段") {
-									layer = new ol.layer.Vector(
-											{
-												source : vector_Source,
-												style : function(feature) {
-													return new ol.style.Style(
+														
+													}
+												});
+										layer.setTextPathStyle(
+												function(feature) {
+													return [ new ol.style.Style(
 															{
-																fill : new ol.style.Fill(
+																text : new ol.style.TextPath(
 																		{
-																			color : 'rgba(0, 0, 0, 1)'
+																			text : feature
+																			.get('TYPE')
+																			+ '/'
+																			+ feature
+																			.get('CORENUM')
+																			+ '芯/'
+																			+ feature
+																			.get('LENGTH')
+																			+ '米',
+																			font : "16px Calibri,sans-serif",
+																			fill : new ol.style.Fill(
+																					{
+																						color : "#0000ff"
+																					}),
+																					stroke : new ol.style.Stroke(
+																							{
+																								color : "#0000ff",
+																								width : 0
+																							}),
+																							textBaseline : 'bottom',
+																							textAlign : 'center',
+																							rotateWithView : true,
+																							textOverflow : 'visible',
+																							minWidth : 0
 																		}),
-																stroke : new ol.style.Stroke(
-																		{
-																			color : 'rgba(0, 0, 0, 1)',
-																			width : feature
-																					.get('CORENUM') == null ? 1
-																					: feature
-																							.get('CORENUM') / 12
-																		})
-															});
-
-												}
-											});
-									layer.setTextPathStyle(
-													function(feature) {
-														return [ new ol.style.Style(
-																{
-																	text : new ol.style.TextPath(
-																			{
-																				text : feature
-																						.get('TYPE')
-																						+ '/'
-																						+ feature
-																								.get('CORENUM')
-																						+ '芯/'
-																						+ feature
-																								.get('LENGTH')
-																						+ '米',
-																				font : "16px Calibri,sans-serif",
-																				fill : new ol.style.Fill(
-																						{
-																							color : "#0000ff"
-																						}),
-																				stroke : new ol.style.Stroke(
-																						{
-																							color : "#0000ff",
-																							width : 0
-																						}),
-																				textBaseline : 'bottom',
-																				textAlign : 'center',
-																				rotateWithView : true,
-																				textOverflow : 'visible',
-																				minWidth : 0
-																			}),
-																	geometry : null
-																}) ]
-													}, 0.00005);
-
+																		geometry : null
+															}) ]
+												}, 0.00005);
+										
+									} else
+										layer = new ol.layer.Vector({
+											source : vector_Source
+										});
 								} else
 									layer = new ol.layer.Vector({
-										source : vector_Source
+										source : vector_Source,
+										style : layerStyle
 									});
-							} else
-								layer = new ol.layer.Vector({
-									source : vector_Source,
-									style : layerStyle
-								});
-							layers.push(layer);
-							var name = data[i].C_LAYER.split(':');
-							treeNodes[treeId] = {
-								text : data[i].C_LAYERNAME,
-								id : data[i].C_ID,
-								layer : layer,
-								bounds : data[i].C_BBOX,
-								name : name[1],
-								icon : "glyphicon glyphicon-file",
-								state : {
-									checked : true
+								layers.push(layer);
+								var name = data[i].C_LAYER.split(':');
+								treeNodes[treeId] = {
+										text : data[i].C_LAYERNAME,
+										id : data[i].C_ID,
+										layer : layer,
+										bounds : data[i].C_BBOX,
+										name : name[1],
+										icon : "glyphicon glyphicon-file",
+										state : {
+											checked : true
+										}
 								}
-							}
-							treeId--;
+								treeId--;
 						}
 					}
 					var projection = new ol.proj.Projection({
@@ -677,21 +690,23 @@ function closePropertyListWindow() {
 
 // 测量
 function measureOnMap(value) {
-	clearMeasureObj();
+//	clearMeasureObj();
 	clearDrawGeometry();
 	$('#measuretext').html("");
 	// 添加一个绘制的线使用的layer
-	geomObj = new ol.layer.Vector({
-		source : new ol.source.Vector(),
-		style : new ol.style.Style({
-			stroke : new ol.style.Stroke({
+	if(geomObj==""){
+		geomObj = new ol.layer.Vector({
+			source : new ol.source.Vector(),
+			style : new ol.style.Style({
+				stroke : new ol.style.Stroke({
 //				color : '#ffcc33',
-				color : 'red',
-				size : 2
+					color : 'red',
+					size : 2
+				})
 			})
-		})
-	});
-	map.addLayer(geomObj);
+		});
+		map.addLayer(geomObj);
+	}
 	var type = ""
 	if (value == 'area') {
 		$('#measureName').html('面积');
@@ -726,7 +741,22 @@ function measureOnMap(value) {
 	map.addInteraction(drawGeometry);
 
 	createMeasureTooltip();
-
+	/**
+	 * 创建显示结果的提示工具
+	 */
+	if (measureTooltipElement) {
+		measureTooltipElement.parentNode.removeChild(measureTooltipElement);
+	}
+	measureTooltipElement = document.createElement('div');
+	measureTooltipElement.className = 'tooltip tooltip-measure';
+	var tooltip = new ol.Overlay({
+		element : measureTooltipElement,
+		offset : [ 0, -15 ],
+		positioning : 'bottom-center'
+	});
+	map.addOverlay(tooltip);
+	measureTooltip.push(tooltip);
+	
 	var results = ""; // 测量结果
 	var listener = ""; //
 	var sketch = ""; 
@@ -750,13 +780,13 @@ function measureOnMap(value) {
 			}
 			results = output;
 			measureTooltipElement.innerHTML = output;
-			measureTooltip.setPosition(tooltipCoord);
+			tooltip.setPosition(tooltipCoord);
 		});
 	}, this);
 
 	drawGeometry.on('drawend', function(event) {
 		measureTooltipElement.className = 'tooltip tooltip-static';
-		measureTooltip.setOffset([ 0, -7 ]);
+		tooltip.setOffset([ 0, -7 ]);
 		// unset sketch
 		sketch = null;
 		// unset tooltip so that a new one can be created
@@ -771,22 +801,6 @@ function measureOnMap(value) {
 	}, this);
 }
 
-/**
- * 创建显示结果的提示工具
- */
-function createMeasureTooltip() {
-	if (measureTooltipElement) {
-		measureTooltipElement.parentNode.removeChild(measureTooltipElement);
-	}
-	measureTooltipElement = document.createElement('div');
-	measureTooltipElement.className = 'tooltip tooltip-measure';
-	measureTooltip = new ol.Overlay({
-		element : measureTooltipElement,
-		offset : [ 0, -15 ],
-		positioning : 'bottom-center'
-	});
-	map.addOverlay(measureTooltip);
-}
 
 /**
  * 根据多线段获取长度.
@@ -860,9 +874,11 @@ function clearMeasure() {
 		map.removeInteraction(drawGeometry);
 		drawGeometry = "";
 	}
-	if (measureTooltip != "") {
-		map.removeOverlay(measureTooltip);
-		measureTooltip = "";
+	if (measureTooltip.length != 0) {
+		for(var i in measureTooltip){
+			map.removeOverlay(measureTooltip[i]);
+		}
+		measureTooltip = [];
 	}
 }
 
@@ -873,9 +889,11 @@ function clearMeasureObj() {
 		geomObj = "";
 	}
 
-	if (measureTooltip != "") {
-		map.removeOverlay(measureTooltip);
-		measureTooltip = "";
+	if (measureTooltip.length != 0) {
+		for(var i in measureTooltip){
+			map.removeOverlay(measureTooltip[i]);
+		}
+		measureTooltip = [];
 	}
 
 }
@@ -1477,7 +1495,7 @@ function queryClientFeature() {
 		return;
 	}
 		// 获取查询图层类型
-		var code = layerAttributeTableData.features[0].values_.ID.substring(0,4);
+		var code = layerAttributeTableData[0].values_.ID.substring(0,4);
 		var layerType = queryLayerNameByPMSID(code);
 		var columns = getColumnsBylayerType(layerType);
 		
@@ -2294,7 +2312,6 @@ function getColumnsBylayerType(layerType){
 	}
 	return  columns;
 }
-
 // 将数据在table中显示
 function displayData(features, layerType) {
 	// 销毁查询结果 bootstrapTable
@@ -2414,7 +2431,7 @@ window.operateEventsFeature = {
 						modify.setActive(false);
 					}
 				});
-		jsPanelAttributeInfo();
+		jsPanelAttributeInfo(layer_type);
 		
 		// 获取要素的几何范围
 //		var extent = row.getGeometry().getExtent();
@@ -2542,19 +2559,6 @@ window.operateEventsFeature = {
 	},'click .RoleOfEquipment' : function(e, value, row, index) {
 		//查询设备信息
 		filterFieldID = row.values_.ID;
-		/*var title='';
-		var titles = queryTableByData('/T_B_MODULE/search.action',{});
-		for(var i in titles){
-			var url = titles[i].C_URL;
-			if(url==null){
-				continue;
-			}
-			var name = url.split('/')[1].toLowerCase();
-			if(name == 'equipment'){
-				title = titles[i].C_MODULENAME;
-				break;
-			}
-		}*/
 		resPopover('/EQUIPMENT/EQUIPMENT.action','设备信息');
 	} 
 
@@ -2685,8 +2689,11 @@ function queryWFSURL() {
 		dataType : "json",// 设置服务器响应类型
 		// success：请求成功之后执行的回调函数 data：服务器响应的数据
 		success : function(data) {
-			if (data != "") {
-				url = data[0].C_LAYERURL;
+			for(var i in  data){
+				if (data[i].C_LAYERTYPE=='1') {
+					url = data[i].C_LAYERURL;
+					break;
+				}
 			}
 		}
 	});
@@ -2695,14 +2702,14 @@ function queryWFSURL() {
 }
 
 // 弹出属性字段信息框
-function jsPanelAttributeInfo(Latlong) {
-	var	name =editObject.layer_name.toLowerCase();
-	var	url = "/" + name + "/" + name + ".action";
-	var	title = "新增"+getLayerNodeByName(editObject.layer_name).text;// + "数据属性";
+function jsPanelAttributeInfo(layer_name) {
+	var	name =layer_name.toLowerCase();
+	var	url = "/" + name + "/" + name + "attr.action";
+	var	title = getLayerNodeByName(layer_name).text + "数据属性";
+    var	title = "新增"+getLayerNodeByName(layer_name).text;// + "数据属性";
 	if(editObject.editType == "update"){
-		title = "修改"+getLayerNodeByName(editObject.layer_name).text;// + "数据属性";
+		title = "修改"+getLayerNodeByName(layer_name).text;// + "数据属性";
 	}
-	
 	attributeInfoObj = $.jsPanel({
 				id : "attributeInfo",
 				headerControls: {
@@ -2724,12 +2731,12 @@ function jsPanelAttributeInfo(Latlong) {
 					url : url,
 					autoload : true,
 					done : function(data, textStatus, jqXHR, panel) {
-						if(Latlong != undefined){
+						if(editObject.field == 'Latlong'){
 							$('#'+name+'_coordinate').show();
 						}else{
 							$('#'+name+'_coordinate').hide();
 							if (editObject.editType == "add") {
-								if(editObject.layer_name == 'SD_STATION'){
+								if(layer_name == 'SD_STATION'){
 									$('#TYPE').selectpicker('val', editObject.stationType);
 //									$('#TYPE').prop('disabled', true);
 								}
@@ -2861,7 +2868,7 @@ function saveFeature() {
 	}
 	if (editObject.field=='Latlong') {
 		var layerName = editObject.layer_name;
-		var type = editObject.type;
+		var type = editObject.DrawType;
 		var source = editObject.source;
 		var fea = '';
 		
@@ -2904,7 +2911,6 @@ function saveFeature() {
 			}
 			fea =new ol.Feature( new ol.geom.LineString(latlongs));
 		}
-		return;
 		// 获取属性字段的json
 		var attributeJson = getFormJson(layerName.toLowerCase() + "_form");
 		if(layerName == "SD_OPTICALCABLESECTION"){
@@ -3048,10 +3054,10 @@ function saveFeature() {
 		feature.set('SHAPE', geo);
 		editWFSFeature([feature], editType, featureType);
 		if(editType == "update" ){
-			$('#wfsFeatureTable').bootstrapTable('updateRow', {index: editObject.index, row: feature.values_});
+			$('#'+featureType.toLowerCase()+'Table').bootstrapTable('updateRow', {index: editObject.index, row: feature.values_});
 			swal("修改成功", '', "success");
 		}else if(editType == "add"){
-			$('#wfsFeatureTable').bootstrapTable('prepend', [feature]);
+			$('#'+featureType.toLowerCase()+'Table').bootstrapTable('prepend', [feature]);
 			swal("保存成功", '', "success");
 		}
 
@@ -3548,14 +3554,14 @@ function getBlurDate(tableNames){
 }
 
 //根据经纬度添加要素
-function addFeatureBylatlong(){
+/*function addFeatureBylatlong(){
 	editObject.source = excessiveObject.source;
 	editObject.layer_name = excessiveObject.layerName;
-	editObject.type = excessiveObject.type;
+	editObject.DrawType = excessiveObject.DrawType;
 	editObject.field = 'Latlong';
 	jsPanelAttributeInfo('Latlong');
 	excessiveObject={};
-}
+}*/
 
 //判断object对象是否为空
 function isEmptyObject(e) {  
@@ -3594,7 +3600,7 @@ function addSpaceData(layerName,stationType){
 				editObject.layer_name = layerName;
 				editObject.stationType = stationType;
 				// 弹出属性窗口
-				jsPanelAttributeInfo();
+				jsPanelAttributeInfo(layerName);
 				// 关闭draw事件
 				map.removeInteraction(draw);
 			}, this);				
@@ -3626,7 +3632,7 @@ function updateSpaceData(){
 				editObject.source = layer.getSource();
 				editObject.editType = "update";
 				editObject.layer_name = layer_name;
-				jsPanelAttributeInfo();
+				jsPanelAttributeInfo(layer_name);
 			}else{
 				closeAttributeInfoObj();
 			}
@@ -3983,14 +3989,7 @@ function imgmouseleave(id,name) {
 
 
 
-function test(id,name) {
-	$("#"+name+" img").attr("src","/images/img/"+name+"1.png");
-//	map.getView().setZoom(30);
-	/*map.getView().setCenter([ 114.31, 30.52 ]);
-    map.render();*/
 
-//    var asdsd = queryTableByData("SD_OPTICALCABLESECTION",{});
-}
 
 /************** 书签 BEGIN *****************/
 function loadBookMark(){
@@ -4137,3 +4136,13 @@ function queryField(name){
     })
 }
 /************** 书签 END *****************/
+
+function test(id,name) {
+	queryWFSURL();
+//	$("#"+name+" img").attr("src","/images/img/"+name+"1.png");
+//	map.getView().setZoom(30);
+	/*map.getView().setCenter([ 114.31, 30.52 ]);
+    map.render();*/
+
+//    var asdsd = queryTableByData("SD_OPTICALCABLESECTION",{});
+}

@@ -34,16 +34,15 @@ function init(){
             openEquipmentDailog('/equipment/equipmentAdd.action','设备信息');
         },
         'click .RoleOfImage': function (e, value, row, index) {
-        	/*
-        	closeEquipment();
-            openEquipmentDailog('/imgmsg/imgmsg.action','图片信息');
-            */
             rowData = row;
             resPopover('/imgmsg/imgmsg.action','图片信息');
         },
         'click .RoleOfToEquipment': function (e, value, row, index) {
-        	closePropertyListWindow();
         	var stationID = row.C_STATIONID;
+        	if(stationID=="" || stationID==null){
+        		swal('所属局站为空!', '', "warning");
+        		return;
+        	}
         	// 获取查询图层类型
 			var layerName = queryLayerNameByPMSID(stationID.substring(0,4));
 			var node = getLayerNodeByName(layerName);
@@ -55,7 +54,13 @@ function init(){
 					break;
 				}
 			}
-			openDialg(node.text+"表信息","queryAll", [feature],layerName,'none');
+			layerAttributeTableData = [feature];
+			excessiveObject.layer = node.layer;
+			excessiveObject.layerName = layerName;
+			excessiveObject.DrawType = 'Point';
+			
+			resPopover("/"+layerName+"/"+layerName+".action",'局站信息');
+			
         },
         'click .RoleOfLight': function (e, value, row, index) {
         	rowData = row;

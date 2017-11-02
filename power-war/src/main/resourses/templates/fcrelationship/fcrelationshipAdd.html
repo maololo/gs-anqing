@@ -14,6 +14,7 @@
    
  function selectOpticalcablesectionID(inputID){
 		var select = new ol.interaction.Select();
+		var jsPanelID = window.jsPanel.activePanels.list;
 		map.addInteraction(select);
 		select.on('select',function(e) {
 			if (e.selected[0] != undefined ) {
@@ -22,9 +23,17 @@
 				if(code=='0406'){
 					$('#'+inputID).val(data.NAME);
 					map.removeInteraction(select);
+					for(var i in jsPanelID){
+						//恢复弹出框  
+					   jsPanel.activePanels.getPanel(jsPanelID[i]).normalize();
+					}
 				}
 			}		 
 		});
+		for(var i in jsPanelID){
+			//最小化弹出框  
+		   jsPanel.activePanels.getPanel(jsPanelID[i]).minimize();
+		}
 	}
  </script>
 
@@ -48,7 +57,7 @@
                                 <input type="text" class="form-control"  id="C_STARTOCSECTIONID" name="C_STARTOCSECTIONID" autocomplete="off" />
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_STARTOCSECTIONID')">
+                                <button class="selectButton" type="button" title="在地图上选择光缆段" onclick="selectOpticalcablesectionID('C_STARTOCSECTIONID')">
                                 <img src="/images/img/2.png" alt=""></button>
                             </div>
                             
@@ -57,7 +66,7 @@
                                 <input type="text" class="form-control"  id="C_ENDOCSECTIONID" name="C_ENDOCSECTIONID" autocomplete="off" />
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_ENDOCSECTIONID')">
+                                <button class="selectButton" type="button" title="在地图上选择光缆段" onclick="selectOpticalcablesectionID('C_ENDOCSECTIONID')">
                                 <img src="/images/img/2.png" alt=""></button>
                             </div>
                         </div>

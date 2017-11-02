@@ -705,6 +705,9 @@ table tr:nth-child(odd):hover{
 table tr:nth-child(even) {
     background:#fafafa;
 }
+.bootstrap-table .table:not(.table-condensed), .bootstrap-table .table:not(.table-condensed)>tbody>tr>td, .bootstrap-table .table:not(.table-condensed)>tbody>tr>th, .bootstrap-table .table:not(.table-condensed)>tfoot>tr>td, .bootstrap-table .table:not(.table-condensed)>tfoot>tr>th, .bootstrap-table .table:not(.table-condensed)>thead>tr>td {
+    padding: 5px;
+}
 table tr:nth-child(odd) {
     background:transparent;
 }
@@ -1087,6 +1090,17 @@ table.query-table >tbody>tr>td{
 }
 /* 首页右边框选查找样式 END */
 
+/* 添加数据页面 鼠标选取局站按钮样式 */
+.selectButton{
+	width: 33px;
+    padding: 0px;
+    height: 35px;
+}
+.selectButton img{
+	margin-left: -4px;
+}
+
+/* 添加数据页面 鼠标选取局站按钮样式  END */
 
 
 

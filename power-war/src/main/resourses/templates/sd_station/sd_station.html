@@ -1,106 +1,23 @@
-<script type="text/javascript">
-$("#checkDate").datetimepicker({
-	  language: 'zh-CN',//显示中文
-	  format: 'yyyy-mm-dd',//显示格式
-	  minView: "month",//设置只显示到月份
-	  initialDate: new Date(),//初始化当前日期
-	  autoclose: true,//选中自动关闭
-	  todayBtn: true//显示今日按钮
-});
 
-initSelectpicker('局站类型',"TYPE");
-initSelectpicker('电压等级','VOLTAGE');
-initSelectpicker('行政区划','DISTRICT');
-initSelectpicker('资产单位','ASSETUNIT'); 
-initSelectpicker('维护单位','MAINTENANCEUNIT');
 
-function initSelectpicker(val,id){
-	$.ajax({
-		url:"/T_ENUMERATE/search.action",
-    	data:{"search.C_TYPE*eq":val,"sort.C_SORTID":'ASC'},//设置请求参数 
-    	type:"post",//请求方法 
-        dataType: "Json",
-        async:false,
-        success: function (data) {
-            if (data!="" ||data!=null) {               
-                for(var i=0;i<data.length;i++) {
-                	$('#'+id+'.selectpicker').append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
-                }
-                $("#"+id).selectpicker('refresh');
-               
-            }
-        }
-    })
-}
-</script>
-<div class="modal-body" style="padding: 5px;width:500px;">
-       <form class="form-horizontal" style="padding: 10px 10px 0px 10px;display: none;" id="sd_station_coordinate">
-           <div class="form-group">
-              <label for="longitude" class="col-sm-2 control-label">经度:</label>
-                 <div class="col-sm-4">
-                     <input type="text" class="form-control"  name="longitude" id="longitude"/>
-                 </div>
-               <label for="latitude" class="col-sm-2 control-label" style="margin-left: -10px;">纬度:</label>
-                   <div class="col-sm-4">
-                       <input type="text" class="form-control"  name="latitude" id="latitude"/>
-                   </div>              
-          </div>
-       </form>
-                    <form class="form-horizontal" style="padding: 10px" id="sd_station_form">
-                        <div class="form-group">
-                            <label for="NAME" class="col-sm-2 control-label" >名称:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="NAME" id="NAME"/>
-                            </div>
-                            <label for="TYPE" class="col-sm-2 control-label" style="margin-left: -10px;">局站类型:</label>
-                            <div class="col-sm-4" >
-                                <select id="TYPE" name="TYPE" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="OPERATIONDATE" class="col-sm-2 control-label">投运日期:</label>
-                            <div class="col-sm-4">
-                            <div class='input-group date' id='checkDate'>
-					           <input type='text' class="form-control" name="OPERATIONDATE" id="OPERATIONDATE"/> <span
-						       class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span> </span>
-				            </div>
-				            </div>
-				            <label for="VOLTAGE" class="col-sm-2 control-label" style="margin-left: -10px;">电压等级:</label>
-                            <div class="col-sm-4" >
-                                <select id="VOLTAGE" name="VOLTAGE" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="DISTRICT" class="col-sm-2 control-label" >行政区划:</label>
-                            <div class="col-sm-4" >
-                                <select id="DISTRICT" name="DISTRICT" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                            <label for="ASSETUNIT" class="col-sm-2 control-label" style="margin-left: -10px;">资产单位:</label>
-                            <div class="col-sm-4" >
-                                <select id="ASSETUNIT" name="ASSETUNIT" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                        </div>
-                         <div class="form-group">
-                            
-                            <label for="MAINTENANCEUNIT" class="col-sm-2 control-label" >维护单位:</label>
-                            <div class="col-sm-4" >
-                                <select id="MAINTENANCEUNIT" name="MAINTENANCEUNIT" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="saveFeature()">保存</button>
-                            <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="unSaveFeature()">取消</button>
-                        </div>
-       </form>
- </div>
- 
+
+<div class="modal-content table-content" style="background: transparent; border: 1px solid #444;min-width: 1250px;min-height: 590px;">
+            <div class="modal-body check-text" >
+            <span id="sd_stationOptions">
+                <div class="check">
+                  <button type="button"  class="btn btn-primary rolebtn" onclick="addStationFeature()" style="margin:0px 600px 0px 20px;" >添加</button>
+                                                                 过滤字段：<select  id="sd_station_filterField" name="filterField2" onchange="stationFilterField(this.options[this.options.selectedIndex].text)"style="width:100px;">
+                           </select>
+                           <span id="sd_station_filterFieldSelect" style="display: none"><select  id="sd_station_filterFieldSelectValue"  style="width:100px;">
+                           </select></span>
+                           <span id="sd_station_filterFieldInput" style="display: none"><input type="text" id="sd_station_filterFieldInputValue" style="height: 30px;"/></span>
+                       <button type="button"  class="btn btn-primary rolebtn" onclick="queryStationFeature()" style="float: right;margin-right: 20px;margin-top: 6px;" >查询</button>
+               </div>
+                
+            </span>
+            
+              
+      <table id="sd_stationTable" style="overflow:auto;"></table> 
+
+    </div>
+</div>
