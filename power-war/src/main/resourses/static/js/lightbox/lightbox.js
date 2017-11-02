@@ -75,7 +75,7 @@ function init(){
         }
         ,{
         	field: 'C_DISKID',
-            title: '盘号',
+            title: '盘序',
             class: 'width-2',
             formatter: indexFormatter
 	    }
@@ -287,6 +287,8 @@ function lightFormatter(val, row, index){
 	var line = "未设定";
 	// 当前熔纤端芯数
 	var port_r = "0";
+	// 连接设备的名称
+	var point_eqt = "未设定";
 	// 连接光缆的名称
 	var point_line = "未设定";
 	// 连接光缆的盘号
@@ -296,17 +298,10 @@ function lightFormatter(val, row, index){
 	// 连接光缆熔纤端芯数
 	var point_port_r = "0";
 	
-	if(!isEmpty(row.C_OCSECTIONID)){
-		var layertreeID = queryIdByLayerName('SD_OPTICALCABLESECTION');
-		 var node=$('#powerLayerTree').jstree().get_node("#"+layertreeID);
-		 var features = node.original.layer.getSource().getFeatures();
-		 for(var i in features){
-			 if(features[i].values_.ID == row.C_OCSECTIONID){
-				 line = features[i].values_.NAME;
-				 break;
-			 }
-		 }
-	}
+	var obj = getFeatureObjByCodeAndModel(row.C_OCSECTIONID, "SD_OPTICALCABLESECTION");
+	if (!$.isEmptyObject(obj)) {         
+        line = obj.NAME;
+    }
 	
 	var f = this.field;
 	if(!isEmpty(f)){
@@ -314,8 +309,8 @@ function lightFormatter(val, row, index){
 		var reg = /^\+?[0-9][0-9]*$/;
 		var num = f.substring(4, 5);
 		var secNum = f.substring(5, 6);
-		if(reg.test(secNum)){//验证是否为数字
-			num = num+secNum;
+		if(reg.test(secNum)){// 验证是否为数字
+			num = num + secNum;
 		}
 		if(!isEmpty(num)){
 			// 当前熔纤端芯数
@@ -326,60 +321,68 @@ function lightFormatter(val, row, index){
 			// 跳纤端
 			var t = eval("row.C_JF" + num);
 			if(!isEmpty(t)){
-				// 获取连接光缆的端子号
-				point_port = t.substring(t.length - 2, t.length);
-				// 获取指向的C_ID
-				var point_c_id = t.substring(36, t.length - 2);
-				// 连接光缆的信息
-				if(!isEmpty(point_c_id)){
-					var pointData = queryTableByData("/T_DISTRIBUTIONINFO/search.action", {"search.C_ID*eq": point_c_id});
-					if (!$.isEmptyObject(pointData[0])) {
-						if(!isEmpty(pointData[0].C_DISKID)){
-							point_disk = pointData[0].C_DISKID;
+				if(rowData.C_TYPE == "ODF"){
+					// 获取连接设备编号
+					var eCode = t.substring(0, 36);
+					var tableObj = getTableObjByParamAndModel({"search.C_CODE*eq": eCode}, "T_EQUIPMENT");
+					if (!$.isEmptyObject(tableObj)) {         
+				        var d = tableObj[0];
+				        point_eqt = d.C_NAME;
+				    }
+					// 获取连接光缆的端子号
+					point_port = t.substring(t.length - 2, t.length);
+					// 获取指向的盘序
+					var point_disk = t.substring(36, t.length - 2);
+					// 连接光缆的信息
+					if(!isEmpty(point_disk) && !isEmpty(eCode)){
+						var pointData = queryTableByData("/T_DISTRIBUTIONINFO/search.action", {"search.C_EQUIPMENTCODE*eq": eCode, "search.C_DISKID*eq": point_disk});
+						if (!$.isEmptyObject(pointData[0])) {
+							var pCode = pointData[0].C_OCSECTIONID;
+							var info = getFeatureObjByCodeAndModel(pCode, "SD_OPTICALCABLESECTION");
+							if (!$.isEmptyObject(info)) {         
+						        point_line = info.NAME;
+						    }
+							if(!isEmpty(eval("pointData[0].C_FF" + parseInt(point_port)))){
+								point_port_r = eval("pointData[0].C_FF" + parseInt(point_port));
+							}
 						}
-						if(!isEmpty(eval("pointData[0].C_FF" + parseInt(point_port)))){
-							point_port_r = eval("pointData[0].C_FF" + parseInt(point_port));
-						}
+					}
+					if(val == "在用"){
+						port_title = "熔纤信息：" + line + ",第" + port_r + "芯" ; 
+						port_title = port_title + "&#10;跳纤信息：" + point_eqt + "," + parseInt(point_disk) + "-" + parseInt(point_port);
+						port_title = port_title + "&#10;连接光缆：" + point_line + ",第" + point_port_r + "芯";
+					}else if(val == "备用" || val == "故障芯" || val == "封存"){
+						port_title = "熔纤信息：" + line + ",第" + port_r + "芯" ;
+					}else{
+						
+					}
+				}else{
+					if(val == "在用"){
+						port_title = "熔纤信息：" + line + ",第" + port_r + "芯" ; 
+						port_title = port_title + "&#10;跳纤信息：" + (!isEmpty(point_eqt)) ? point_eqt : rowData.C_TYPE;
+					}else if(val == "备用" || val == "故障芯" || val == "封存"){
+						port_title = "熔纤信息：" + line + ",第" + port_r + "芯" ;
+					}else{
+						
 					}
 				}
 			}
 		}
 	}
 		
-	if(rowData.C_TYPE == "ODF"){	
-		if(val == "在用"){
-			port_title = "熔纤信息：" + line + ",第" + port_r + "芯" ; 
-			port_title = port_title + "&#10;跳纤信息：" + rowData.C_NAME + "," + point_disk + "-" + parseInt(point_port);
-			port_title = port_title + "&#10;连接光缆：" + point_line + ",第" + point_port_r + "芯";
-		}else if(val == "备用" || val == "故障芯" || val == "封存"){
-			port_title = "熔纤信息：" + line + ",第" + port_r + "芯" ;
-		}else{
-			
-		}
-	}else{
-		if(val == "在用"){
-			port_title = "熔纤信息：" + line + ",第" + port_r + "芯" ; 
-			port_title = port_title + "&#10;跳纤信息：" + (!isEmpty(rowData.C_NAME)) ? rowData.C_NAME : rowData.C_TYPE;
-		}else if(val == "备用" || val == "故障芯" || val == "封存"){
-			port_title = "熔纤信息：" + line + ",第" + port_r + "芯" ;
-		}else{
-			
-		}
-	}
-	
 	var m;
    	if(val == "在用"){
-   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:26px;height:26px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:red;padding:3px 0;color:white">' + point_disk + "-" + parseInt(point_port) + '<span>';
+   		m = '<span title="' + port_title + '" class="gjt-span zy-span RoleOfEdit btn btn-sm">' + parseInt(point_disk) + "-" + parseInt(point_port) + '<span>';
    	}else if(val == "备用"){
-   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background-color:#059929;"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span by-span RoleOfEdit btn btn-sm"><span>';
    	}else if(val == "故障芯"){
-        m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm selecteds" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background:url(/images/malfunction.png);"><span>';
+        m = '<span title="' + port_title + '" class="gjt-span gz-span RoleOfEdit btn btn-sm selecteds"><span>';
    	}else if(val == "封存"){
-   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm selecteds" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:none;background:url(/images/safekeeping.png);"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span fc-span RoleOfEdit btn btn-sm selecteds"><span>';
    	}else if(val == "空"){
-   		m = '<span title="' + port_title + '" class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;border:1px solid #64a3e6;background-color:none;"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span k-span RoleOfEdit btn btn-sm"><span>';
    	}else{
-   		m = '<span class="RoleOfEdit btn btn-sm" style="width:20px;height:20px;border-radius:50%;border:1px solid #64a3e6;"><span>';
+   		m = '<span class="gjt-span RoleOfEdit btn btn-sm"><span>';
    	}
     return m;
 }

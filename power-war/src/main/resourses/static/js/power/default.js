@@ -223,4 +223,206 @@ function resPopover(url,title,callback){
 	 });
 }
 
+/** 公用方法 BEGIN **/
+// 判断是否都是数字
+function isDigit(str) {
+    var reg = /^\d+$/;
+    return reg.test(str);
+};
+
+// 判断某个元素是否在数组内
+function contains(arr, obj) {  
+    var i = arr.length;  
+    while (i--) {  
+        if (arr[i] === obj) {  
+            return true;  
+        }  
+    }  
+    return false;  
+} 
+
+// 判断字符串是否为空     判断对象是否为空直接用$.isEmptyObject
+function isEmpty(val){
+	if(val == undefined || val == "" || val == null){  
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// 初始化页面表单元素为JSON格式
+$.fn.serializeJson = function(){  
+    var serializeObj={};  
+    var array=this.serializeArray();  
+    var str=this.serialize();  
+    $(array).each(function(){  
+        if(serializeObj[this.name]){  
+            if($.isArray(serializeObj[this.name])){  
+                serializeObj[this.name].push(this.value);  
+            }else{  
+                serializeObj[this.name]=[serializeObj[this.name],this.value];  
+            }  
+        }else{  
+            serializeObj[this.name]=this.value;   
+        }  
+    });  
+    return serializeObj;  
+}; 
+
+// 度 格式验证经度  保留六位小数
+function validLonDu(val){
+	if(val.trim()==""){
+		return false;
+	}
+	var lonReg= /^-?((0|1?[0-7]?[0-9]?)(([.][0-9]{1,6})?)|180(([.][0]{1,6})?))$/;
+    var state = lonReg.test(val);   
+    if(state){  
+        return true;  
+    }else{  
+        return false;  
+    }  
+}
+
+// 度分秒 格式验证经度 保留六位小数
+function validLonDFM(v){
+	var state; 
+	var lonTest1 = /^((\d|[1-9]\d|1[0-7]\d)[°](\d|[0-5]\d)[′](\d|[0-5]\d)(\.\d{1,6})?[\″]$)|(180[°]0[′]0[\″]$)/;  
+	var lonTest2 = /^((\d|[1-9]\d|1[0-7]\d)[°](\d|[0-5]\d)(\.\d{1,6})?[′]$)|(180[°]0[′]$)/;  
+	var lonTest3 = /^((\d|[1-9]\d|1[0-7]\d)(\.\d{1,6})?[°]$)|(180[°]$)/;
+    var s1 = v.split("°");  
+    if(s1[1] != '' && s1[1] != null){  
+        var s2 = s1[1].split("′");  
+        if(s2[1] != '' && s2[1] != null){  
+            var s3 = s2[1].split("″");  
+            state = lonTest1.test(v);  
+        }else{  
+            state = lonTest2.test(v);  
+        }  
+    }else{  
+        state =  lonTest3.test(v);   
+    }  
+    if(state){  
+        return true;  
+    }else{  
+        return false;  
+    } 
+}
+
+// 度 格式验证纬度 保留六位小数
+function validLatDu(val){
+	if(val.trim()==""){
+		return false;
+	}
+	var latReg= /^-?((0|[1-8]?[0-9]?)(([.][0-9]{1,6})?)|90(([.][0]{1,6})?))$/; 
+	var state =  latReg.test(val);   
+   	if(state){  
+   		return true;  
+   	}else{  
+   		return false;  
+   	}  
+}
+
+// 度分秒 格式验证纬度 保留六位小数
+function validLatDFM(v){
+	var state;  
+	var latTest1 = /^((\d|[1-8]\d)[°](\d|[0-5]\d)[′](\d|[0-5]\d)(\.\d{1,6})?[\″]$)|(90[°]0[′]0[\″]$)/;  
+    var latTest2 = /^((\d|[1-8]\d)[°](\d|[0-5]\d)(\.\d{1,6})?[′]$)|(90[°]0[′]$)/;  
+    var latTest3 = /^((\d|[1-8]\d)(\.\d{1,6})?[°]$)|(90[°]$)/;  
+    var s1 = v.split("°");  
+    if(s1[1] != '' && s1[1] != null){  
+    	var s2 = s1[1].split("′");  
+    	if(s2[1] != '' && s2[1] != null){  
+    		var s3 = s2[1].split("″");  
+           	state = latTest1.test(v);  
+    	}else{  
+    		state = latTest2.test(v);  
+    	}  
+    }else{  
+    	state =  latTest3.test(v);   
+         
+    }  
+    if(state){  
+    	return true;  
+    }else{  
+    	return false;  
+    } 
+}
+
+// 将度转换成为度分秒  保留整数
+function duConvertDFM(val) {
+	var s1 = val.split(".");
+	var d = s1[0];
+	if(isEmpty(s1[1])){
+		s1[1] = 0;
+	}
+	var temp = "0." + s1[1]
+	var temp = String(temp * 60);
+	var s2 = temp.split(".");
+	var f = s2[0];
+	if(isEmpty(s2[1])){
+		s2[1] = 0;
+	}
+	temp = "0." + s2[1];
+	temp = temp * 60;
+	var m = parseInt(temp);
+	return d + "°" + f + "′" + m + "″";  
+}
+
+// 度分秒转换成为度  保留六位小数
+function dFMConvertDu(value) {
+	var d  = value.split("°")[0];  
+    var f = value.split("°")[1].split("′")[0];  
+    var m = value.split("°")[1].split("′")[1].split('″')[0];
+	var f = parseFloat(f) + parseFloat(m/60);
+	var du = parseFloat(f/60) + parseFloat(d);		
+	return du.toFixed(6);
+}
+
+/**
+ * 根据编号和模型名称取图层数据
+ * code 数据编号
+ * tableName 模型名称
+ */
+function getFeatureObjByCodeAndModel(code, tableName){
+	var fObj;
+	if(!isEmpty(code)){
+		var node = getLayerNodeByName(tableName);
+    	if(!$.isEmptyObject(node)){
+    		var features = node.layer.getSource().getFeatures();
+    		if(!$.isEmptyObject(features)){
+    			for(var i in features){
+	    			var obj = features[i].values_;
+	    			if(!$.isEmptyObject(obj) && !isEmpty(obj.ID)){
+	    				if(code == obj.ID){
+	    					fObj = obj;
+	    					break;
+	    				}
+	    			}
+	    		}
+    		}
+    	}
+	}
+	return fObj;
+}
+
+/**
+ * 根据参数和模型名称取表对象数据
+ * param 查询参数
+ * tableName 模型名称
+ */
+function getTableObjByParamAndModel(param, tableName){
+	var tableObj;
+	$.ajax({
+		url: "/" + tableName + "/search.action",
+    	data: param,
+    	type: "post",
+        dataType: "Json",
+        async:false,
+        success: function (data) {
+            tableObj = data;
+        }
+    })
+	return tableObj;
+}
+/** 公用方法 END **/
 

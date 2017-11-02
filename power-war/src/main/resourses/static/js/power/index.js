@@ -138,25 +138,6 @@ $(function() {
 		}
 	});
 	
-	/** 初始化页面表单元素为JSON格式 **/
-	$.fn.serializeJson = function(){  
-        var serializeObj={};  
-        var array=this.serializeArray();  
-        var str=this.serialize();  
-        $(array).each(function(){  
-            if(serializeObj[this.name]){  
-                if($.isArray(serializeObj[this.name])){  
-                    serializeObj[this.name].push(this.value);  
-                }else{  
-                    serializeObj[this.name]=[serializeObj[this.name],this.value];  
-                }  
-            }else{  
-                serializeObj[this.name]=this.value;   
-            }  
-        });  
-        return serializeObj;  
-    };  
-    
 	/** 拖拽模态框 */
 	/** 拖拽模态框 */
 	var dragModal = {
@@ -245,7 +226,6 @@ $(function() {
 		}
 		dragModal.moveTarget.offset(dragModal.mouseEndPoint);
 	});
-	
 	
 	//关闭jspane窗口事件
 	$(document).on('jspanelclosed', function (event, id) {
@@ -3155,129 +3135,6 @@ function fullView(){
 }
 
 /************** 经纬度验证、定位 BEGIN ******************/
-function isEmpty(val){
-	if(val == undefined || val == "" || val == null){  
-		return true;
-	} else {
-		return false;
-	}
-}
-
-/**
- * 验证经度
- */
-function validLonDu(val){
-	if(val.trim()==""){
-		return false;
-	}
-	var lonReg= /^-?((0|1?[0-7]?[0-9]?)(([.][0-9]{1,6})?)|180(([.][0]{1,6})?))$/;
-    var state = lonReg.test(val);   
-    if(state){  
-        return true;  
-    }else{  
-        return false;  
-    }  
-}
-
-function validLonDFM(v){
-	var state; 
-	var lonTest1 = /^((\d|[1-9]\d|1[0-7]\d)[°](\d|[0-5]\d)[′](\d|[0-5]\d)(\.\d{1,6})?[\″]$)|(180[°]0[′]0[\″]$)/;  
-	var lonTest2 = /^((\d|[1-9]\d|1[0-7]\d)[°](\d|[0-5]\d)(\.\d{1,6})?[′]$)|(180[°]0[′]$)/;  
-	var lonTest3 = /^((\d|[1-9]\d|1[0-7]\d)(\.\d{1,6})?[°]$)|(180[°]$)/;
-    var s1 = v.split("°");  
-    if(s1[1] != '' && s1[1] != null){  
-        var s2 = s1[1].split("′");  
-        if(s2[1] != '' && s2[1] != null){  
-            var s3 = s2[1].split("″");  
-            state = lonTest1.test(v);  
-        }else{  
-            state = lonTest2.test(v);  
-        }  
-    }else{  
-        state =  lonTest3.test(v);   
-    }  
-    if(state){  
-        return true;  
-    }else{  
-        return false;  
-    } 
-}
-
-/**
- * 验证纬度
- */
-function validLatDu(val){
-	if(val.trim()==""){
-		return false;
-	}
-	var latReg= /^-?((0|[1-8]?[0-9]?)(([.][0-9]{1,6})?)|90(([.][0]{1,6})?))$/; 
-	var state =  latReg.test(val);   
-   	if(state){  
-   		return true;  
-   	}else{  
-   		return false;  
-   	}  
-}
-
-function validLatDFM(v){
-	var state;  
-	var latTest1 = /^((\d|[1-8]\d)[°](\d|[0-5]\d)[′](\d|[0-5]\d)(\.\d{1,6})?[\″]$)|(90[°]0[′]0[\″]$)/;  
-    var latTest2 = /^((\d|[1-8]\d)[°](\d|[0-5]\d)(\.\d{1,6})?[′]$)|(90[°]0[′]$)/;  
-    var latTest3 = /^((\d|[1-8]\d)(\.\d{1,6})?[°]$)|(90[°]$)/;  
-    var s1 = v.split("°");  
-    if(s1[1] != '' && s1[1] != null){  
-    	var s2 = s1[1].split("′");  
-    	if(s2[1] != '' && s2[1] != null){  
-    		var s3 = s2[1].split("″");  
-           	state = latTest1.test(v);  
-    	}else{  
-    		state = latTest2.test(v);  
-    	}  
-    }else{  
-    	state =  latTest3.test(v);   
-         
-    }  
-    if(state){  
-    	return true;  
-    }else{  
-    	return false;  
-    } 
-}
-
-/**
- * 将度转换成为度分秒 
- */
-function duConvertDFM(val) {
-	var s1 = val.split(".");
-	var d = s1[0];
-	if(isEmpty(s1[1])){
-		s1[1] = 0;
-	}
-	var temp = "0." + s1[1]
-	var temp = String(temp * 60);
-	var s2 = temp.split(".");
-	var f = s2[0];
-	if(isEmpty(s2[1])){
-		s2[1] = 0;
-	}
-	temp = "0." + s2[1];
-	temp = temp * 60;
-	var m = parseInt(temp);
-	return d + "°" + f + "′" + m + "″";  
-}
-
-/**
- * 度分秒转换成为度
- */
-function dFMConvertDu(value) {
-	var d  = value.split("°")[0];  
-    var f = value.split("°")[1].split("′")[0];  
-    var m = value.split("°")[1].split("′")[1].split('″')[0];
-	var f = parseFloat(f) + parseFloat(m/60);
-	var du = parseFloat(f/60) + parseFloat(d);		
-	return du.toFixed(6);
-}
-
 /**
  * 获取度分秒经纬度
  */
@@ -3482,6 +3339,48 @@ function selectStartIDOrEndID(inputID){
 				}
 			}
 		}		 
+	});
+	for(var i in jsPanelID){
+		//最小化弹出框  
+	   jsPanel.activePanels.getPanel(jsPanelID[i]).minimize();
+	}
+}
+
+/** 地图选取局站、光缆信息  
+ * inputType 选取类型
+ * callback 回调函数
+ */
+// 局站
+var jz = new Array("0401", "0402"); 
+// 光缆段
+var gl = new Array("0406");
+
+function selObjByMap(inputType, callback){
+	var jsPanelID = window.jsPanel.activePanels.list;
+	var select = new ol.interaction.Select();
+	map.addInteraction(select);
+	select.on('select',function(e) {
+		if (!isEmpty(e.selected[0])) {
+			var data = e.selected[0].values_;
+			var code = data.ID.substring(0,4);
+			var arr = new Array();
+			if(inputType == "jz"){
+				arr = jz;
+			}else if(inputType == "gl"){
+				arr = gl;
+			}
+			if(contains(arr, code)){
+				$('.' + inputType).val(data.NAME);
+				map.removeInteraction(select);
+				for(var i in jsPanelID){
+					//恢复弹出框  
+				   jsPanel.activePanels.getPanel(jsPanelID[i]).normalize();
+				}
+			}
+		}	
+		if(!isEmpty(callback)){
+			eval(callback + "('" + data.ID + "')");
+		}
 	});
 	for(var i in jsPanelID){
 		//最小化弹出框  

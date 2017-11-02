@@ -83,3 +83,25 @@ table thead{
 	line-height: 25px;
 	text-align: center;
 }
+.group-range{
+	margin:6px 0
+}
+.btn-opre-l{
+	margin-right: 15px;
+	background: none;
+	outline: none;
+	color: #308374;
+}
+.btn-opre-r{
+	margin-right: 15px;
+	background: none;
+	outline: none;
+	color: red;
+}
+
+
+
+
+
+
+

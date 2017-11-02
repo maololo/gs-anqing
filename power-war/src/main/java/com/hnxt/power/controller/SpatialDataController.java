@@ -4,7 +4,6 @@
  */
 package com.hnxt.power.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSONArray;
-import com.hnxt.basic.core.dto.ResponseMessageDto;
-import com.hnxt.basic.core.dto.SuccessDto;
 import com.hnxt.power.service.SpatialDataService;
 
 /** 

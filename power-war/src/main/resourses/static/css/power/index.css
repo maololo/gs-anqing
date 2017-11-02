@@ -1098,23 +1098,26 @@ table.query-table >tbody>tr>td{
 }
 .selectButton img{
 	margin-left: -4px;
+}/* 地图选点按钮样式 */
+.selectButton{
+	width: 33px;
+    padding: 0;
+    height: 35px;
+}
+.selectButton img{
+	margin-left: -4px;
 }
 
-/* 添加数据页面 鼠标选取局站按钮样式  END */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
- 
- 
+/* 下拉框样式 */
+.select-basic{
+	display: block;
+	outline: none;
+    height: 33px;
+    padding: 0 12px;
+    font-size: 14px;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

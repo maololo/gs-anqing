@@ -1,5 +1,6 @@
 var distributionInfo = "";
-var rowData="";//选择行数据
+var rowData = "";// 选择行数据
+var eCode = "";// 设备ID
 function init(){
     window.operateEvents = {
         'click .RoleOfdDeldte': function (e, value, row, index) {
@@ -19,10 +20,10 @@ function init(){
 	              		},
 	              		function(result){
 	              			if (result.success){    
-	              				swal(result.title,'',"success");
+	              				swal(result.title, '', "success");
 	              				$('#distributioninfoTable').bootstrapTable('refresh');
 	              			} else {
-	              				swal(result.title,'',"error");
+	              				swal(result.title, '', "error");
 	              			}
 	              		},'json'
 	        		);
@@ -31,6 +32,7 @@ function init(){
         },
         'click .RoleOfEdit': function (e, value, row, index) {
         	rowData = row;
+        	eCode = row.C_EQUIPMENTCODE; 
             openDistributionInfoDailog('/distributioninfo/distributioninfoAdd.action','配线信息');
         }
     };
@@ -47,305 +49,35 @@ function init(){
 		pageSize: 10,
 		pageNumber:1,
 		undefinedText:"",
-//		search: true, //不显示 搜索框
-		showColumns: false, //不显示下拉框（选择显示的列）
-		sidePagination: "server", //服务端请求
-		queryParams: queryParams,//分页参数
+		sidePagination: "server",
+		queryParams: queryParams,
 		clickToSelect: true,
         columns: [
             {
                 title: '操作',
                 align: 'center',
                 valign: 'top',
-                sortable: true,
-                width: '100px',
-//    	    	visible: false ,// 该列隐藏，界面不显示
-                events: operateEvents,//给按钮注册事件
-                formatter: operateFormatter,//表格中增加按钮
+                events: operateEvents,
+                formatter: operateFormatter
             },
-	    	/*{
-	            field: 'C_CODE',
-	            title: '配线信息编号',
-	            align: 'center',
-	            valign: 'top',
-	            sortable: true
-	        },
-	        {
-	            field: 'C_DMID',
-	            title: '配线模块编号',
-	            align: 'center',
-	            valign: 'top',
-	            sortable: true
-	        },*/
-	        {
-	        	field: 'C_DISKID',
-	        	title: '盘号',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_OTHEREND',
-	        	title: '对端（局站）',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
 	        {
 	        	field: 'C_NAME',
 	        	title: '名称',
 	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
+	        	valign: 'top'
 	        },
 	        {
-	        	field: 'C_FF1',
-	        	title: '熔纤端',
+	        	field: 'C_EQUIPMENTCODE',
+	        	title: '设备名称',
 	        	align: 'center',
 	        	valign: 'top',
-	        	sortable: true
+	        	formatter:function(value, row, index){
+	        		return formatfeatureName(value);
+        		}
 	        },
 	        {
-	        	field: 'C_FF1STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF1',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF2',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF2STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF2',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF3',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF3STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF3',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF4',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF4STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF4',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF5',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF5STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF5',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF6',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF6STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF6',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF7',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF7STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF7',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF8',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF8STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF8',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF9',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF9STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF9',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF10',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF10STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF10',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF11',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF11STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF11',
-	        	title: '跳纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF12',
-	        	title: '熔纤端',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_FF12STATUS',
-	        	title: '熔纤端使用状态',
-	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
-	        },
-	        {
-	        	field: 'C_JF12',
-	        	title: '跳纤端',
+	        	field: 'C_DISKID',
+	        	title: '盘号',
 	        	align: 'center',
 	        	valign: 'top',
 	        	sortable: true
@@ -355,27 +87,266 @@ function init(){
 	        	title: '所属光缆段',
 	        	align: 'center',
 	        	valign: 'top',
-	        	sortable: true,
-	        	formatter:function(value,row,index){return formatfeatureName(value);}
+	        	formatter:function(value, row, index){
+	        		return formatfeatureName(value);
+        		}
 	        },
 	        {
-	        	field: 'C_EQUIPMENTCODE',
-	        	title: '设备名称',
+	        	field: 'C_FF1',
+	        	title: '熔纤端',
 	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true,
-	        	formatter:function(value,row,index){return formatfeatureName(value);}
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF1STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF1',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF2',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF2STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF2',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF3',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF3STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF3',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF4',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF4STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF4',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF5',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF5STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF5',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF6',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF6STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF6',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF7',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF7STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF7',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF8',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF8STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF8',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF9',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF9STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF9',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF10',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF10STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF10',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF11',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF11STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF11',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF12',
+	        	title: '熔纤端',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_FF12STATUS',
+	        	title: '熔纤端使用状态',
+	        	align: 'center',
+	        	valign: 'top'
+	        },
+	        {
+	        	field: 'C_JF12',
+	        	title: '跳纤端',
+	        	align: 'center',
+	        	valign: 'top'
 	        },
 	        {
 	        	field: 'C_REMARK',
 	        	title: '备注',
 	        	align: 'center',
-	        	valign: 'top',
-	        	sortable: true
+	        	valign: 'top'
 	        }
         ]
     });
-    
+}
+
+function stationFtn(selId){
+	$.ajax({
+		url:"/T_EQUIPMENT/search.action",
+    	data:{"search.C_STATIONID*eq": selId},
+    	type:"post",
+        dataType: "Json",
+        async:false,
+        success: function (data) {
+        	var eSel = $('.e-sel');
+        	eSel.attr("onchange", "chgEq(this.options[this.options.selectedIndex])");
+        	var newSel = $('#C_EQUIPMENTCODE');
+        	eSel.empty();
+        	newSel.empty();
+        	eSel.append("<option value=''>请选择</option>");
+        	newSel.append("<option value=''>请选择</option>");
+            if (!$.isEmptyObject(data)) { 
+                for(var i = 0; i < data.length; i++) {
+                	var d = data[i];
+                	eSel.append("<option value=" + d.C_CODE + " data-type=" + d.C_TYPE + ">" + d.C_NAME + "</option>");
+                	if(d.C_TYPE == "ODF"){
+                		newSel.append("<option value=" + d.C_CODE + " data-type=" + d.C_TYPE + ">" + d.C_NAME + "</option>");
+                	}
+                }
+            }
+        }
+    })
+}
+
+function glFtn(selId){
+	$("#C_OCSECTIONID").val(selId);
 }
 
 function initDistributionInfoDailog(){
@@ -392,23 +363,80 @@ function initDistributionInfoDailog(){
 	initSelectpicker('熔纤端使用状态',"C_FF11STATUS");
 	initSelectpicker('熔纤端使用状态',"C_FF12STATUS");
 }
+
 //初始化下拉列表
-function initSelectpicker(val,id){
+function initSelectpicker(val, id){
 	$.ajax({
 		url:"/T_ENUMERATE/search.action",
-    	data:{"search.C_TYPE*eq":val,"sort.C_SORTID":'ASC'},//设置请求参数 
-    	type:"post",//请求方法 
+    	data:{"search.C_TYPE*eq": val,"sort.C_SORTID": 'ASC'},
+    	type:"post",
         dataType: "Json",
         async:false,
         success: function (data) {
-            if (data!="" ||data!=null) {         
-                for(var i=0;i<data.length;i++) {
-                	$('#'+id+'.selectpicker').append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
+            if (!$.isEmptyObject(data)) {         
+                for(var i = 0; i < data.length; i++) {
+                	$('#' + id).append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
                 }
-                $("#"+id).selectpicker('refresh');
             }
         }
     })
+}
+
+//编辑 数据回写
+function initUpdateDistributionInfo(obj){
+	var stationId = "";
+	// 根据设备ID 得到局站ID
+	var param = {"search.C_CODE*eq": obj.C_EQUIPMENTCODE};
+	var data = getTableObjByParamAndModel(param, "T_EQUIPMENT");
+	if (!$.isEmptyObject(data)) {         
+        var e = data[0];
+        stationId = e.C_STATIONID;
+    }
+    // 根据局站ID 查询局站信息
+    if(!isEmpty(stationId)){
+    	var fObj = getFeatureObjByCodeAndModel(stationId, "SD_STATION");
+    	if(!$.isEmptyObject(fObj)){
+    		$(".jz").val(fObj.NAME);
+			stationFtn(stationId);
+			// 初始化下拉框后赋值
+			$('#C_EQUIPMENTCODE').val(domVal);
+    	}
+    }
+	
+	for(var id in obj){
+		var domVal = obj[id];
+		if(id == "C_OCSECTIONID"){// 所属光缆段
+	    	var fObj = getFeatureObjByCodeAndModel(domVal, "SD_OPTICALCABLESECTION");
+	    	if(!$.isEmptyObject(fObj)){
+	    		$(".gl").val(fObj.NAME);
+	    	}
+			$("#C_OCSECTIONID").val(domVal);
+		}else if(id.indexOf("C_JF") >= 0){// 跳纤端
+			if(!isEmpty(domVal)){
+				if(domVal.length > 36){
+					// 获取连接设备的编号
+					var eId = domVal.substring(0, 36);
+					// 获取指向的盘序
+					var pan = domVal.substring(36, domVal.length - 2);
+					// 获取连接光缆的端子号
+					var dz = domVal.substring(domVal.length - 2, domVal.length);
+					
+					var selDom = $("div[data-mark = " + id + "]").children(".e-sel");
+					selDom.val(eId);
+					// 初始化DOM
+					var option = selDom.children("option[value=" + eId + "]");
+					chgEq(option);
+					$("div[data-mark = " + id + "]").children("input.pan").val(pan);
+					$("div[data-mark = " + id + "]").children("input.dz").val(dz);
+				}
+			}
+		}else{
+			var dom = $('#' + id);
+			if(dom.length > 0){
+				$('#' + id).val(domVal);
+			}
+		}
+	}
 }
 
 //设置传入参数
@@ -436,40 +464,37 @@ function queryParams(params) {
 };
 
 function operateFormatter(val,row,index){
-    return  ['<button class="RoleOfEdit btn btn-sm rolebtn" style="margin-right:15px;background:none; outline:none; color:#308374"><span class=" glyphicon glyphicon-edit"><span></button>',
-        '<button class="RoleOfdDeldte btn btn-sm rolebtn" style="margin-right:15px; background:none; outline:none; color:red"><span class=" glyphicon glyphicon-trash" ><span></button>'
-        /*'<button class="RoleOfPosition  btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color: #6688b5"><span  class=" glyphicon glyphicon-retweet " ><span></button>',
-        '<button class="RoleOfPosition  btn btn-sm rolebtn" style="margin-right:15px;background: none;outline:none;color: #bf824c"><span  class=" glyphicon glyphicon-record  " ><span></button>'*/
+    return  ['<button class="btn-opre-l RoleOfEdit btn btn-sm rolebtn"><span class="glyphicon glyphicon-edit"><span></button>',
+        '<button class="btn-opre-r RoleOfdDeldte btn btn-sm rolebtn"><span class="glyphicon glyphicon-trash"><span></button>'
     ].join('');
 }
 
-function openDistributionInfoDailog(url,title){
+function openDistributionInfoDailog(url, title){
 	distributionInfo = $.jsPanel({
 		headerControls: {
 	    	maximize: 'remove',
 	        smallify: 'remove'
 	    },
 	    resizeit: {
-	        disable: true //禁止窗口大小调整
+	        disable: true
 	    },
-		id:"distributionInfoAdd",
-		position:'center',
-		theme:"#308374",
-		contentSize:{width: 'auto', height: 'auto'},
-		headerTitle:title,
-		border:'1px solid #066868',
-		contentAjax:{
+		id: "distributionInfoAdd",
+		position: 'center',
+		theme: "#308374",
+		contentSize: {width: 'auto', height: 'auto'},
+		headerTitle: title,
+		border: '1px solid #066868',
+		contentAjax: {
 			url: url,
 			autoload: true,
 			done: function (data, textStatus, jqXHR, panel) {
 				initDistributionInfoDailog();
-            	if(rowData!=""){
-            		rowData.C_RUNDATE = DateTimeFormatter(rowData.C_RUNDATE);
+            	if(!$.isEmptyObject(rowData)){
             		initUpdateDistributionInfo(rowData);
             	}
 			}
 		},
-		callback:function(){
+		callback: function(){
 			this.content.css("padding", "5px");
 		}
 	});
@@ -482,41 +507,53 @@ function closeDistributionInfo(){
 	}
 }
 
-//添加
+// 添加
 function addDistributionInfo(){
 	row = "";
 	rowData = "";
+	eCode = "";
 	openDistributionInfoDailog('/distributioninfo/distributioninfoAdd.action','配线信息');
-}
-
-//数据回写
-function initUpdateDistributionInfo(obj){
-	for(var id in obj){
-		var data = document.getElementById(id);
-		if(data!=null && data.type == "select-one"){
- 			$('#'+id).selectpicker('val',obj[id]);
- 		/*	 
-		}else if(id=="C_CODE"){
-			$("#"+id).attr("readonly","true");
-			$('#'+id).val(obj[id]);
-		*/ 
-		}else{
-			$('#'+id).val(obj[id]);
-		}
-	}
-	rowData = "";
 }
 
 /**
  * 保存
  */
 function submitDistributionInfo(){
-	$.post('/T_DISTRIBUTIONINFO/save.action',
-			$("#distributioninfo_form").serialize(),
-			function(result){
-		        closeDistributionInfo();
-		        swal(result.title,'',"success");
-		        $('#distributioninfoTable').bootstrapTable('refresh');
+	var info = $("#distributioninfo_form").serializeJson()
+	// 获取跳纤端DIV,拼接页面上输入的值
+	var dataMarkDiv = $("div[data-mark]");
+	if(dataMarkDiv.length > 0){
+		for(var i = 0; i < dataMarkDiv.length; i++){
+			var divDom = dataMarkDiv[i];
+			var filed = $(divDom).attr("data-mark");
+			var divChildDom = $(divDom).children();
+			if(filed.length > 0 && divChildDom.length > 0){
+				var tq = "";
+				for(var j = 0; j < divChildDom.length; j++){
+					var dom = divChildDom[j];
+					if($(dom).hasClass("sel-input")){
+						// 这里每个设备的盘序不能超过99
+						if(!isDigit($(dom).val()) || $(dom).val().length != 2){
+							swal("端子号" + filed.substring(filed.length - 1, filed.length) + "跳纤端盘序或者端子号格式输入不正确，请输入两位数字。",'',"warning");
+							return "";
+						}
+						if($(dom).hasClass("dz")){
+							if(!isDigit($(dom).val()) || $(dom).val() > 12){
+								swal("端子号" + filed.substring(filed.length - 1, filed.length) + "跳纤端端子号格式输入不正确，请输入小于12的两位数字。",'',"warning");
+								return "";
+							}
+						}
+					}
+					tq = tq + $(dom).val();
+				}
+				info[filed] = tq
+			}
+		}
+	}
+	$.post('/T_DISTRIBUTIONINFO/save.action', info , function(result){
+        closeDistributionInfo();
+        swal(result.title,'',"success");
+        $('#distributioninfoTable').bootstrapTable('refresh');
 	},"json");
 }
 
@@ -524,7 +561,6 @@ function submitDistributionInfo(){
  *  查询
  */
 function searchDistributionInfo(){
-//	$(".distributionInfo-header").mLoading("show");
 	$.post('/T_DISTRIBUTIONINFO/queryPage.action',
 	    {
 	    "search.C_EQUIPMENTCODE*like":'%'+$("#EQUIPMENTCODE").val()+'%',
@@ -533,46 +569,51 @@ function searchDistributionInfo(){
 	    },
 		function(data){
 	        $('#distributioninfoTable').bootstrapTable('load', data);
-//		        $(".distributionInfo-header").mLoading("hide");
 	    },'json'
 	);
 }
 
-/**
- * @requires jQuery
- * 
- * 格式化日期时间
+/** 选择设备后的回调函数
+ * obj 选中的 option
  */
-function DateTimeFormatter(value) {
-	if (value == null || value == '') {
-		return '';
+function chgEquipment(obj){
+	var selCode = $(obj).attr("value");
+	// 根据设备id查询配线信息
+	$.ajax({
+		url: "/T_DISTRIBUTIONINFO/search.action",
+		data: {"search.C_EQUIPMENTCODE*eq": selCode},
+		type: "post",
+		dataType: "Json",
+		success: function(data){
+			if(!isEmpty(eCode)){
+				if(selCode == eCode){
+					$("#C_DISKID").val(data.length);
+				}else{
+					$("#C_DISKID").val(data.length + 1);
+				}
+			}else{
+				$("#C_DISKID").val(data.length + 1);
+			}
+		}
+	});
+}
+
+/** 选择跳纤端设备后
+ * obj 选中的 option
+ */
+function chgEq(obj){
+	var type = $(obj).attr("data-type");
+	var tqDiv = $(obj).parent().parent(".tq-div");
+	var tqInput = tqDiv.children(".sel-input");
+	if(tqInput.length > 0){
+		tqInput.remove();
 	}
-	var dt;
-	if (value instanceof Date) {
-		dt = value;
-	} else {
-		dt = new Date(value);
+	if(type == "ODF"){
+		var panInput = $("<input type='text' class='pan sel-input col-sm-2'>");
+		var dzInput = $("<input type='text' class='dz sel-input col-sm-2'>");
+		tqDiv.append(panInput);
+		tqDiv.append(dzInput);
 	}
-	return dt.format("yyyy-MM-dd"); //扩展的Date的format方法(
 }
 
 
-Date.prototype.format = function(format) {
-	var o = {
-		"M+": this.getMonth() + 1, // month
-		"d+": this.getDate(), // day
-		"h+": this.getHours(), // hour
-		"m+": this.getMinutes(), // minute
-		"s+": this.getSeconds(), // second
-		"q+": Math.floor((this.getMonth() + 3) / 3), // quarter
-		"S": this.getMilliseconds()
-		// millisecond
-	}
-	if (/(y+)/.test(format))
-		format = format.replace(RegExp.$1, (this.getFullYear() + "")
-			.substr(4 - RegExp.$1.length));
-	for (var k in o)
-		if (new RegExp("(" + k + ")").test(format))
-			format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
-	return format;
-}

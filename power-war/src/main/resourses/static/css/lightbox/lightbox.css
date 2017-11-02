@@ -104,3 +104,36 @@ input[name='btSelectItem']{
 .width-3{
 	width:16%;
 }
+/**光交图状态样式*/
+.gjt-span {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 1px solid #64a3e6;
+}
+
+.zy-span {
+	border: none;
+	background-color: red;
+	padding: 1px 0;
+	color: white;
+}
+
+.by-span {
+	border: none;
+	background-color: #059929;
+}
+
+.gz-span {
+	border: none;
+	background: url(/images/malfunction.png);
+}
+
+.fc-span {
+	border: none;
+	background: url(/images/safekeeping.png);
+}
+
+.k-span {
+	background-color: none;
+}
