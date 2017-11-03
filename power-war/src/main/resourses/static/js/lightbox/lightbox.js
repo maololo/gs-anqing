@@ -1,22 +1,11 @@
-var clickStatus = ""; // 点击radio状态描述
+var clickStatus = ""; // 点击状态描述
 var $table = $('#gj-table');
 var $add = $('#addOptic');
 var $remove = $('#delectOptic');
-var lightData = [];
+var gjData = [];
 
 function init(){
-	$.ajax({
-		url:"/T_DISTRIBUTIONINFO/search.action",
-    	data:{"search.C_EQUIPMENTCODE*eq":rowData.C_CODE},
-    	type:"post",
-        dataType:"Json",
-        async:false,
-        success: function(data){
-        	if (!$.isEmptyObject(data)) {
-        		lightData = data;
-        	}
-        }
-    })
+	loadTableInfo();
 	
     // 在用 
     $('.light-statu.zy').click(function(){
@@ -79,128 +68,6 @@ function init(){
         });
     });
     
-    $table.bootstrapTable({
-    	data: lightData,
-        method:'post',
-        dataType: "json",
-        clickToSelect: false,
-        sortName: "C_DISKID",
-        sortOrder: "asc",
-        striped: true, // 隔行变色
-        columns: [{
-        	field: 'ISCHK',
-        	class: 'width-2',
-            checkbox : true
-        }
-        ,{
-        	field: 'C_DISKID',
-            title: '盘序',
-            class: 'width-2',
-            formatter: indexFormatter
-	    }
-        ,{
-        	field: 'C_CODE',
-        	visible: false
-        }
-        ,{
-            field: 'C_FF1STATUS',
-            title: '1',
-            class: 'width-2',
-            formatter: lightFormatter
-        }, 
-        {
-            field: 'C_FF2STATUS',
-            title: '2',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF3STATUS',
-            title: '3',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF4STATUS',
-            title: '4',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF5STATUS',
-            title: '5',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF6STATUS',
-            title: '6',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF7STATUS',
-            title: '7',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF8STATUS',
-            title: '8',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF9STATUS',
-            title: '9',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF10STATUS',
-            title: '10',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF11STATUS',
-            title: '11',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_FF12STATUS',
-            title: '12',
-            class: 'width-2',
-            formatter: lightFormatter
-        },
-        {
-            field: 'C_REMARK',
-            title: '备注',
-            class: 'width-3',
-            formatter: inputFormatter
-        },
-        {
-	    	field: 'C_ID',
-	    	visible: false
-	    }],
-	    onPostBody: function (data) {
-	    	if (!$.isEmptyObject(data)) {
-	    		var trList = $table.children().children("tr");
-	    		for(var i = 0; i < data.length; i++){
-	    			var row = data[i];
-	    			trList.eq(i + 1).find("input[name='c_id']").val(row.C_ID);
-	    		}
-	    	}
-        },
-        formatLoadingMessage: function () {
-            return "请稍等，正在加载中...";
-        },
-        formatNoMatches: function () {
-            return '无符合条件的记录';
-        }
-    });
-
     $remove.click(function () {
     	var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
             return row.C_ID;
@@ -248,7 +115,7 @@ function init(){
     	// 先更新
     	updateRemark();
         // 后添加
-    	var hang = $("#gj-table input[type='checkbox']").length;
+    	var hang = $("#gj-table input[type='radio']").length + 1;
     	var d = "C_EQUIPMENTCODE=" + rowData.C_CODE + "&C_DISKID=" + hang;
         $.post('/T_DISTRIBUTIONINFO/save.action', d, function(result){
         	$.ajax({
@@ -259,7 +126,7 @@ function init(){
                 async:false,
                 success: function(data){
                 	if (!$.isEmptyObject(data)) {
-                		lightData = data;
+                		gjData = data;
                 		$table.bootstrapTable('load', data);
                 	}
                 }
@@ -276,6 +143,7 @@ function init(){
     		$("body").mLoading("show");
     		$.post('/T_DISTRIBUTIONINFO/update.action', obj, function(){
     			$("body").mLoading("hide");
+    			//loadTableInfo();
     		});
     	}
 	});
@@ -286,6 +154,147 @@ function init(){
     });
 }
 
+/** 加载表格数据 */
+function loadTableInfo(){
+	$.ajax({
+		url:"/T_DISTRIBUTIONINFO/search.action",
+    	data:{"search.C_EQUIPMENTCODE*eq":rowData.C_CODE},
+    	type:"post",
+        dataType:"Json",
+        async:false,
+        success: function(data){
+        	if (!$.isEmptyObject(data)) {
+        		gjData = data;
+        	}
+        }
+    });
+    
+    $table.bootstrapTable({
+    	data: gjData,
+        method:'post',
+        dataType: "json",
+        clickToSelect: false,
+        sortName: "C_DISKID",
+        sortOrder: "asc",
+        striped: true,
+        columns: [{
+        	field: 'ISCHK',
+        	class: 'width-2',
+            radio : true
+        }
+        ,{
+        	field: 'C_DISKID',
+            title: '盘序',
+            class: 'width-2',
+            formatter: diskInitDom
+	    }
+        ,{
+        	field: 'C_CODE',
+        	visible: false
+        }
+        ,{
+            field: 'C_FF1STATUS',
+            title: '1',
+            class: 'width-2',
+            formatter: dzInitDom
+        }, 
+        {
+            field: 'C_FF2STATUS',
+            title: '2',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF3STATUS',
+            title: '3',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF4STATUS',
+            title: '4',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF5STATUS',
+            title: '5',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF6STATUS',
+            title: '6',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF7STATUS',
+            title: '7',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF8STATUS',
+            title: '8',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF9STATUS',
+            title: '9',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF10STATUS',
+            title: '10',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF11STATUS',
+            title: '11',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_FF12STATUS',
+            title: '12',
+            class: 'width-2',
+            formatter: dzInitDom
+        },
+        {
+            field: 'C_REMARK',
+            title: '备注',
+            class: 'width-3',
+            formatter: remarkInitDom
+        },
+        {
+	    	field: 'C_ID',
+	    	visible: false
+	    }],
+	    onPostBody: function (data) { //在表体展示并在DOM中可用之后触发
+	    	if (!$.isEmptyObject(data)) {
+	    		var trList = $table.children().children("tr");
+	    		for(var i = 0; i < data.length; i++){
+	    			var row = data[i];
+	    			// 给每一行的主键赋值 用于行移动更新数据
+	    			trList.eq(i + 1).find("input[name='c_id']").val(row.C_ID);
+	    		}
+	    	}
+        },
+        formatLoadingMessage: function () {
+            return "请稍等，正在加载中...";
+        },
+        formatNoMatches: function () {
+            return '无符合条件的记录';
+        }
+    });
+}
+
+
+/** 更新备注、盘序信息 */
 function updateRemark(){
 	var allData = [];
 	$("input[name='C_REMARK']").each(function(i, item){
@@ -306,7 +315,8 @@ function updateRemark(){
 	}
 }
 
-function lightFormatter(val, row, index){
+/** 初始化端子号 */
+function dzInitDom(val, row, index){
 	// 光缆名称 C_OCSECTIONID
 	var line = "未设定";
 	// 当前熔纤端芯数
@@ -345,6 +355,7 @@ function lightFormatter(val, row, index){
 			// 跳纤端
 			var t = eval("row.C_JF" + num);
 			if(!isEmpty(t)){
+				// 如果是ODF设备
 				if(rowData.C_TYPE == "ODF"){
 					// 获取连接设备编号
 					var eCode = t.substring(0, 36);
@@ -393,7 +404,6 @@ function lightFormatter(val, row, index){
 			}
 		}
 	}
-		
 	var m;
    	if(val == "在用"){
    		m = '<span title="' + port_title + '" class="gjt-span zy-span">' + parseInt(point_disk) + "-" + parseInt(point_port) + '<span>';
@@ -411,19 +421,18 @@ function lightFormatter(val, row, index){
     return m;
 }
 
-function indexFormatter(val, row, index){
+/** 初始化盘序同时定义隐藏域用于行移动操作 */
+function diskInitDom(val, row, index){
     return '<span class="c_disk">' + val + '</span><input type="hidden" name="c_id" value=""/>';
 }
 
-function idFormatter(val, row, index){
-	$(this).parent().parent().find("input[name='c_id']").val(val);
-}
-
-function inputFormatter(val, row, index){
+/** 定义备注框 */
+function remarkInitDom(val, row, index){
 	if(isEmpty(val)) val = '';
 	return '<input type="text" class="form-control" name="C_REMARK" value="' + val + '"/>';
 }
 
+/** 行上移 */
 function upRow(){
 	$table.find("tr[class='selected']").each(function(){ 
     	var $tr = $(this);
@@ -437,11 +446,12 @@ function upRow(){
 	}) 
 }
 
+/** 行下移 */
 function downRow(){
 	$table.find("tr[class='selected']").each(function(){ 
     	var $tr = $(this);
     	var i = $tr.index();
-    	if (i != lightData.length - 1) {
+    	if (i != gjData.length - 1) {
             $tr.fadeOut().fadeIn();
             $tr.next().find("span[class='c_disk']").html(i + 1);
             $tr.next().after($tr);
