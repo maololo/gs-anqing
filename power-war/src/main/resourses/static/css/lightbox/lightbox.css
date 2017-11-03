@@ -1,27 +1,103 @@
-.commentuse{
-    width: 20px;
-    height: 20px;
-    display: inline-block;
-    margin-top: 8px;
+/* 头部端子状态样式  */
+.commentuse {
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	margin-top: 10px;
 }
-#span1{
-    background: red;
-    border-radius: 50%;
+
+.head-zy {
+	background: red;
+	border-radius: 50%;
 }
-#span2{
-    background: #059929;
-    border-radius: 50%;
+
+.head-by {
+	background: #059929;
+	border-radius: 50%;
 }
-#span3{
-    background:url("/images/malfunction.png");
+
+.head-gz {
+	background: url("/images/malfunction.png");
 }
-#span4{
-    border-radius: 50%;
-    border: 1px solid #64a3e6;
+
+.head-k {
+	border-radius: 50%;
+	border: 1px solid #64a3e6;
 }
-#span5{
-    background: url("/images/safekeeping.png");
+
+.head-fc {
+	background: url("/images/safekeeping.png");
 }
+
+.light-head-l {
+	float: left;
+	margin-left: 6px;
+}
+
+.light-head-r {
+	float: right;
+}
+
+.light-head-r p {
+	margin-left: 6px;
+	float: right;
+}
+
+.light-statu {
+	float: right;
+	margin-right: 10px;
+	height: -webkit-fill-available;
+}
+
+.light-statu-sel {
+	border: 1px solid #64a3e6;
+}
+/** 光交图内容状态样式 */
+.gjt-span {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 1px solid #64a3e6;
+	display: inline-block;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	line-height: 1.5;
+	font-size: 12px;
+	background: none;
+}
+
+.zy-span {
+	border: none;
+	background-color: red;
+	padding: 1px 0;
+	color: black;
+}
+
+.by-span {
+	border: none;
+	background-color: #059929;
+}
+
+.gz-span {
+	border: none;
+	background: url(/images/malfunction.png);
+}
+
+.fc-span {
+	border: none;
+	background: url(/images/safekeeping.png);
+}
+
+.k-span {
+	background-color: none;
+}
+/* 头部按钮样式  */
+.gj-btn {
+	border-radius: 3px; 
+	margin-right:10px;
+}
+
 .opticGraph .formuse span{
     margin-right: 5px;
 }
@@ -103,37 +179,4 @@ input[name='btSelectItem']{
 }
 .width-3{
 	width:16%;
-}
-/**光交图状态样式*/
-.gjt-span {
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	border: 1px solid #64a3e6;
-}
-
-.zy-span {
-	border: none;
-	background-color: red;
-	padding: 1px 0;
-	color: white;
-}
-
-.by-span {
-	border: none;
-	background-color: #059929;
-}
-
-.gz-span {
-	border: none;
-	background: url(/images/malfunction.png);
-}
-
-.fc-span {
-	border: none;
-	background: url(/images/safekeeping.png);
-}
-
-.k-span {
-	background-color: none;
 }

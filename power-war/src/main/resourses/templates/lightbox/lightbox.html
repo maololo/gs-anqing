@@ -1,19 +1,17 @@
 <div style="min-width: 750px;min-height: 600px;">
     <div class="equipment-header opticGraph" style="position: relative;">
-	    <div class="btn-group btn-corner" style="display:inline-block; float: left; line-height: 38px; padding: 6px 0 6px 6px;">
-	        <button class="btn equipment-btn" id="addOptic" style="width: 95px;border-radius: 3px;margin-right: 10px;">新增熔纤盘</button>
-	        <button class="btn equipment-btn" id="delectOptic" style="width: 95px;border-radius: 3px;margin-right: 10px;">删除熔纤盘</button>
-	        <button class="btn equipment-btn" onclick="upRow()" style="border-radius: 3px; margin-right:10px;">上移</button>
-	        <button class="btn equipment-btn" onclick="downRow()" style="border-radius: 3px;">下移</button>
+	    <div class="light-head-l">
+	        <button class="btn equipment-btn gj-btn" id="addOptic">新增熔纤盘</button>
+	        <button class="btn equipment-btn gj-btn" id="delectOptic">删除熔纤盘</button>
+	        <button class="btn equipment-btn gj-btn" onclick="upRow()">上移</button>
+	        <button class="btn equipment-btn gj-btn" onclick="downRow()">下移</button>
         </div>
-        <div class="form-inline formuse" style="display:inline-block; float: right; margin-right:10px;">
-            <div class="form-group">
-                <span id="span1" class="commentuse"></span><span style="vertical-align: super;">在用</span>
-                <span id="span2" class="commentuse"></span><span style="vertical-align: super;">备用</span>
-                <span id="span3" class="commentuse" ></span><span style="vertical-align: super;">故障芯</span>
-                <span id="span4" class="commentuse"></span><span style="vertical-align: super;">空</span>
-                <span id="span5" class="commentuse" ></span><span style="vertical-align: super;">封存</span>
-            </div>
+        <div class="light-head-r">
+            <div class="light-statu fc"><span class="commentuse head-fc"></span><p>封存</p></div>
+            <div class="light-statu k"><span class="commentuse head-k"></span><p>空</p></div>
+            <div class="light-statu gz"><span class="commentuse head-gz" ></span><p>故障芯</p></div>
+            <div class="light-statu by"><span class="commentuse head-by"></span><p>备用</p></div>
+            <div class="light-statu zy"><span class="commentuse head-zy"></span><p>在用</p></div>
         </div>
     </div>
     <div>

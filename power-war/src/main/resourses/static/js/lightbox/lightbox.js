@@ -19,32 +19,51 @@ function init(){
     })
 	
     // 在用 
-    $('.opticGraph #span1').click(function(){
+    $('.light-statu.fc').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
     	clickStatus = "在用";
     	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"border":"none","background":"none","background-color":"red"});
+    		//$(this).children("span").css({"border":"none","background":"none","background-color":"red"});
+    		$(this).children("span").addClass("zy-span");
     	});
     });
     
    	// 备用
-    $('.opticGraph #span2').click(function(){
+    $('.light-statu.by').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
     	clickStatus = "备用";
     	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"border":"none","background":"none","background-color":"#059929"});
+    		//$(this).children("span").css({"border":"none","background":"none","background-color":"#059929"});
+    		$(this).children("span").addClass("by-span");
         });
     });
     
    	// 故障芯
-    $('.opticGraph #span3').click(function(){
+    $('.light-statu.gz').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
     	clickStatus = "故障芯";
     	$('#Fiber-optic td').click(function (){
     		$(this).children("span").css({"background": "url(../../images/malfunction.png)","border":"0"});
+    		$(this).children("span").addClass("by-span");
     		$(this).children("span").addClass("selected");
         });
     });
     
    	// 空
-    $('.opticGraph #span4').click(function(){
+    $('.light-statu.k').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
     	clickStatus = "空";
     	$('#Fiber-optic td').click(function (){
     		$(this).children("span").css({"border":"1px solid #64a3e6","background":"none"});
@@ -52,7 +71,11 @@ function init(){
     });
     
     // 封存
-    $('.opticGraph #span5').click(function(){
+    $('.light-statu.fc').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
     	clickStatus = "封存";
     	$('#Fiber-optic td').click(function (){
     		$(this).children("span").css({"background": "url(/images/safekeeping.png)","border":"0"});
@@ -372,17 +395,17 @@ function lightFormatter(val, row, index){
 		
 	var m;
    	if(val == "在用"){
-   		m = '<span title="' + port_title + '" class="gjt-span zy-span RoleOfEdit btn btn-sm">' + parseInt(point_disk) + "-" + parseInt(point_port) + '<span>';
+   		m = '<span title="' + port_title + '" class="gjt-span zy-span RoleOfEdit">' + parseInt(point_disk) + "-" + parseInt(point_port) + '<span>';
    	}else if(val == "备用"){
-   		m = '<span title="' + port_title + '" class="gjt-span by-span RoleOfEdit btn btn-sm"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span by-span RoleOfEdit"><span>';
    	}else if(val == "故障芯"){
-        m = '<span title="' + port_title + '" class="gjt-span gz-span RoleOfEdit btn btn-sm selecteds"><span>';
+        m = '<span title="' + port_title + '" class="gjt-span gz-span RoleOfEdit selecteds"><span>';
    	}else if(val == "封存"){
-   		m = '<span title="' + port_title + '" class="gjt-span fc-span RoleOfEdit btn btn-sm selecteds"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span fc-span RoleOfEdit selecteds"><span>';
    	}else if(val == "空"){
-   		m = '<span title="' + port_title + '" class="gjt-span k-span RoleOfEdit btn btn-sm"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span k-span RoleOfEdit"><span>';
    	}else{
-   		m = '<span class="gjt-span RoleOfEdit btn btn-sm"><span>';
+   		m = '<span class="gjt-span RoleOfEdit"><span>';
    	}
     return m;
 }
