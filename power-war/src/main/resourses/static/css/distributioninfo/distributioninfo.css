@@ -68,10 +68,10 @@ table thead{
 	padding: 12px 0;
 	width: auto;
 	height: auto;
-	border: solid #ccc 1px;
+	border: solid #308374 1px;
 	position: relative;
-	margin-bottom: 15px;
 	border-radius: 12px;
+    margin: 12px 12px;
 }
 .terminalNub .title {
 	width: 100px;
@@ -79,9 +79,11 @@ table thead{
 	position: absolute;
 	top: -12px;
 	left: 30px;
-	background-color: #ffffff;
 	line-height: 25px;
 	text-align: center;
+	background-color: #308374 !important;
+	border-radius: 12px;
+	color: white;
 }
 .group-range{
 	margin:6px 0

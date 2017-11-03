@@ -31,8 +31,8 @@ function init(){
         },
         'click .RoleOfEdit': function (e, value, row, index) {
         	rowData = row;
-			eCode = row.C_EQUIPMENTCODE;            openDistributionInfoDailog('/distributioninfo/distributioninfoAdd.action','配线信息');
-        }
+            openDistributionInfoDailog('/distributioninfo/distributioninfoAdd.action','配线信息');
+		}
     };
     
     $('#distributioninfoTable').bootstrapTable({
@@ -315,6 +315,7 @@ function init(){
     });
 }
 
+// 选择局站后初始化设备列表
 function stationFtn(selId){
 	$.ajax({
 		url:"/T_EQUIPMENT/search.action",
@@ -343,10 +344,12 @@ function stationFtn(selId){
     })
 }
 
+// 选择光缆段后赋值
 function glFtn(selId){
 	$("#C_OCSECTIONID").val(selId);
 }
 
+// 初始化状态下拉框
 function initDistributionInfoDailog(){
 	initSelectpicker('熔纤端使用状态',"C_FF1STATUS");
 	initSelectpicker('熔纤端使用状态',"C_FF2STATUS");
@@ -511,14 +514,14 @@ function addDistributionInfo(){
 	row = "";
 	rowData = "";
 	eCode = "";
-	openDistributionInfoDailog('/distributioninfo/distributioninfoAdd.action','配线信息');
+	openDistributionInfoDailog('/distributioninfo/distributioninfoAdd.action','添加配线信息');
 }
 
 /**
  * 保存
  */
 function submitDistributionInfo(){
-	var info = $("#distributioninfo_form").serializeJson()
+	var info = $("#info_form").serializeJson();
 	// 获取跳纤端DIV,拼接页面上输入的值
 	var dataMarkDiv = $("div[data-mark]");
 	if(dataMarkDiv.length > 0){
@@ -562,7 +565,7 @@ function submitDistributionInfo(){
 function searchDistributionInfo(){
 $.post('/T_DISTRIBUTIONINFO/queryPage.action',
 	    {
-	    "search.C_EQUIPMENTCODE*like":'%'+$("#EQUIPMENTCODE").val()+'%',
+	    "search.C_NAME*like": '%' + $("#INFO_NAME").val() + '%',
 		"page_pn": 1,
 		"page_size":10
 	    },
