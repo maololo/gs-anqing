@@ -1,5 +1,5 @@
 var clickStatus = ""; // 点击radio状态描述
-var $table = $('#Fiber-optic');
+var $table = $('#gj-table');
 var $add = $('#addOptic');
 var $remove = $('#delectOptic');
 var lightData = [];
@@ -19,15 +19,15 @@ function init(){
     })
 	
     // 在用 
-    $('.light-statu.fc').click(function(){
+    $('.light-statu.zy').click(function(){
     	// 移除所有选中的样式
     	$(".light-statu").removeClass("light-statu-sel");
     	// 选中当前
     	$(this).addClass("light-statu-sel");
     	clickStatus = "在用";
-    	$('#Fiber-optic td').click(function (){
-    		//$(this).children("span").css({"border":"none","background":"none","background-color":"red"});
-    		$(this).children("span").addClass("zy-span");
+    	$('#gj-table td').click(function (){
+    		// 进来后清除原来的样式，增加新的样式
+    		$(this).children("span").attr("class", "gjt-span zy-span");
     	});
     });
     
@@ -38,9 +38,8 @@ function init(){
     	// 选中当前
     	$(this).addClass("light-statu-sel");
     	clickStatus = "备用";
-    	$('#Fiber-optic td').click(function (){
-    		//$(this).children("span").css({"border":"none","background":"none","background-color":"#059929"});
-    		$(this).children("span").addClass("by-span");
+    	$('#gj-table td').click(function (){
+    		$(this).children("span").attr("class", "gjt-span by-span");
         });
     });
     
@@ -51,10 +50,8 @@ function init(){
     	// 选中当前
     	$(this).addClass("light-statu-sel");
     	clickStatus = "故障芯";
-    	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"background": "url(../../images/malfunction.png)","border":"0"});
-    		$(this).children("span").addClass("by-span");
-    		$(this).children("span").addClass("selected");
+    	$('#gj-table td').click(function (){
+    		$(this).children("span").attr("class", "gjt-span gz-span");
         });
     });
     
@@ -65,8 +62,8 @@ function init(){
     	// 选中当前
     	$(this).addClass("light-statu-sel");
     	clickStatus = "空";
-    	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"border":"1px solid #64a3e6","background":"none"});
+    	$('#gj-table td').click(function (){
+    		$(this).children("span").attr("class", "gjt-span k-span");
         });
     });
     
@@ -77,9 +74,8 @@ function init(){
     	// 选中当前
     	$(this).addClass("light-statu-sel");
     	clickStatus = "封存";
-    	$('#Fiber-optic td').click(function (){
-    		$(this).children("span").css({"background": "url(/images/safekeeping.png)","border":"0"});
-    		$(this).children("span").addClass("selecteds");
+    	$('#gj-table td').click(function (){
+    		$(this).children("span").attr("class", "gjt-span fc-span");
         });
     });
     
@@ -252,7 +248,7 @@ function init(){
     	// 先更新
     	updateRemark();
         // 后添加
-    	var hang = $("#Fiber-optic input[type='checkbox']").length;
+    	var hang = $("#gj-table input[type='checkbox']").length;
     	var d = "C_EQUIPMENTCODE=" + rowData.C_CODE + "&C_DISKID=" + hang;
         $.post('/T_DISTRIBUTIONINFO/save.action', d, function(result){
         	$.ajax({
@@ -277,8 +273,10 @@ function init(){
     		var obj = {};
         	obj["search.C_ID*eq"] = row.C_ID;
     		obj[field] = clickStatus;
-    		$.post('/T_DISTRIBUTIONINFO/update.action', obj);
-    		init();
+    		$("body").mLoading("show");
+    		$.post('/T_DISTRIBUTIONINFO/update.action', obj, function(){
+    			$("body").mLoading("hide");
+    		});
     	}
 	});
     
@@ -301,7 +299,10 @@ function updateRemark(){
 		allData.push(objData);
     });
 	for(var j = 0; j < allData.length; j++){
-		$.post('/T_DISTRIBUTIONINFO/update.action', allData[j]);
+		$("body").mLoading("show");
+		$.post('/T_DISTRIBUTIONINFO/update.action', allData[j], function(){
+			$("body").mLoading("hide");
+		});
 	}
 }
 
@@ -395,17 +396,17 @@ function lightFormatter(val, row, index){
 		
 	var m;
    	if(val == "在用"){
-   		m = '<span title="' + port_title + '" class="gjt-span zy-span RoleOfEdit">' + parseInt(point_disk) + "-" + parseInt(point_port) + '<span>';
+   		m = '<span title="' + port_title + '" class="gjt-span zy-span">' + parseInt(point_disk) + "-" + parseInt(point_port) + '<span>';
    	}else if(val == "备用"){
-   		m = '<span title="' + port_title + '" class="gjt-span by-span RoleOfEdit"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span by-span"><span>';
    	}else if(val == "故障芯"){
-        m = '<span title="' + port_title + '" class="gjt-span gz-span RoleOfEdit selecteds"><span>';
+        m = '<span title="' + port_title + '" class="gjt-span gz-span"><span>';
    	}else if(val == "封存"){
-   		m = '<span title="' + port_title + '" class="gjt-span fc-span RoleOfEdit selecteds"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span fc-span"><span>';
    	}else if(val == "空"){
-   		m = '<span title="' + port_title + '" class="gjt-span k-span RoleOfEdit"><span>';
+   		m = '<span title="' + port_title + '" class="gjt-span k-span"><span>';
    	}else{
-   		m = '<span class="gjt-span RoleOfEdit"><span>';
+   		m = '<span class="gjt-span"><span>';
    	}
     return m;
 }

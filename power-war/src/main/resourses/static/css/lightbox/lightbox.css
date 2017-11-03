@@ -17,7 +17,7 @@
 }
 
 .head-gz {
-	background: url("/images/malfunction.png");
+	background: url("../../images/malfunction.png");
 }
 
 .head-k {
@@ -26,7 +26,7 @@
 }
 
 .head-fc {
-	background: url("/images/safekeeping.png");
+	background: url("../../images/safekeeping.png");
 }
 
 .light-head-l {
@@ -49,8 +49,13 @@
 	height: -webkit-fill-available;
 }
 
+.light-statu:hover {
+	cursor: pointer;
+}
+
 .light-statu-sel {
 	border: 1px solid #64a3e6;
+	border-radius: 30%;
 }
 /** 光交图内容状态样式 */
 .gjt-span {
@@ -81,102 +86,48 @@
 
 .gz-span {
 	border: none;
-	background: url(/images/malfunction.png);
+	background: url("../../images/malfunction.png");
 }
 
 .fc-span {
 	border: none;
-	background: url(/images/safekeeping.png);
+	background: url("../../images/safekeeping.png");
 }
 
 .k-span {
 	background-color: none;
 }
+
 /* 头部按钮样式  */
 .gj-btn {
 	border-radius: 3px; 
 	margin-right:10px;
+	height: 30px;
+    background: #318375;
+    color: white;
 }
 
-.opticGraph .formuse span{
-    margin-right: 5px;
-}
-input[type=checkbox] {
-    width: 18px;
-    height: 18px;
-}
-.bootstrap-table{
-    margin-top: 5px;
-}
-table thead, table tr {
-    border-top-style: none;
-    border-top-color: inherit;
-}
-table tr:nth-child(even):hover {
-    background: inherit;
-}
-tbody tr:nth-child(even){
-    background: #f7f7f7;
-}
-table tr:nth-child(odd):hover {
-    background: inherit;
-}
-.table-striped>tbody>tr:nth-of-type(odd) {
-    background-color: white;
-}
-table td, table th {
-    color:#666;
-}
-.bootstrap-table .table>thead>tr>th {
-    border-bottom: none;
-}
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-    border-top: none;
-}
-.fixed-table-container thead th {
-    border-left: none;
-}
-.bootstrap-table .table {
-    border-bottom: none;
-}
-.fixed-table-container tbody td {
-    border-left: none;
-}
-.fixed-table-container {
-    border: none;
-}
-table thead{
-    background: #f7f7f7;
-}
-.clear{
-    clear: both;
-}
-.clearfix:before,.clearfix:after{
-    display: none;
-}
-.selected{
-    background:url("../images/malfunction.png");
-}
-.selecteds{
-    background: url("../images/safekeeping.png");
-}
-#Fiber-optic tbody td{
-	line-height: 30px;
+/* 光交图table样式 */
+#gj-table tbody td{
+	line-height: 34px;
 	text-align: center;
     vertical-align: top;
 }
-input[name='btSelectAll']{
-	vertical-align: sub;
+
+#gj-table input[type=checkbox] {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
 }
-input[name='btSelectItem']{
-	vertical-align: middle;
-}
+
 .width-1{
 	width:5%;
 }
+
 .width-2{
 	width:6%;
 }
+
 .width-3{
 	width:16%;
 }
