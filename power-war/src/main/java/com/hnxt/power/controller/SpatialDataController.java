@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.hnxt.power.service.SpatialDataService;
+import com.hnxt.basic.core.common.entity.page.PageDto;import com.hnxt.power.service.SpatialDataService;
 
 /** 
  * //TODO 角色信息controller
@@ -73,5 +73,29 @@ public class SpatialDataController {
 		return result;
 	}
 	
+	
+	/**
+     * 
+     * //TODO 多条件分页查询数据
+     * @Title queryPage 
+     * @Description TODO(这里用一句话描述这个方法的作用) 
+     * @param modelName 表名称
+     * @param map 页面数据
+     * @return
+     * @Return PageDto    返回类型 
+     * @Throws 
+     * @Date  2017年11月1日
+     * @修改历史  
+     *     1. [2017年11月1日]创建文件hbx
+     */
+    @ResponseBody
+    @RequestMapping(value="/{modelName}/queryMultiConditionByPage.action")
+    public PageDto queryMultiConditionByPage(@PathVariable String modelName,@RequestParam Map<String, Object> map){
+        List<Map<String, Object>> result = spatialDataService.getMultiConditionByPage(modelName, map);
+        int count = spatialDataService.getMultiConditionCount(modelName, map);
+        PageDto pageDto = new PageDto(result, count);
+        return pageDto;
+    }
+
 	
 }

@@ -1,4 +1,5 @@
  <script>
+ blurData=[];
  blurData = getBlurDate(['SD_STATION']);
  $('#C_STATIONID').typeahead({
 	    source: blurData,
@@ -31,8 +32,8 @@
                                 <input type="text" class="form-control"  id="C_STATIONID" name="C_STATIONID" autocomplete="off" />
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_STATIONID')">
-                                <img src="/images/img/2.png" alt=""></button>
+                                <button class="selectButton rolebtn" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_STATIONID')">
+                                <span  class=" glyphicon glyphicon-retweet " ><span></button>
                             </div>
                             <label for="C_MANUFACTURER" class="col-sm-2 control-label" style="margin-left: -10px;">生产厂家:</label>
                             <div class="col-sm-4" >

@@ -1,5 +1,4 @@
 
-var equipment = "";
 var rowData="";//选择行数据
 function init(){
     window.operateEventsEquipment = {
@@ -236,7 +235,7 @@ function queryParams(params) {
 		$('#equipmentBody').hide();
 	}
 	return params;
-};
+}
 
 function operateFormatterEquipment(val,row,index){
 	var icon = ""
@@ -257,7 +256,7 @@ function operateFormatterEquipment(val,row,index){
 
 
 function openEquipmentDailog(url,title){
-	equipment =$.jsPanel({
+	$.jsPanel({
 		headerControls: {
 	    	maximize: 'remove',
 	        smallify: 'remove'
@@ -279,7 +278,6 @@ function openEquipmentDailog(url,title){
             	initEquipmentDailog();
             	if(rowData!=""){
             		rowData.C_RUNDATE = DateTimeFormatter(rowData.C_RUNDATE);
-            		rowData.C_STATIONID = formatfeatureName(rowData.C_STATIONID);
             		initUpdateEquipment(rowData);
             	}
               }
@@ -291,9 +289,9 @@ function openEquipmentDailog(url,title){
 }
 
 function closeEquipment(){
-	if(equipment!=""){
-		equipment.close();
-		equipment="";		
+	var panel = document.querySelector('#equipmentAdd');
+	if(panel != null){
+		panel.jspanel.close();
 	}
 }
 
@@ -311,6 +309,9 @@ function initUpdateEquipment(obj){
 		var data = document.getElementById(id);
 		if(data!=null && data.type == "select-one"){
  			 $('#'+id).selectpicker('val',obj[id]);
+ 		 }else if(id == "C_STATIONID"){
+ 			var typeName = formatfeatureName(obj[id]);
+			$("#"+id).val(typeName);
  		 }else{
  			 $('#'+id).val(obj[id]);
  		 }
@@ -355,7 +356,7 @@ function searchEquipmentInfo(){
 //	$(".equipment-header").mLoading("show");
 	$.post('/T_EQUIPMENT/queryPage.action',
 		    {
-		    "search.C_NAME*like":'%'+$("#NAME").val()+'%',
+		    "search.C_NAME*like":'%'+$("#equipment_name").val()+'%',
 			"page_pn": 1,
 			"page_size":10
 		    },

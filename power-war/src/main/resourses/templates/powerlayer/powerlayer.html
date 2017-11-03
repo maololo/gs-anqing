@@ -4,6 +4,8 @@
 			return '图层';
 		if(value == '2') 
 			return '图层组';
+		if(value == '3') 
+			return '底图';
 	}
 	function fnisDefault(value){
 		if(value == '1') 
@@ -83,7 +85,7 @@
 					<select id="C_LAYERTYPE" name="C_LAYERTYPE" class="easyui-combobox" style="width:173px;" >
 							<!-- <option value="" selected="selected">-请选择-</option> -->
 							<option value="1" >图层</option>
-							<option value="2">图层组</option>
+							<!-- <option value="2">图层组</option> -->
 							<option value="3">底图</option>
 					</select>
 				</td>

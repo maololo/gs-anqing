@@ -1,9 +1,14 @@
   <script>
+  blurData = [];
  blurData = getBlurDate(['SD_OPTICALCABLESECTION']);
  $('#C_STARTOCSECTIONID').typeahead({
 	    source: blurData,
 	    display: 'Name',
 	    val: 'ID'
+	    /* itemSelected: function(item, val, text){
+	    	$('#C_STARTOCSECTIONID').val(text);
+	    	$('#C_STARTOCSECTIONID1').val(val);
+	    } */
 	});
    
  $('#C_ENDOCSECTIONID').typeahead({

@@ -1,5 +1,4 @@
 
-var fcrelationship = "";
 var rowData="";//选择行数据
 $(function(){
 	window.operateEventFcrelationship = {
@@ -30,6 +29,7 @@ $(function(){
 			},
 			'click .RoleOfEdit': function (e, value, row, index) {
 				rowData = row;
+				closeFcrelationship();
 				openFcrelationshipDailog('/fcrelationship/fcrelationshipAdd.action','设备信息');
 			}
 	};
@@ -50,7 +50,7 @@ function showFcrelationshipTable(data){
 		undefinedText:"",
 //		search: true, //不显示 搜索框
 		showColumns: false, //不显示下拉框（选择显示的列）
-		sidePagination: "client", //服务端请求
+		sidePagination: "client", //客户端请求
 		queryParams: queryParams,//分页参数
 		clickToSelect: true,
 //		height: 400,
@@ -147,8 +147,8 @@ function operateFormatterFcrelationship(val,row,index){
 
 
 function openFcrelationshipDailog(url,title){
-	fcrelationship = $.jsPanel({
-        id:			 "fcrelationshipAdd",
+	$.jsPanel({
+        id:	"fcrelationshipAdd",
         dragit: {containment: [100, 0, 0,160]},
         headerControls: {
 	    	maximize: 'remove',
@@ -168,8 +168,7 @@ function openFcrelationshipDailog(url,title){
             done: function (data, textStatus, jqXHR, panel) {
             	initFcrelationshipDailog();
             	if(rowData!=""){
-            		rowData.C_STARTOCSECTIONID = formatfeatureName(rowData.C_STARTOCSECTIONID);
-            		rowData.C_ENDOCSECTIONID = formatfeatureName(rowData.C_ENDOCSECTIONID);
+            		
             		initUpdateFcrelationship(rowData);
             	}
               }
@@ -181,9 +180,9 @@ function openFcrelationshipDailog(url,title){
 }
 
 function closeFcrelationship(){
-	if(fcrelationship!=""){
-		fcrelationship.close();
-		fcrelationship="";		
+	var panel = document.querySelector('#fcrelationshipAdd');
+	if(panel != null){
+		panel.jspanel.close();
 	}
 }
 
@@ -199,9 +198,9 @@ function initUpdateFcrelationship(obj){
 		var data = document.getElementById(id);
 		if(data!=null && data.type == "select-one"){
  			 $('#'+id).selectpicker('val',obj[id]);
- 		 }else if(id=="C_CODE"){
- 			$("#"+id).attr("readonly","true");
- 			$('#'+id).val(obj[id]);
+ 		 }else if(id=="C_STARTOCSECTIONID" || id=="C_ENDOCSECTIONID"){
+ 			var name = formatfeatureName(obj[id]);
+ 			$('#'+id).val(name);
  		 }else{
  			 $('#'+id).val(obj[id]);
  		 }
@@ -253,7 +252,7 @@ function searchFcrelationshipInfo(){
 //	$(".equipment-header").mLoading("show");
 	$.post('/T_FCRELATIONSHIP/queryPage.action',
 		    {
-		    "search.C_CODE*like":'%'+$("#CODE").val()+'%',
+		    "search.C_BEARERCONTENT*like":'%'+$("#fibercore_content").val()+'%',
 			"page_pn": 1,
 			"page_size":10
 		    },

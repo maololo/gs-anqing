@@ -29,6 +29,7 @@ function initSelectpicker(val,id){
         }
     })
 }
+blurData = [];
 blurData = getBlurDate(['SD_STATION']);
 $('#STARTID').typeahead({
     source: blurData,
@@ -247,8 +248,8 @@ function downLatlongRow(){
                                 <input type="text" class="form-control"  id="STARTID" name="STARTID" autocomplete="off" />
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('STARTID')">
-                                <img src="/images/img/2.png" alt=""></button>
+                                <button class="selectButton rolebtn" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('STARTID')">
+                                <span  class=" glyphicon glyphicon-retweet " ><span></button>
                             </div>
                             
                             <label for="ENDID" class="col-sm-2 control-label" style="margin-left: -10px;">终点:</label>
@@ -256,8 +257,8 @@ function downLatlongRow(){
                                 <input type="text" class="form-control"  id="ENDID" name="ENDID" autocomplete="off" />
                             </div>
                             <div class="col-sm-1" style="padding:0px">
-                                <button class="selectButton" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('ENDID')">
-                                <img src="/images/img/2.png" alt=""></button>
+                                <button class="selectButton rolebtn" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('ENDID')">
+                                <span  class=" glyphicon glyphicon-retweet " ><span></button>
                             </div>
                         </div>
                          <div class="form-group">

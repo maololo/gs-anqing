@@ -37,4 +37,31 @@ public interface SpatialDataService {
     *     1. [2017年9月29日]创建文件 hbx
     */
    public  List<Map<String, Object>> getMultiConditionData(String modelName,Map<String, Object> map);
+   
+   
+   /**
+    * @Title getMultiConditionData 多条件查询数据
+    * @Description  通过空间数据表名称获取数据集合
+    * @param modelName 空间数据表名称
+    * @Return <Map<String, Object>   条件集合 
+    * @Throws 
+    * @Date  2017年11月1日
+    * @修改历史  
+    *     1. [2017年11月1日]创建文件 hbx
+    */
+   public  List<Map<String, Object>> getMultiConditionByPage(String modelName,Map<String, Object> map);
+   
+   /** 
+	  * //TODO 获取多条件分页查询的数据总条数
+	  * @Title getMultiConditionCount 
+	  * @Description TODO(这里用一句话描述重构方法的作用) 
+	  * @param modelName 表名
+	  * @param map 条件
+	  * @return  int 总条数
+	  * @see com.hnxt.basic.service.CommunService#queryCount(java.lang.String, java.util.List, java.lang.String)
+	  * @Date  2017年11月1日
+	  * @修改历史  
+	  *     1.[2017年11月1日]创建文件 hbx 
+	 **/
+	public int getMultiConditionCount(String modelName, Map<String, Object> map); 
 }

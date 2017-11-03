@@ -102,9 +102,14 @@ a:focus, a:hover {
 .left_nav>ul>li{background-color:#005a52;  border-bottom:0;}
 .left_nav ul li a{padding-left: 20px;color: #fff; font-size:14px; display: block;  height:36px;line-height:20px;position: relative;
 }
-.left_nav>ul>li:hover{
-    background:#01675e;
+.left_nav>ul>li a:hover{
+    background-color:#01675e;
 }
+.nav-stacked>li+li {
+    margin-top: 0!important;
+    margin-left: 0;
+}
+
 .left_nav ul li ul{display: none;}
 .left_nav ul li ul{ border-left:0; border-right:0; background:#044b45!important;width: 160px;}
 .left_nav ul li ul li a{ padding-left:35px;padding-top: 10px;}
@@ -1095,6 +1100,9 @@ table.query-table >tbody>tr>td{
 	width: 33px;
     padding: 0px;
     height: 35px;
+     background: none;
+    outline:none;
+    color: #6688b5; 
 }
 .selectButton img{
 	margin-left: -4px;

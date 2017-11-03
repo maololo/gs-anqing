@@ -167,6 +167,7 @@ function init(){
 			editObject.source = sd_opticalcablesectionData.layer.getSource();
 			editObject.editType = "update";
 			editObject.index = index;
+			editObject.manually_modify = true;
 			editObject.field = "";
 			
 			clearHighlightObj();
@@ -175,19 +176,7 @@ function init(){
 			// 设置要素高亮
 			highlightObj = select.getFeatures();
 			highlightObj.push(row);
-			var modify = new ol.interaction.Modify({
-				features : select.getFeatures()
-			});
 			map.addInteraction(select);
-			map.addInteraction(modify);
-			select.on('select',function(e) {
-				highlightObj={};
-						if (e.selected[0] != undefined && e.selected[0].id_ == row.id_) {
-							modify.setActive(true);
-						} else {
-							modify.setActive(false);
-						}
-					});
 			jsPanelAttributeInfo(sd_opticalcablesectionData.layer_name);
 			
 			// 获取要素的几何范围
@@ -397,7 +386,7 @@ function displayCableData(features, layerType) {
 
 //bootstrap table操作按钮 （查询结果表）
 function operateFormatCable(val, row, index) {
-	return ['<button class="cableFiberCore btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="纤芯信息"><span  class=" glyphicon glyphicon-edit " ><span></button>',
+	return ['<button class="cableFiberCore btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="纤芯信息"><span  class="qxinfo_icon" style="display:block;" ><span></button>',
 	        '<button class="cableEditFeature btn btn-sm rolebtn" style="background: none;outline:none;color:#308374" title="修改"><span  class=" glyphicon glyphicon-edit " ><span></button>',
 			'<button class="cableDeldteFeature  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>',
 			'<button class="cablePositionFeature  btn btn-sm rolebtn" style="background: none;outline:none;color: #bf824c" title="定位"><span  class=" glyphicon glyphicon-record  " ><span></button>'

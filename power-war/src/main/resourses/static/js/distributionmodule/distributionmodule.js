@@ -1,5 +1,4 @@
 
-var eistributionmodule = "";
 var rowData="";//选择行数据
 function init(){
     window.operateEventDistributionmodule = {
@@ -196,7 +195,7 @@ function operateFormatterDistributionmodule(val,row,index){
 
 
 function openDistributionmoduleDailog(url,title){
-	distributionmodule = $.jsPanel({
+	$.jsPanel({
 		headerControls: {
 	    	maximize: 'remove',
 	        smallify: 'remove'
@@ -204,7 +203,7 @@ function openDistributionmoduleDailog(url,title){
 	    resizeit: {
 	        disable: true //禁止窗口大小调整
 	    },
-        id:			 "distributionmoduleAdd",
+        id:	"distributionmoduleAdd",
         position:    'center',
         dragit: {containment: [100, 0, 0,160]},
         theme:       "#308374",
@@ -218,7 +217,6 @@ function openDistributionmoduleDailog(url,title){
             	initDistributionmoduleDailog();
             	if(rowData!=""){
             		rowData.C_RUNDATE = DateTimeFormatter(rowData.C_RUNDATE);
-            		//rowData.C_STATIONID = formatfeatureName(rowData.C_STATIONID);
             		initUpdateDistributionmodule(rowData);
             	}
               }
@@ -230,10 +228,7 @@ function openDistributionmoduleDailog(url,title){
 }
 
 function closeDistributionmodule(){
-	if(distributionmodule!=""){
-		distributionmodule.close();
-		distributionmodule="";		
-	}
+	document.querySelector('#distributionmoduleAdd').jspanel.close();
 }
 
 //添加
@@ -298,7 +293,7 @@ function submitDistributionmoduleInfo(){
 function searchDistributionmoduleInfo(){
 	$.post('/T_DISTRIBUTIONMODULE/queryPage.action',
 		    {
-		    "search.C_MODULENAME*like":'%'+$("#MODULENAME").val()+'%',
+		    "search.C_MODULENAME*like":'%'+$("#module_name").val()+'%',
 			"page_pn": 1,
 			"page_size":10
 		    },

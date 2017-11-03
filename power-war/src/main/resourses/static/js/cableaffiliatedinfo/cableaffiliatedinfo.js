@@ -1,5 +1,4 @@
 
-var cableaffiliatedInfo = "";
 var rowData="";//选择行数据
 function init(){
 	
@@ -54,16 +53,18 @@ function init(){
 //		height: 400,
         columns: [{
             field: 'C_OPSECTIONID',
-            title: '光缆段编号',
+            title: '光缆段',
             align: 'center',
             valign: 'top',
-            sortable: true
+            sortable: true,
+            formatter:function(value,row,index){return formatfeatureName(value);}
         },{
             field: 'C_AFFILIATEDID',
-            title: '附属对象编号',
+            title: '附属对象',
             align: 'center',
             valign: 'top',
-            sortable: true
+            sortable: true,
+            formatter:function(value,row,index){return formatfeatureName(value);}
         },{
         	field: 'C_REMARK',
         	title: '备注',
@@ -105,7 +106,7 @@ function operateFormatterCableaffiliatedInfo(val,row,index){
 
 
 function openCableaffiliatedInfoDailog(url,title){
-	cableaffiliatedInfo = $.jsPanel({
+	$.jsPanel({
 		headerControls: {
 	    	maximize: 'remove',
 	        smallify: 'remove'
@@ -113,7 +114,7 @@ function openCableaffiliatedInfoDailog(url,title){
 	    resizeit: {
 	        disable: true //禁止窗口大小调整
 	    },
-        id:			 "cableaffiliatedInfoAdd",
+        id:	"cableaffiliatedInfoAdd",
         dragit: {containment: [100, 0, 0,160]},
         position:    'center',
         theme:       "#308374",
@@ -136,9 +137,9 @@ function openCableaffiliatedInfoDailog(url,title){
 }
 
 function closeCableaffiliatedInfo(){
-	if(cableaffiliatedInfo!=""){
-		cableaffiliatedInfo.close();
-		cableaffiliatedInfo="";		
+	var panel = document.querySelector('#cableaffiliatedInfoAdd');
+	if(panel != null){
+		panel.jspanel.close();
 	}
 }
 
@@ -169,8 +170,32 @@ function initUpdateCableaffiliatedInfo(obj){
  * 保存
  */
 function submitCableaffiliatedInfo(){
+	var cableaffiliated = getFormJson('cableaffiliatedInfo_form');
+	var flag1 = true,flag1 = true;
+	//根据选择的模糊数据转换成空间数据ID
+	var blurData1 = blurData[0];
+	for(var i=0;i<blurData1.length;i++){
+		if(blurData1[i].Name == cableaffiliated.C_OPSECTIONID){ //光缆段
+			cableaffiliated.C_OPSECTIONID = blurData1[i].ID;
+			flag1 = false;
+		}
+	}
+	var blurData2 = blurData[1];
+	for(var j=0;j<blurData2.length;j++){
+		if(blurData2[j].Name == cableaffiliated.C_AFFILIATEDID){ //附属对象
+			cableaffiliated.C_AFFILIATEDID = blurData2[j].ID;
+			flag2 = false;
+		}
+	}
+	if(flag1){
+		cableaffiliated.C_OPSECTIONID="";
+	}
+	if(flag2){
+		cableaffiliated.C_AFFILIATEDID = "";
+	}
+	
 	$.post('/T_CABLEAFFILIATEDINFO/save.action',
-			$("#cableaffiliatedInfo_form").serialize(),
+			cableaffiliated,
 			function(result){
 		       closeCableaffiliatedInfo();
 		        swal(result.title,'',"success");
@@ -185,14 +210,24 @@ function submitCableaffiliatedInfo(){
  */
 function searchCableaffiliatedInfo(){
 //	$(".equipment-header").mLoading("show");
-	$.post('/T_CABLEAFFILIATEDINFO/queryPage.action',
-		    {
-		    "search.C_OPSECTIONID*like":'%'+$("#OPSECTIONID").val()+'%',
-			"page_pn": 1,
-			"page_size":10
-		    },
-    		function(data){
-		        $('#cableaffiliatedInfoTable').bootstrapTable('load', data);
-//		        $(".equipment-header").mLoading("hide");
-    },'json');
+	var val = $("#cableaffiliated_id").val();
+		// 获取所有光缆段数据
+		var features = getLayerNodeByName('SD_OPTICALCABLESECTION').layer.getSource().getFeatures();
+		var id = "";
+		for(var i in features){
+			if(features[i].values_.NAME == val.trim()){
+				id = features[i].values_.ID;
+				break;
+			}
+		}
+		$.post('/T_CABLEAFFILIATEDINFO/queryPage.action',
+    		    {
+    		    "search.C_OPSECTIONID*like":'%'+val.trim()+'%',
+    			"page_pn": 1,
+    			"page_size":10
+    		    },
+        		function(data){
+    		        $('#cableaffiliatedInfoTable').bootstrapTable('load', data);
+//    		        $(".equipment-header").mLoading("hide");
+        },'json');	
 }

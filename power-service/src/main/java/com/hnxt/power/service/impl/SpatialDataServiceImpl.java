@@ -57,4 +57,59 @@ public class SpatialDataServiceImpl  implements SpatialDataService{
 		List<Map<String, Object>> list =baseDao.executeSQL("SELECT  * FROM "+modelName+" WHERE "+sql);
 		return list;
 	}
+
+
+	@Override
+	public List<Map<String, Object>> getMultiConditionByPage(String modelName,Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		Set<String> keys = map.keySet();
+		Iterator<String> iterator = keys.iterator( );
+		StringBuilder sql = new StringBuilder();
+		int page=0; int size=0;
+		
+		while(iterator.hasNext()) {
+		  String key = (String)iterator.next();
+		  if(key.equals("page_pn")){
+			  page = (Integer.valueOf(map.get(key).toString()));
+		  }else if(key.equals("page_size")){
+			  size = (Integer.valueOf(map.get(key).toString()));
+		  }else{
+			  String[] val = ((String) map.get(key)).split("_");
+			  for (String str : val) {
+				  sql.append(" "+key+"='"+str+"'");
+				  sql.append(" OR");
+			 }
+		  }
+		}
+		//删除多余的‘OR’
+		sql.delete(sql.length()-2, sql.length());
+		int page1 = page-1;
+		List<Map<String, Object>> listData = baseDao.executeSQL("select * from (select t.*,rownum rn from (select * from "+modelName+" where 1=1 and "+sql+") T )  WHERE RN>("+ page1 +")*"+size+" AND RN<=("+ page +")*"+size+"" );
+	    return listData;
+	}
+
+
+	@Override
+	public int getMultiConditionCount(String modelName, Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		Set<String> keys = map.keySet();
+		Iterator<String> iterator = keys.iterator( );
+		StringBuilder sql = new StringBuilder();
+		
+		while(iterator.hasNext()) {
+		  String key = (String)iterator.next();
+		  if(!key.equals("page_pn") && !key.equals("page_size")){
+			  String[] val = ((String) map.get(key)).split("_");
+			  for (String str : val) {
+				  sql.append(" "+key+"='"+str+"'");
+				  sql.append(" OR");
+			 }
+		  }
+		}
+		//删除多余的‘OR’
+		sql.delete(sql.length()-2, sql.length());
+		
+		List<Map<String, Object>> listNum = baseDao.executeSQL("select * from "+modelName+" where 1=1 and "+sql+"");
+		return listNum.size();
+	}
 }

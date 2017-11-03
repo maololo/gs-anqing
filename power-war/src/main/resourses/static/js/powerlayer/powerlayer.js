@@ -112,7 +112,7 @@ function fnSaveApp(){
 	var flag = $('#C_LAYERTYPE').combobox('getValue');
 	var layer=""
     var layerID=""
-	if(flag=="1"){
+	if(flag=="1" || flag=="3"){
 		layerID = 'C_LAYER1';
 		layer = $('#C_LAYER1').textbox('getValue');
 	}else if(flag == "2"){
@@ -127,9 +127,11 @@ function fnSaveApp(){
 	if(name==""|| name.trim()==""){
 		$('#C_LAYERNAME').focus();
 		swal('图层名称不能为空','',"warning");
+		return;
 	}else if(layer == ""){
 		$('#'+layerID).focus();
 		swal('图层不能为空','',"warning");
+		return;
 	}
 	$.post('/T_POWERLAYERS/save.action',
 		{C_LAYERNAME:$('#C_LAYERNAME').textbox('getValue'),
@@ -151,7 +153,7 @@ function fnSaveApp(){
 }
 
 /**
- * 保存图层信息
+ * 修改
  */
 function fnUpdateApp(){
 	var rows = $('#app_table').datagrid('getSelections');
@@ -170,8 +172,12 @@ function fnUpdateApp(){
 	$('#app_form').form('clear');
 	$('#app_dlg').dialog('open');
 	$('#app_form').form('load',rows[0]);
+	if(rows[0].C_LAYERTYPE=="2"){
+		$('#app_layer').hide();
+		$('#app_group').shwo();
+		$('#C_LAYER2').combobox('setValues',rows[0].C_LAYER.split(","));
+	}
 	$('#C_ID').val(rows[0].C_ID);
-	$('#C_LAYER2').combobox('setValues',rows[0].C_LAYER.split(","));
 	$('#C_LAYER1').textbox('setValue',rows[0].C_LAYER);
 }
 

@@ -66,6 +66,7 @@ function init(){
 			editObject.source = sd_stationData.layer.getSource();
 			editObject.editType = "update";
 			editObject.index = index;
+			editObject.manually_modify = true;
 			editObject.field = "";
 			
 			clearHighlightObj();
@@ -74,10 +75,10 @@ function init(){
 			// 设置要素高亮
 			highlightObj = select.getFeatures();
 			highlightObj.push(row);
-			var modify = new ol.interaction.Modify({
+			map.addInteraction(select);
+			/*var modify = new ol.interaction.Modify({
 				features : select.getFeatures()
 			});
-			map.addInteraction(select);
 			map.addInteraction(modify);
 			select.on('select',function(e) {
 				highlightObj={};
@@ -86,7 +87,7 @@ function init(){
 						} else {
 							modify.setActive(false);
 						}
-					});
+					});*/
 			jsPanelAttributeInfo(sd_stationData.layer_name);
 			
 			// 获取要素的几何范围

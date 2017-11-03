@@ -145,6 +145,7 @@ function res(url,outlink,common,self,callback){
 				break;
 			}else if(jsPanelID[i] == jssrc){ //如果此弹出框存在就将面板标准化到之前的位置
 				jsPanel.activePanels.getPanel(jsPanelID[i]).normalize();
+				jsPanel.activePanels.getPanel(jsPanelID[i]).front();
 				return;
 			}
 		}

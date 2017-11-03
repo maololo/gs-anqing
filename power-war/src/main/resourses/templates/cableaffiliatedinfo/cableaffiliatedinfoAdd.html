@@ -1,17 +1,97 @@
- 
+ <script>
+ blurData=[];
+  blurData[0] = getBlurDate(['SD_OPTICALCABLESECTION']);
+  blurData[1] = getBlurDate(['SD_PERSONWELL','SD_COMMUNICATIONPOLETOWER']);
+ $('#C_OPSECTIONID').typeahead({
+	    source: blurData[0],
+	    display: 'Name',
+	    val: 'ID'
+	});
+   
+ $('#C_AFFILIATEDID').typeahead({
+	    source: blurData[1],
+	    display: 'Name',
+	    val: 'ID'
+	});
+   
+ function selectOpticalcablesectionID(inputID){
+		var select = new ol.interaction.Select();
+		var jsPanelID = window.jsPanel.activePanels.list;
+		map.addInteraction(select);
+		select.on('select',function(e) {
+			if (e.selected[0] != undefined ) {
+				var data = e.selected[0].values_;
+				var code = data.ID.substring(0,4);
+				if(code=='0406'){
+					$('#'+inputID).val(data.NAME);
+					map.removeInteraction(select);
+					for(var i in jsPanelID){
+						//恢复弹出框  
+					   jsPanel.activePanels.getPanel(jsPanelID[i]).normalize();
+					}
+				}
+			}		 
+		});
+		for(var i in jsPanelID){
+			//最小化弹出框  
+		   jsPanel.activePanels.getPanel(jsPanelID[i]).minimize();
+		}
+	}
+ function selectRJandTXGTID(inputID){
+		var select = new ol.interaction.Select();
+		var jsPanelID = window.jsPanel.activePanels.list;
+		map.addInteraction(select);
+		select.on('select',function(e) {
+			if (e.selected[0] != undefined ) {
+				var data = e.selected[0].values_;
+				var code = data.ID.substring(0,4);
+				if(code=='0405' || code=='0403'){
+					$('#'+inputID).val(data.NAME);
+					map.removeInteraction(select);
+					for(var i in jsPanelID){
+						//恢复弹出框  
+					   jsPanel.activePanels.getPanel(jsPanelID[i]).normalize();
+					}
+				}
+			}		 
+		});
+		for(var i in jsPanelID){
+			//最小化弹出框  
+		   jsPanel.activePanels.getPanel(jsPanelID[i]).minimize();
+		}
+	}
+ </script>
 
 <div style="width: 530px;">
     <form class="form-horizontal" style="margin-top: 20px;" id="cableaffiliatedInfo_form">
         
-        <div class="form-group">
-                            <label for="C_OPSECTIONID" class="col-sm-2 control-label" >光缆段编号:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_OPSECTIONID" id="C_OPSECTIONID"/>
+                        <div class="form-group">
+                          <!-- <label for="C_STATIONID" class="col-sm-2 control-label" >所属局站:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="C_STATIONID" name="C_STATIONID" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="selectButton rolebtn" type="button" title="在地图上选择局站" onclick="selectStartIDOrEndID('C_STATIONID')">
+                                <span  class=" glyphicon glyphicon-retweet " ><span></button>
+                            </div> -->
+                        
+                           <label for="C_OPSECTIONID" class="col-sm-2 control-label" >光缆段:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="C_OPSECTIONID" name="C_OPSECTIONID" autocomplete="off" />
                                 <input type="hidden" name="C_ID" id="C_ID"/>
                             </div>
-                            <label for="C_AFFILIATEDID" class="col-sm-2 control-label" style="margin-left: -10px;">附属对象编号:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_AFFILIATEDID" id="C_AFFILIATEDID"/>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="selectButton rolebtn" type="button" title="在地图上选择光缆段" onclick="selectOpticalcablesectionID('C_OPSECTIONID')">
+                                <span  class=" glyphicon glyphicon-retweet " ><span></button>
+                            </div>
+                            
+                            <label for="C_AFFILIATEDID" class="col-sm-2 control-label"  style="margin-left: -10px;">附属对象:</label>
+                            <div class="col-sm-3" style="padding-right:0px">
+                                <input type="text" class="form-control"  id="C_AFFILIATEDID" name="C_AFFILIATEDID" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-1" style="padding:0px">
+                                <button class="selectButton rolebtn" type="button" title="在地图上选择人井或通信杆塔" onclick="selectRJandTXGTID('C_AFFILIATEDID')">
+                                <span  class=" glyphicon glyphicon-retweet " ><span></button>
                             </div>
                             
                         </div>

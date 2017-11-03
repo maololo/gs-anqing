@@ -1,4 +1,3 @@
-var distributionInfo = "";
 var rowData = "";// 选择行数据
 var eCode = "";// 设备ID
 function init(){
@@ -32,8 +31,7 @@ function init(){
         },
         'click .RoleOfEdit': function (e, value, row, index) {
         	rowData = row;
-        	eCode = row.C_EQUIPMENTCODE; 
-            openDistributionInfoDailog('/distributioninfo/distributioninfoAdd.action','配线信息');
+			eCode = row.C_EQUIPMENTCODE;            openDistributionInfoDailog('/distributioninfo/distributioninfoAdd.action','配线信息');
         }
     };
     
@@ -470,7 +468,7 @@ function operateFormatter(val,row,index){
 }
 
 function openDistributionInfoDailog(url, title){
-	distributionInfo = $.jsPanel({
+	$.jsPanel({
 		headerControls: {
 	    	maximize: 'remove',
 	        smallify: 'remove'
@@ -501,9 +499,10 @@ function openDistributionInfoDailog(url, title){
 }
 
 function closeDistributionInfo(){
-	if(distributionInfo!=""){
-		distributionInfo.close();
-		distributionInfo="";		
+	
+	var panel = document.querySelector('#distributionInfoAdd');
+	if(panel != null){
+		panel.jspanel.close();
 	}
 }
 
@@ -561,7 +560,7 @@ function submitDistributionInfo(){
  *  查询
  */
 function searchDistributionInfo(){
-	$.post('/T_DISTRIBUTIONINFO/queryPage.action',
+$.post('/T_DISTRIBUTIONINFO/queryPage.action',
 	    {
 	    "search.C_EQUIPMENTCODE*like":'%'+$("#EQUIPMENTCODE").val()+'%',
 		"page_pn": 1,
@@ -570,8 +569,7 @@ function searchDistributionInfo(){
 		function(data){
 	        $('#distributioninfoTable').bootstrapTable('load', data);
 	    },'json'
-	);
-}
+	);}
 
 /** 选择设备后的回调函数
  * obj 选中的 option

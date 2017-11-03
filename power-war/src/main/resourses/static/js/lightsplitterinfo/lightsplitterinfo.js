@@ -1,5 +1,4 @@
 
-var lightsplitterinfo = "";
 var rowData="";//选择行数据
 function init(){
 	
@@ -57,7 +56,8 @@ function init(){
             title: '设备编号',
             align: 'center',
             valign: 'top',
-            sortable: true
+            sortable: true,
+            formatter:function(value,row,index){return formatfeatureName(value);}
         },{
             field: 'C_UPORDOWN',
             title: '分光器端子类型',
@@ -147,8 +147,8 @@ function operateFormatter(val,row,index){
 }
 
 function openLightsplitterinfoDailog(url,title){
-	lightsplitterinfo = $.jsPanel({
-        id:			 "lightsplitterinfoAdd",
+	$.jsPanel({
+        id:	 "lightsplitterinfoAdd",
         dragit: {containment: [100, 0, 0,160]},
         headerControls: {
 	    	maximize: 'remove',
@@ -179,9 +179,9 @@ function openLightsplitterinfoDailog(url,title){
 }
 
 function closeLightsplitterinfo(){
-	if(lightsplitterinfo!=""){
-		lightsplitterinfo.close();
-		lightsplitterinfo="";		
+	var panel = document.querySelector('#lightsplitterinfoAdd');
+	if(panel != null){
+		panel.jspanel.close();
 	}
 }
 
@@ -233,14 +233,35 @@ function submitLightsplitterinfo(){
  */
 function searchLightsplitterinfo(){
 //	$(".equipment-header").mLoading("show");
-	$.post('/T_LIGHTSPLITTERINFO/queryPage.action',
-		    {
-		    "search.C_EQUIPMENTID*like":'%'+$("#EQUIPMENTID").val()+'%',
-			"page_pn": 1,
-			"page_size":10
-		    },
-    		function(data){
-		        $('#lightsplitterinfoTable').bootstrapTable('load', data);
+	var val = $("#lightsplitter_id").val();
+    if(val.trim()==""){
+    	$.post('/T_LIGHTSPLITTERINFO/queryPage.action',{
+    		    "search.C_EQUIPMENTID*like":'%'+val.trim()+'%',
+    			"page_pn": 1,
+    			"page_size":10
+    		    },
+        		function(data){
+    		        $('#lightsplitterinfoTable').bootstrapTable('load', data);
+//    		        $(".equipment-header").mLoading("hide");
+        },'json');	
+	}else{
+		var data =queryTableByData('/T_EQUIPMENT/search.action',{"search.C_NAME*like" : '%'+val.trim()+'%'}); 
+		if(data==""){
+			$('#lightsplitterinfoTable').bootstrapTable('load', {rows:[],total:0});
+		}else{
+			var condition=""
+				for(var i in data){
+					condition += data[i].C_CODE+"_"
+				}
+			condition = condition.substring(0,condition.length-1);
+			$.post('/T_LIGHTSPLITTERINFO/queryMultiConditionByPage.action',
+					{"C_EQUIPMENTID":condition,
+				"page_pn": 1,
+				"page_size":10},
+				function(data){
+					$('#lightsplitterinfoTable').bootstrapTable('load', data);
 //		        $(".equipment-header").mLoading("hide");
-    },'json');
+				},'json');
+		}
+	}	
 }

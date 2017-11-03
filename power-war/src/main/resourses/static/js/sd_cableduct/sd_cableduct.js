@@ -65,6 +65,7 @@ function init(){
 			editObject.feature = row;
 			editObject.source = sd_cableductData.layer.getSource();
 			editObject.editType = "update";
+			editObject.manually_modify = true;
 			editObject.index = index;
 			editObject.field = "";
 			
@@ -74,19 +75,7 @@ function init(){
 			// 设置要素高亮
 			highlightObj = select.getFeatures();
 			highlightObj.push(row);
-			var modify = new ol.interaction.Modify({
-				features : select.getFeatures()
-			});
 			map.addInteraction(select);
-			map.addInteraction(modify);
-			select.on('select',function(e) {
-				highlightObj={};
-						if (e.selected[0] != undefined && e.selected[0].id_ == row.id_) {
-							modify.setActive(true);
-						} else {
-							modify.setActive(false);
-						}
-					});
 			jsPanelAttributeInfo(sd_cableductData.layer_name);
 			
 			// 获取要素的几何范围
