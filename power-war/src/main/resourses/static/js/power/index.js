@@ -947,36 +947,16 @@ function right_click_box(number) {
 	}, this);
 }
 
-// 单选查询
-function radioQuery() {
-	closeFunction();
-	// 定义select控制器
-	var select = new ol.interaction.Select();
-	map.addInteraction(select);// map加载该控件，默认是激活可用的
-	select.on('select', function(e) {
-		if (e.selected.length > 0) {
-			openDialg("查询结果","radioQuery", e.selected);
-			map.removeInteraction(select);
-		}
-	});
-
-}
-
+/*** 框选查询 END ***/
 function openDialg(title, field, dataFeatures, layerName, display) {
 	closePropertyListWindow();
 	propertyListWindow = $.jsPanel({
 		id : "openDialg",
-		maximizedMargin : {
-			top : 100,
-			left : 170
-		},
+		maximizedMargin : { top : 100, left : 170 },
 		dragit: {containment: [100, 0, 0,160]},
 		position : 'center',
 		theme : "rebeccapurple",
-		contentSize : {
-			width : 'auto',
-			height : 'auto'
-		},
+		contentSize : { width : 'auto', height : 'auto' },
 		headerTitle : title,
 		border : '2px solid rgb(7,102,104)',
 		contentAjax : {
@@ -986,20 +966,33 @@ function openDialg(title, field, dataFeatures, layerName, display) {
 				// 图层tree根节点
 				var root = $('#powerLayerTree').jstree().get_node("#-1");
 				var childrens = $('#powerLayerTree').jstree("get_children_dom", root);
+				/*
 				$('#assemblageQueryOptions1').hide();
 				$('#queryAllOptions').hide();
+				*/
+				
+				// 获取查询图层类型
+				/*
+				var obj = dataFeatures.values_;
+    			var code = obj.ID.substring(0,4);
+    			var layerType = queryLayerNameByPMSID(code);
+				*/
 				
 				var html = $("#queryDiv");
 				html.empty();
+				
 				if (field == 'radioQuery') {
-					// 获取查询图层类型
-					var code = dataFeatures[0].values_.ID.substring(0,4);
-					var layerType = queryLayerNameByPMSID(code);
-					
+					// 单选查询
 					var t = $("<table id='dataTableRadio' class='query-table'>");
 					t.appendTo(html);
-					loadTableData(dataFeatures, layerType, "Radio");
+					if(!$.isEmptyObject(dataFeatures)){
+		    			var obj = dataFeatures.values_;
+		    			var code = obj.ID.substring(0,4);
+		    			var layerType = queryLayerNameByPMSID(code);
+		    			loadTableData(dataFeatures, layerType, "Radio");
+					}
 				} else if (field == 'boxQuery' || field == 'polygonQuery') {
+					// 多选查询
 					var queryUl = $("<ul class='nav nav-tabs'>");
 					queryUl.empty();
 					var queryDiv = $("<div class='tab-content'>");
@@ -1064,8 +1057,11 @@ function openDialg(title, field, dataFeatures, layerName, display) {
 						
 						html.append(queryUl);
 						html.append(queryDiv);
+						
+						//loadTableData(features, layerType, nodeId);
 					}
 				} 
+				
 				$('#search').modal('hide');// 隐藏查询模态框
 			}
 		},
@@ -1186,7 +1182,46 @@ function loadTableData(features, layerType, tabId) {
 	});
 }
 
-// 框选、多边形查询
+//单选查询
+/*
+function radioQuery() {
+	closeFunction();
+	// 定义select控制器
+	var select = new ol.interaction.Select();
+	map.addInteraction(select);// map加载该控件，默认是激活可用的
+	select.on('select', function(e) {
+		if (e.selected.length > 0) {
+			openDialg("查询结果", "radioQuery", e.selected);
+			map.removeInteraction(select);
+		}
+	});
+}
+*/
+function radioQuery() {
+	closeFunction();
+	var select = new ol.interaction.Select();
+	map.addInteraction(select);
+	select.on('select', function(event) {
+		if(!$.isEmptyObject(event)){
+			var f = event.selected[0]; 
+			/*
+			f.setStyle(new ol.style.Style({
+	            image: new ol.style.Circle({
+	                radius: 10,
+	                fill: new ol.style.Fill({
+	                    color: 'blue'
+	                })
+	            })
+	        }));
+			*/
+			openDialg("查询结果", "radioQuery", f);
+			map.removeInteraction(select);
+		}
+	});
+}
+
+
+// 规则图形框选
 function boxQuery() {
 	closeFunction();
 	drawGeometry = new ol.interaction.Draw({
@@ -1231,20 +1266,20 @@ function boxQuery() {
 	}, this);
 
 	drawGeometry.on('drawend', function(event) {
-		sketch = null;
 		clearDrawGeometry();
-		openDialg("查询结果", "boxQuery");
+		openDialg("查询结果", "boxQuery", event.feature);
 		ol.Observable.unByKey(listener);
 	}, this);
 
 }
 
 // 多边形查询
+/*
 function polygonQuery() {
 	closeFunction();
 	drawGeometry = new ol.interaction.Draw({
 		source : new ol.source.Vector(),
-		type : /** @type {ol.geom.GeometryType} */
+		type : *//** @type {ol.geom.GeometryType} *//*
 		('Polygon'),
 		style : new ol.style.Style({
 			fill : new ol.style.Fill({
@@ -1272,7 +1307,7 @@ function polygonQuery() {
 	drawGeometry.on('drawstart', function(evt) {
 		// set sketch
 		sketch = evt.feature;
-		/** @type {ol.Coordinate|undefined} */
+		*//** @type {ol.Coordinate|undefined} *//*
 		var coord = evt.coordinate;
 		listener = sketch.getGeometry().on('change', function(evt) {
 			var geom = evt.target;
@@ -1283,14 +1318,49 @@ function polygonQuery() {
 		});
 	}, this);
 
-	drawGeometry.on('drawend',
-			function(event) {
-				sketch = null;
-				clearDrawGeometry();
-				openDialg( "查询结果","polygonQuery");
-				ol.Observable.unByKey(listener);
-			}, this);
+	drawGeometry.on('drawend', function(event) {
+		sketch = event.feature;
+		clearDrawGeometry();
+		openDialg( "查询结果", "polygonQuery", sketch);
+		ol.Observable.unByKey(listener);
+	}, this);
 }
+*/
+function polygonQuery() {
+	closeFunction();
+	drawGeometry = new ol.interaction.Draw({
+		source : new ol.source.Vector(),
+		type : "Polygon",
+		style : new ol.style.Style({
+			fill : new ol.style.Fill({
+				color : 'rgba(255, 255, 255, 0.2)'
+			}),
+			stroke : new ol.style.Stroke({
+				color : 'rgba(0, 0, 0, 0.5)',
+				lineDash : [ 10, 10 ],
+				width : 2
+			}),
+			image : new ol.style.Circle({
+				radius : 5,
+				stroke : new ol.style.Stroke({
+					color : 'rgba(0, 0, 0, 0.7)'
+				}),
+				fill : new ol.style.Fill({
+					color : 'rgba(255, 255, 255, 0.2)'
+				})
+			})
+		})
+	});
+	map.addInteraction(drawGeometry);
+	
+	// 监听线绘制结束事件
+	drawGeometry.on('drawend', function(event) {
+		clearDrawGeometry();
+		openDialg( "查询结果", "polygonQuery", event.feature);
+	}, this);
+}
+
+/*** 框选查询 END ***/
 
 // 更改图层下拉框后查询属性
 function changeLayer(id) {

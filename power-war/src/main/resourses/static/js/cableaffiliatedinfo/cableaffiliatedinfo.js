@@ -1,38 +1,37 @@
-
 var rowData="";//选择行数据
 function init(){
-	
     window.operateEventCableaffiliatedInfo = {
         'click .RoleOfdDeldte': function (e, value, row, index) {
-            swal({
-        		  title: "确定删除?",
-        		  type: "warning",
-        		  showCancelButton: true,
-        		  confirmButtonColor: "#DD6B55",
-        		  confirmButtonText: "确定",
-        		  cancelButtonText: "取消",
-        		  closeOnConfirm: false
-        		},
-        		function(){
-        		$.post('/T_CABLEAFFILIATEDINFO/delete.action',
-              		{
-              	     "ID":row.C_ID
-              		},
-              		function(result){
-              			if (result.success){    
-              				swal(result.title,'',"success");
-              				$('#cableaffiliatedInfoTable').bootstrapTable('refresh');
-                          } else {
-                          	swal(result.title,'',"error");
-                          }
-                 },'json');
-        		});
+        swal({
+    		  title: "确定删除?",
+    		  type: "warning",
+    		  showCancelButton: true,
+    		  confirmButtonColor: "#DD6B55",
+    		  confirmButtonText: "确定",
+    		  cancelButtonText: "取消",
+    		  closeOnConfirm: false
+    		},
+    		function(){
+    		$.post('/T_CABLEAFFILIATEDINFO/delete.action',
+          		{
+          	     "ID":row.C_ID
+          		},
+          		function(result){
+          			if (result.success){    
+          				swal(result.title,'',"success");
+          				$('#cableaffiliatedInfoTable').bootstrapTable('refresh');
+                      } else {
+                      	swal(result.title,'',"error");
+                      }
+             },'json');
+    		});
         },
         'click .RoleOfEdit': function (e, value, row, index) {
         	rowData = row;
             openCableaffiliatedInfoDailog('/cableaffiliatedinfo/cableaffiliatedinfoAdd.action','光缆信息');
         }
     };
+    
     $('#cableaffiliatedInfoTable').bootstrapTable({
     	url: '/T_CABLEAFFILIATEDINFO/queryPage.action',
 	    method:'post',
@@ -45,12 +44,10 @@ function init(){
 		pageSize: 10,
 		pageNumber:1,
 		undefinedText:"",
-//		search: true, //不显示 搜索框
 		showColumns: false, //不显示下拉框（选择显示的列）
 		sidePagination: "server", //服务端请求
 		queryParams: queryParams,//分页参数
 		clickToSelect: true,
-//		height: 400,
         columns: [{
             field: 'C_OPSECTIONID',
             title: '光缆段',
@@ -78,13 +75,10 @@ function init(){
             valign: 'top',
             sortable: true,
             width : '125px',
-//	    	visible: false ,// 该列隐藏，界面不显示
             events: operateEventCableaffiliatedInfo,//给按钮注册事件
             formatter: operateFormatterCableaffiliatedInfo,//表格中增加按钮
         }]
-
     });
-
 }
 
 //设置传入参数
@@ -94,7 +88,6 @@ function queryParams(params) {
 		sColumn:params.sort,
 		order:params.order,
 		page_size: params.limit
-		
 	}
 };
 
@@ -103,7 +96,6 @@ function operateFormatterCableaffiliatedInfo(val,row,index){
         '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style=" background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
     ].join('');
 }
-
 
 function openCableaffiliatedInfoDailog(url,title){
 	$.jsPanel({
@@ -154,14 +146,12 @@ function addCableaffiliatedInfo(){
 function initUpdateCableaffiliatedInfo(obj){
 	for(var id in obj){
 		var data = document.getElementById(id);
-		if(data!=null && data.type == "select-one"){
- 			 $('#'+id).selectpicker('val',obj[id]);
- 		 }else if(id=="C_OPSECTIONID"){
+		if(id=="C_OPSECTIONID"){
  			$("#"+id).attr("readonly","true");
  			$('#'+id).val(obj[id]);
- 		 }else{
- 			 $('#'+id).val(obj[id]);
- 		 }
+		}else{
+			$('#'+id).val(obj[id]);
+		}
 	}
 	rowData = "";
 }
@@ -187,47 +177,43 @@ function submitCableaffiliatedInfo(){
 			flag2 = false;
 		}
 	}
+	
 	if(flag1){
 		cableaffiliated.C_OPSECTIONID="";
 	}
+	
 	if(flag2){
 		cableaffiliated.C_AFFILIATEDID = "";
 	}
 	
-	$.post('/T_CABLEAFFILIATEDINFO/save.action',
-			cableaffiliated,
-			function(result){
-		       closeCableaffiliatedInfo();
-		        swal(result.title,'',"success");
-		        $('#cableaffiliatedInfoTable').bootstrapTable('refresh');
+	$.post('/T_CABLEAFFILIATEDINFO/save.action', cableaffiliated, function(result){
+		closeCableaffiliatedInfo();
+        swal(result.title,'',"success");
+        $('#cableaffiliatedInfoTable').bootstrapTable('refresh');
 	},"json");
 }
-
-
 
 /**
  *  查询
  */
 function searchCableaffiliatedInfo(){
-//	$(".equipment-header").mLoading("show");
 	var val = $("#cableaffiliated_id").val();
-		// 获取所有光缆段数据
-		var features = getLayerNodeByName('SD_OPTICALCABLESECTION').layer.getSource().getFeatures();
-		var id = "";
-		for(var i in features){
-			if(features[i].values_.NAME == val.trim()){
-				id = features[i].values_.ID;
-				break;
-			}
+	// 获取所有光缆段数据
+	var features = getLayerNodeByName('SD_OPTICALCABLESECTION').layer.getSource().getFeatures();
+	var id = "";
+	for(var i in features){
+		if(features[i].values_.NAME == val.trim()){
+			id = features[i].values_.ID;
+			break;
 		}
-		$.post('/T_CABLEAFFILIATEDINFO/queryPage.action',
-    		    {
-    		    "search.C_OPSECTIONID*like":'%'+val.trim()+'%',
-    			"page_pn": 1,
-    			"page_size":10
-    		    },
-        		function(data){
-    		        $('#cableaffiliatedInfoTable').bootstrapTable('load', data);
-//    		        $(".equipment-header").mLoading("hide");
-        },'json');	
+	}
+	$.post('/T_CABLEAFFILIATEDINFO/queryPage.action',
+	    {
+	    "search.C_OPSECTIONID*like":'%'+val.trim()+'%',
+		"page_pn": 1,
+		"page_size":10
+	    },
+		function(data){
+	        $('#cableaffiliatedInfoTable').bootstrapTable('load', data);
+    },'json');	
 }

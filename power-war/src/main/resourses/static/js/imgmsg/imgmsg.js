@@ -26,6 +26,7 @@ function init(){
 	    // 滑出则重置定时器
 	    autoChangeAgain();
 	});
+	
 }
 
 function loadImg(){
@@ -68,7 +69,7 @@ function loadImg(){
         		for(var i = 0; i < imgLen; i++){
         			var pic = data[i];
         			var imgLi = $("<li>");
-        			var img = $("<img>").attr({"src": "/upload/" + pic.FILENAME, "alt": pic.NAME}).css({"width": "500px", "height": "300px"});
+        			var img = $("<img>").attr({"src": "/upload/" + pic.FILENAME, "alt": ""}).css({"width": "500px", "height": "300px"});
         			img.appendTo(imgLi);
         			imgUl.append(imgLi);
         			// 隐藏域赋值用作删除
@@ -89,7 +90,7 @@ function loadImg(){
         			indexUl.append(indexLi);
         			
         			var smallLi = $("<li>").attr("title", pic.REMARK);
-        			var smallImg = $("<img>").attr({"src": "/upload/" + pic.FILENAME, "alt": pic.NAME}).css({"width": "90px", "height": "50px"});
+        			var smallImg = $("<img>").attr({"src": "/upload/" + pic.FILENAME, "alt": ""}).css({"width": "90px", "height": "50px"});
         			var pImg = $("<p>").attr({"align": "center", "class": "small-p"}).append(pic.NAME);
         			smallImg.appendTo(smallLi);
         			pImg.appendTo(smallLi);
@@ -163,7 +164,7 @@ function openDailog(url, title){
             }
         },
         callback:function(){
-            this.content.css("padding", "5px");
+            this.content.css({"padding": "5px"});
         }
     });
 }
@@ -174,6 +175,7 @@ function initAdd(){
 }
 
 function saveImg(){
+	if (!$('#img_form').valid()) return null;
 	$("body").mLoading("show");
 	var option = {
 	　　 url : '/PICTURE/picUploadFile.action',

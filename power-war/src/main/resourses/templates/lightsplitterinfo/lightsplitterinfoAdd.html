@@ -1,43 +1,41 @@
 <script type="text/javascript">
-$("#C_TOEQUIPMENTID").selectpicker({
-	'noneSelectedText':'请选择'
-});
+    $("#C_TOEQUIPMENTID").selectpicker({
+        'noneSelectedText':'请选择'
+    });
 </script>
 
 <div style="width: 530px;">
     <form class="form-horizontal" style="margin-top: 20px;" id="lightsplitterinfo_form">
-        
         <div class="form-group">
-                            <label for="C_EQUIPMENTID" class="col-sm-2 control-label" >设备编号:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_EQUIPMENTID" id="C_EQUIPMENTID"/>
-                                <input type="hidden" name="C_ID" id="C_ID"/>
-                            </div>
-                            <label for="C_TERMINALNUM" class="col-sm-2 control-label" style="margin-left: -10px;">端子编号:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control"  name="C_TERMINALNUM" id="C_TERMINALNUM"/>
-                            </div>
-                            
-                        </div>
-                        <div class="form-group">
-                            <label for="C_UPORDOWN" class="col-sm-2 control-label" >分光器端子类型:</label>
-                            <div class="col-sm-4" >
-                                <select id="C_UPORDOWN" name="C_UPORDOWN" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                            <label for="C_TOEQUIPMENTID" class="col-sm-2 control-label" style="margin-left: -10px;">连接的设备编号:</label>
-                            <div class="col-sm-3">
-                                <select id="C_TOEQUIPMENTID" name="C_TOEQUIPMENTID" class="selectpicker show-tick form-control">
-                                 <option value ="">请选择</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-1" style="padding:0px">
-                                <button class="selectButton rolebtn" type="button" title="在地图上选择局站" onclick="selectStationToEquip('C_TOEQUIPMENTID')">
-                                 <span  class=" glyphicon glyphicon-retweet " ><span></button>
-                            </div>
-				            
-                        </div>
+            <label for="C_EQUIPMENTID" class="col-sm-2 control-label" >设备编号:</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control"  name="C_EQUIPMENTID" id="C_EQUIPMENTID"/>
+                <input type="hidden" name="C_ID" id="C_ID"/>
+            </div>
+            <label for="C_TERMINALNUM" class="col-sm-2 control-label" style="margin-left: -10px;">端子编号:</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control"  name="C_TERMINALNUM" id="C_TERMINALNUM"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="C_UPORDOWN" class="col-sm-2 control-label" >分光器端子类型:</label>
+            <div class="col-sm-4" >
+                <select id="C_UPORDOWN" name="C_UPORDOWN" class="select-basic col-sm-12">
+                    <option value ="">请选择</option>
+                </select>
+            </div>
+            <label for="C_TOEQUIPMENTID" class="col-sm-2 control-label" style="margin-left: -10px;">连接的设备编号:</label>
+            <div class="col-sm-3">
+                <select id="C_TOEQUIPMENTID" name="C_TOEQUIPMENTID" class="select-basic col-sm-12">
+                    <option value ="">请选择</option>
+                </select>
+            </div>
+            <div class="col-sm-1" style="padding: 0">
+                <button class="selectButton rolebtn" type="button" title="在地图上选择局站" onclick="selectStationToEquip('C_TOEQUIPMENTID')">
+                    <span class=" glyphicon glyphicon-retweet"></span>
+                </button>
+            </div>
+        </div>
         <div class="form-group">
             <div class="text-center">
                 <button class="btn rolebtn" type="button" style="background:#308374;color: white" onclick="submitLightsplitterinfo()">保存</button>
@@ -46,5 +44,3 @@ $("#C_TOEQUIPMENTID").selectpicker({
         </div>
     </form>
 </div>
-
-

@@ -1,5 +1,11 @@
 $(function(){
 	showMenu();  //初始化导航
+	
+	$.extend( $.validator, {
+		messages: {
+			required: "不能为空"
+		}
+	});
 });
 
 
@@ -118,7 +124,8 @@ function LoadJS(src,tableName,callback){
 	script.src = src;
 	document.getElementsByTagName("head")[0].appendChild(script);
 } 
-function res(url,outlink,common,self,callback){
+
+function res(url, outlink, common, self, callback){
 	var url = url.toLowerCase();
 	var tableName = "";
 	var findex = url.lastIndexOf("/");
@@ -182,7 +189,6 @@ function res(url,outlink,common,self,callback){
 		   this.content.css("padding", "5px");
 		  }
 		 });
-		
 	}
 }
 
@@ -425,5 +431,6 @@ function getTableObjByParamAndModel(param, tableName){
     })
 	return tableObj;
 }
+
 /** 公用方法 END **/
 

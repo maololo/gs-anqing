@@ -2,177 +2,10 @@ var clickStatus = ""; // 点击状态描述
 var $table = $('#gj-table');
 var $add = $('#addOptic');
 var $remove = $('#delectOptic');
-var gjData = [];
+var selEqtCode = rowData.C_CODE; //选中的设备编号
 
 function init(){
-	loadTableInfo();
-	
-    // 在用 
-    $('.light-statu.zy').click(function(){
-    	// 移除所有选中的样式
-    	$(".light-statu").removeClass("light-statu-sel");
-    	// 选中当前
-    	$(this).addClass("light-statu-sel");
-    	clickStatus = "在用";
-    	$('#gj-table td').click(function (){
-    		// 进来后清除原来的样式，增加新的样式
-    		$(this).children("span").attr("class", "gjt-span zy-span");
-    	});
-    });
-    
-   	// 备用
-    $('.light-statu.by').click(function(){
-    	// 移除所有选中的样式
-    	$(".light-statu").removeClass("light-statu-sel");
-    	// 选中当前
-    	$(this).addClass("light-statu-sel");
-    	clickStatus = "备用";
-    	$('#gj-table td').click(function (){
-    		$(this).children("span").attr("class", "gjt-span by-span");
-        });
-    });
-    
-   	// 故障芯
-    $('.light-statu.gz').click(function(){
-    	// 移除所有选中的样式
-    	$(".light-statu").removeClass("light-statu-sel");
-    	// 选中当前
-    	$(this).addClass("light-statu-sel");
-    	clickStatus = "故障芯";
-    	$('#gj-table td').click(function (){
-    		$(this).children("span").attr("class", "gjt-span gz-span");
-        });
-    });
-    
-   	// 空
-    $('.light-statu.k').click(function(){
-    	// 移除所有选中的样式
-    	$(".light-statu").removeClass("light-statu-sel");
-    	// 选中当前
-    	$(this).addClass("light-statu-sel");
-    	clickStatus = "空";
-    	$('#gj-table td').click(function (){
-    		$(this).children("span").attr("class", "gjt-span k-span");
-        });
-    });
-    
-    // 封存
-    $('.light-statu.fc').click(function(){
-    	// 移除所有选中的样式
-    	$(".light-statu").removeClass("light-statu-sel");
-    	// 选中当前
-    	$(this).addClass("light-statu-sel");
-    	clickStatus = "封存";
-    	$('#gj-table td').click(function (){
-    		$(this).children("span").attr("class", "gjt-span fc-span");
-        });
-    });
-    
-    $remove.click(function () {
-    	var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
-            return row.C_ID;
-        });
-    	if($.isEmptyObject(ids)){
-    		swal("请选择需要删除的数据！",'',"error");
-    	}else{
-    		swal({
-    	  		  title: "确定删除?",
-    	  		  type: "warning",
-    	  		  showCancelButton: true,
-    	  		  confirmButtonColor: "#DD6B55",
-    	  		  confirmButtonText: "确定",
-    	  		  cancelButtonText: "取消",
-    	  		  closeOnConfirm: false
-	  		},
-	  		function(){
-	  			// 先更新
-	  			updateRemark();
-	  	        // 后删除
-	  	        $table.bootstrapTable('remove', {
-	  	            field: 'C_ID',
-	  	            values: ids
-	  	        });
-	  	        var flag = true;
-	  	        for(var i = 0; i < ids.length; i++){
-	  	        	$.post('/T_DISTRIBUTIONINFO/delete.action', {"ID":ids[i]},
-	  	          		function(result){
-	  	      				if (!result.success){ 
-	  	      	            	flag = false;
-	  	      	            }
-	                  	},'json'
-	              	);
-	  	        }
-	  	        if(flag){
-					swal("删除成功！",'',"success");
-	  	        }else{
-	  	        	swal("删除失败！",'',"error");
-	  	        }
-	  		});
-    	}
-    });
-    
-    $add.click(function () {
-    	// 先更新
-    	updateRemark();
-        // 后添加
-    	var hang = $("#gj-table input[type='radio']").length + 1;
-    	var d = "C_EQUIPMENTCODE=" + rowData.C_CODE + "&C_DISKID=" + hang;
-        $.post('/T_DISTRIBUTIONINFO/save.action', d, function(result){
-        	$.ajax({
-        		url:"/T_DISTRIBUTIONINFO/search.action",
-            	data:{"search.C_EQUIPMENTCODE*eq":rowData.C_CODE},
-            	type:"post",
-                dataType:"Json",
-                async:false,
-                success: function(data){
-                	if (!$.isEmptyObject(data)) {
-                		gjData = data;
-                		$table.bootstrapTable('load', data);
-                	}
-                }
-            });
-        });
-    });  
-    
-    // 点击某一列的时候触发
-    $table.on('click-cell.bs.table', function (e, field, value, row) {
-    	if(!isEmpty(clickStatus) && !isEmpty(field) && field != "C_REMARK" && field.indexOf("C_") >= 0){
-    		var obj = {};
-        	obj["search.C_ID*eq"] = row.C_ID;
-    		obj[field] = clickStatus;
-    		$("body").mLoading("show");
-    		$.post('/T_DISTRIBUTIONINFO/update.action', obj, function(){
-    			$("body").mLoading("hide");
-    			//loadTableInfo();
-    		});
-    	}
-	});
-    
-    // 点击关闭按钮时触发
-    $("#lightbox1 .jsglyph-close").click(function(){
-    	updateRemark();
-    });
-}
-
-/** 加载表格数据 */
-function loadTableInfo(){
-	$.ajax({
-		url:"/T_DISTRIBUTIONINFO/search.action",
-    	data:{"search.C_EQUIPMENTCODE*eq":rowData.C_CODE},
-    	type:"post",
-        dataType:"Json",
-        async:false,
-        success: function(data){
-        	if (!$.isEmptyObject(data)) {
-        		gjData = data;
-        	}
-        }
-    });
-    
-    $table.bootstrapTable({
-    	data: gjData,
-        method:'post',
-        dataType: "json",
+	$table.bootstrapTable({
         clickToSelect: false,
         sortName: "C_DISKID",
         sortOrder: "asc",
@@ -291,6 +124,158 @@ function loadTableInfo(){
             return '无符合条件的记录';
         }
     });
+	
+	// 加载表格
+	loadTableInfo();
+	
+    // 在用 
+    $('.light-statu.zy').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
+    	clickStatus = "在用";
+    	$('#gj-table td').click(function (){
+    		// 进来后清除原来的样式，增加新的样式
+    		$(this).children("span").attr("class", "gjt-span zy-span");
+    	});
+    });
+    
+   	// 备用
+    $('.light-statu.by').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
+    	clickStatus = "备用";
+    	$('#gj-table td').click(function (){
+    		$(this).children("span").attr("class", "gjt-span by-span");
+        });
+    });
+    
+   	// 故障芯
+    $('.light-statu.gz').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
+    	clickStatus = "故障芯";
+    	$('#gj-table td').click(function (){
+    		$(this).children("span").attr("class", "gjt-span gz-span");
+        });
+    });
+    
+   	// 空
+    $('.light-statu.k').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
+    	clickStatus = "空";
+    	$('#gj-table td').click(function (){
+    		$(this).children("span").attr("class", "gjt-span k-span");
+        });
+    });
+    
+    // 封存
+    $('.light-statu.fc').click(function(){
+    	// 移除所有选中的样式
+    	$(".light-statu").removeClass("light-statu-sel");
+    	// 选中当前
+    	$(this).addClass("light-statu-sel");
+    	clickStatus = "封存";
+    	$('#gj-table td').click(function (){
+    		$(this).children("span").attr("class", "gjt-span fc-span");
+        });
+    });
+    
+    // 删除
+    $remove.click(function () {
+    	var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+            return row.C_ID;
+        });
+    	if($.isEmptyObject(ids)){
+    		swal("请选择需要删除的数据！",'',"error");
+    	}else{
+    		swal({
+    	  		  title: "确定删除?",
+    	  		  type: "warning",
+    	  		  showCancelButton: true,
+    	  		  confirmButtonColor: "#DD6B55",
+    	  		  confirmButtonText: "确定",
+    	  		  cancelButtonText: "取消",
+    	  		  closeOnConfirm: false
+	  		},
+	  		function(){
+	  			updateRemark();
+	  	        $table.bootstrapTable('remove', {
+	  	            field: 'C_ID',
+	  	            values: ids
+	  	        });
+	  	        var flag = true;
+	  	        for(var i = 0; i < ids.length; i++){
+	  	        	$.post('/T_DISTRIBUTIONINFO/delete.action', {"ID":ids[i]},
+	  	          		function(result){
+	  	      				if (!result.success){ 
+	  	      	            	flag = false;
+	  	      	            }
+	                  	},'json'
+	              	);
+	  	        }
+	  	        if(flag){
+					swal("删除成功！",'',"success");
+	  	        }else{
+	  	        	swal("删除失败！",'',"error");
+	  	        }
+	  		});
+    	}
+    });
+    
+    // 新增
+    $add.click(function () {
+    	updateRemark();
+    	var hang = $("#gj-table input[type='radio']").length + 1;
+    	var d = "C_EQUIPMENTCODE=" + rowData.C_CODE + "&C_DISKID=" + hang;
+    	$("body").mLoading("show");
+        $.post('/T_DISTRIBUTIONINFO/save.action', d, function(result){
+        	loadTableInfo();
+        });
+    });  
+    
+    // 点击某一列的时候触发
+    $table.on('click-cell.bs.table', function (e, field, value, row) {
+    	if(!isEmpty(clickStatus) && !isEmpty(field) && field != "C_REMARK" && field.indexOf("C_") >= 0){
+    		var obj = {};
+        	obj["search.C_ID*eq"] = row.C_ID;
+    		obj[field] = clickStatus;
+    		$("body").mLoading("show");
+    		$.post('/T_DISTRIBUTIONINFO/update.action', obj, function(){
+    			loadTableInfo();
+    		});
+    	}
+	});
+    
+    // 点击关闭按钮时触发
+    $("#lightbox1 .jsglyph-close").click(function(){
+    	updateRemark();
+    });
+}
+
+/** 加载表格数据 */
+function loadTableInfo(){
+	$.ajax({
+		url: "/T_DISTRIBUTIONINFO/search.action",
+    	data: {"search.C_EQUIPMENTCODE*eq": selEqtCode},
+    	type: "post",
+        dataType: "Json",
+        async: false,
+        success: function(data){
+        	if (!$.isEmptyObject(data)) {
+        		$table.bootstrapTable('load', data);
+        		$("body").mLoading("hide");
+        	}
+        }
+    });
 }
 
 
@@ -307,11 +292,13 @@ function updateRemark(){
 		objData["search.C_ID*eq"] = c_id;
 		allData.push(objData);
     });
-	for(var j = 0; j < allData.length; j++){
-		$("body").mLoading("show");
-		$.post('/T_DISTRIBUTIONINFO/update.action', allData[j], function(){
-			$("body").mLoading("hide");
-		});
+	if(!$.isEmptyObject(allData)){
+		for(var j = 0; j < allData.length; j++){
+			$("body").mLoading("show");
+			$.post('/T_DISTRIBUTIONINFO/update.action', allData[j], function(){
+				loadTableInfo();
+			});
+		}
 	}
 }
 
@@ -451,7 +438,8 @@ function downRow(){
 	$table.find("tr[class='selected']").each(function(){ 
     	var $tr = $(this);
     	var i = $tr.index();
-    	if (i != gjData.length - 1) {
+    	var hang = $("#gj-table input[type='radio']").length;
+    	if (i != hang - 1) {
             $tr.fadeOut().fadeIn();
             $tr.next().find("span[class='c_disk']").html(i + 1);
             $tr.next().after($tr);

@@ -369,7 +369,7 @@ function initDistributionInfoDailog(){
 function initSelectpicker(val, id){
 	$.ajax({
 		url:"/T_ENUMERATE/search.action",
-    	data:{"search.C_TYPE*eq": val,"sort.C_SORTID": 'ASC'},
+    	data:{"search.C_TYPE*eq": val, "sort.C_SORTID": 'ASC'},
     	type:"post",
         dataType: "Json",
         async:false,
@@ -521,6 +521,7 @@ function addDistributionInfo(){
  * 保存
  */
 function submitDistributionInfo(){
+	if (!$('#img_form').valid()) return null;
 	var info = $("#info_form").serializeJson();
 	// 获取跳纤端DIV,拼接页面上输入的值
 	var dataMarkDiv = $("div[data-mark]");

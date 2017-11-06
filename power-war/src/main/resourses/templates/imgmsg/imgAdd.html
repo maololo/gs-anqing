@@ -1,4 +1,4 @@
-<div style="width:530px;">
+<div style="width: 530px;">
     <form class="form-horizontal" style="margin-top: 20px;" id="img_form" enctype="multipart/form-data">
         <div class="form-group" style="margin:6px 0">
         	<label for="E_NAME" class="col-sm-2 control-label">所属设备:</label>
@@ -10,7 +10,7 @@
         <div class="form-group" style="margin:6px 0">
         	<label for="NAME" class="col-sm-2 control-label" >名称:</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control"  name="NAME" id="NAME"/>
+                <input type="text" class="form-control"  name="NAME" id="NAME" required validTitle="图片名称"/>
             </div>
         </div>
         <div class="form-group" style="margin:6px 0">
@@ -22,7 +22,7 @@
         <div class="form-group" style="margin:6px 0">
             <label for="REMARK" class="col-sm-2 control-label">备注:</label>
             <div class="col-sm-10">
-                <textarea class="form-control" rows="2" name="REMARK" id="REMARK"></textarea>
+                <textarea class="form-control" rows="2" name="REMARK" id="REMARK" required validTitle="备注"></textarea>
             </div>
         </div>
         <div class="form-group" style="margin:6px 0">

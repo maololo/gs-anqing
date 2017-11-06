@@ -1,4 +1,3 @@
-
 var rowData="";//选择行数据
 function init(){
     window.operateEventDistributionmodule = {
@@ -32,6 +31,7 @@ function init(){
             openDistributionmoduleDailog('/distributionmodule/distributionmoduleAdd.action','配线模块信息');
         }
     };
+    
     $('#distributionmoduleTable').bootstrapTable({
     	url: '/T_DISTRIBUTIONMODULE/queryPage.action',
 	    method:'post',
@@ -44,12 +44,10 @@ function init(){
 		pageSize: 10,
 		pageNumber:1,
 		undefinedText:"",
-//		search: true, //不显示 搜索框
 		showColumns: false, //不显示下拉框（选择显示的列）
 		sidePagination: "server", //服务端请求
 		queryParams: queryParams,//分页参数
 		clickToSelect: true,
-//		height: 400,
         columns: [{
             field: 'C_CODE',
             title: '模块ID',
@@ -111,11 +109,9 @@ function init(){
             events: operateEventDistributionmodule,//给按钮注册事件
             formatter: operateFormatterDistributionmodule,//表格中增加按钮
         }]
-
     });
-
-    
 }
+
 //端子行数离焦事件
 function blurTerminalRownum(){
 	var rownum = $("#C_TERMINALROWNUM").val().trim();
@@ -134,6 +130,7 @@ function blurTerminalRownum(){
 		 }	 
 	 }
 }
+
 //端子列数离焦事件
 function blurTerminalColumnnum(){
 	var columnnum = $("#C_TERMINALCOLUMNNUM").val().trim();
@@ -163,6 +160,7 @@ function initDistributionmoduleDailog(){
 		  todayBtn: true//显示今日按钮
 	});
 }
+
 //设置传入参数
 function queryParams(params) {
 	var params={};
@@ -192,7 +190,6 @@ function operateFormatterDistributionmodule(val,row,index){
         '<button class="RoleOfdDeldte  btn btn-sm rolebtn" style="background: none;outline:none;color:red" title="删除"><span  class=" glyphicon glyphicon-trash " ><span></button>'
     ].join('');
 }
-
 
 function openDistributionmoduleDailog(url,title){
 	$.jsPanel({
@@ -241,16 +238,11 @@ function addDistributionmodule(){
 //数据回写
 function initUpdateDistributionmodule(obj){
 	for(var id in obj){
-		var data = document.getElementById(id);
-		if(data!=null && data.type == "select-one"){
- 			 $('#'+id).selectpicker('val',obj[id]);
- 		 }else{
- 			 $('#'+id).val(obj[id]);
- 		 }
 		if(id == "C_STATIONID"){
 			var typeName = formatfeatureName(obj[id]);
-			$('#'+id+'.selectpicker').append("<option value=" + obj[id] + ">" + typeName + "</option>");
-			$("#"+id).selectpicker('val', obj[id]);
+			$('#' + id).append("<option value=" + obj[id] + ">" + typeName + "</option>");
+		}else{
+			$('#' + id).val(obj[id]);
 		}
 	}
 	rowData = "";
@@ -264,46 +256,31 @@ function submitDistributionmoduleInfo(){
 	if(distributionmoduleInfo.C_ID==''){
 		distributionmoduleInfo.C_CODE = guid();
 	}
-//	var distributionmoduleid = true;
-//	//根据选择的模糊数据转换成空间数据ID
-//	for(var i=0;i<blurData.length;i++){
-//		if(blurData[i].Name == distributionmoduleInfo.C_STATIONID){
-//			distributionmoduleInfo.C_STATIONID = blurData[i].ID;
-//			distributionmoduleid = false;
-//			break;
-//		}
-//	}
-//	if(distributionmoduleid){distributionmoduleInfo.C_STATIONID=""}
-//	blurData=[];
-	
 	$.post('/T_DISTRIBUTIONMODULE/save.action',
-			distributionmoduleInfo,
-			function(result){
-		        closeDistributionmodule();
-		        swal(result.title,'',"success");
-		        $('#distributionmoduleTable').bootstrapTable('refresh');
+	distributionmoduleInfo,
+	function(result){
+        closeDistributionmodule();
+        swal(result.title,'',"success");
+        $('#distributionmoduleTable').bootstrapTable('refresh');
 	},"json");
 }
-
-
 
 /**
  *  查询
  */
 function searchDistributionmoduleInfo(){
 	$.post('/T_DISTRIBUTIONMODULE/queryPage.action',
-		    {
-		    "search.C_MODULENAME*like":'%'+$("#module_name").val()+'%',
-			"page_pn": 1,
-			"page_size":10
-		    },
-    		function(data){
-		        $('#distributionmoduleTable').bootstrapTable('load', data);
+    {
+    "search.C_MODULENAME*like":'%'+$("#module_name").val()+'%',
+	"page_pn": 1,
+	"page_size":10
+    },
+	function(data){
+        $('#distributionmoduleTable').bootstrapTable('load', data);
     },'json');
 }
+
 /**
- * @requires jQuery
- * 
  * 格式化日期时间
  */
 function DateTimeFormatter(value) {
@@ -319,7 +296,6 @@ function DateTimeFormatter(value) {
 	}
 	return dt.format("yyyy-MM-dd"); //扩展的Date的format方法(
 }
-
 
 Date.prototype.format = function(format) {
 	var o = {

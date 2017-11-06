@@ -37,29 +37,12 @@ function init(){
             resPopover('/imgmsg/imgmsg.action','图片信息');
         },
         'click .RoleOfToEquipment': function (e, value, row, index) {
-        	var stationID = row.C_STATIONID;
-        	if(stationID=="" || stationID==null){
+        	var stationId = row.C_STATIONID;
+        	if(isEmpty(stationId)){
         		swal('所属局站为空!', '', "warning");
         		return;
         	}
-        	// 获取查询图层类型
-			var layerName = queryLayerNameByPMSID(stationID.substring(0,4));
-			var node = getLayerNodeByName(layerName);
-			var features = node.layer.getSource().getFeatures();
-			var feature = '';
-			for(var i in features){
-				if(features[i].values_.ID==stationID){
-					feature = features[i];
-					break;
-				}
-			}
-			layerAttributeTableData = [feature];
-			excessiveObject.layer = node.layer;
-			excessiveObject.layerName = layerName;
-			excessiveObject.DrawType = 'Point';
-			
-			resPopover("/"+layerName+"/"+layerName+".action",'局站信息');
-			
+        	stationViewDailog(stationId, "/equipment/stationView.action", '局站信息');
         },
         'click .RoleOfLight': function (e, value, row, index) {
         	rowData = row;
@@ -173,9 +156,7 @@ function init(){
             events: operateEventsEquipment,//给按钮注册事件
             formatter: operateFormatterEquipment//表格中增加按钮
         }]
-
     });
-
 }
 
 function initEquipmentDailog(){
@@ -204,10 +185,8 @@ function initSelectpicker(val,id){
         success: function (data) {
             if (data!="" ||data!=null) {               
                 for(var i=0;i<data.length;i++) {
-                	$('#'+id+'.selectpicker').append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
+                	$('#' + id).append("<option value=" + data[i].C_VALUE + ">" + data[i].C_NAME + "</option>");
                 }
-                $("#"+id).selectpicker('refresh');
-               
             }
         }
     })
@@ -306,15 +285,12 @@ function addEquipment(){
 //数据回写
 function initUpdateEquipment(obj){
 	for(var id in obj){
-		var data = document.getElementById(id);
-		if(data!=null && data.type == "select-one"){
- 			 $('#'+id).selectpicker('val',obj[id]);
- 		 }else if(id == "C_STATIONID"){
+		if(id == "C_STATIONID"){
  			var typeName = formatfeatureName(obj[id]);
-			$("#"+id).val(typeName);
- 		 }else{
- 			 $('#'+id).val(obj[id]);
- 		 }
+			$("#" + id).val(typeName);
+		}else{
+			$('#' + id).val(obj[id]);
+		}
 	}
 	rowData = "";
 }
@@ -404,3 +380,61 @@ Date.prototype.format = function(format) {
 			format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
 	return format;
 }
+
+/** 查询局站弹框 **/
+function stationViewDailog(stationId, url, title){
+	$.jsPanel({
+	 	headerControls: {controls: "closeonly"},
+        id: "stationView",
+        position: 'center',
+        theme: "#308374",
+        dragit: {containment: [100, 0, 0, 160]},
+        contentSize: {width: 'auto', height: 'auto'},
+        headerTitle: title,
+        border: '1px solid #066868',
+        contentAjax: {
+            url: url,
+            autoload: true,
+            done: function (data, textStatus, jqXHR, panel) {
+            	initStationInfo(stationId);
+            }
+        },
+        callback:function(){
+            this.content.css({"padding": "5px"});
+        }
+    });
+}
+
+/** 初始化页面值 **/
+function initStationInfo(stationId){
+	// 局站信息
+	var station = getFeatureObjByCodeAndModel(stationId, "SD_STATION");
+	if(!$.isEmptyObject(station)){
+		var du = station.geometry.getCoordinates();
+		if(!$.isEmptyObject(du)){
+			if(!isEmpty(du[0])){
+				$("input[name='longitude']").val(du[0]);
+			}else{
+				$("input[name='longitude']").val("未设定");
+			}
+			if(!isEmpty(du[1])){
+				$("input[name='latitude']").val(du[1]);
+			}else{
+				$("input[name='latitude']").val("未设定");
+			}
+		}
+		for(var s in station){
+			var domVal = station[s];
+			var dom = $("input[name=" + s + "]");
+			if(dom.length > 0){
+				if(!isEmpty(domVal)){
+					$("input[name=" + s + "]").val(domVal);
+				}else{
+					$("input[name=" + s + "]").val("未设定");
+				}
+			}
+		}
+	}
+}
+
+
